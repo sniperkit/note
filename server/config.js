@@ -1,5 +1,5 @@
 import commonConfig from "../common/config.js";
-import config from "./prod.config.js";
+import config from "./.config.js";
 
 const defaultConfig = {
 	...commonConfig,
