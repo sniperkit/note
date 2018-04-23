@@ -45,7 +45,7 @@ export default {
 		codeEditor,
 		page,
 	},
-	//middleware: "authenticated",
+	middleware: "authenticated",
 	data: function() {
 		var tag = tags.getTag("div");
 		return {

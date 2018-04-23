@@ -60,12 +60,10 @@ export default {
 
 	methods: {
 		...mapActions({
-			setAuthenticated: "user/setAuthenticated",
 			setToken: "user/setToken",
 		}),
 		handleCommand(cmd){
 			if (cmd == "logout") {
-				this.setAuthenticated(false);
 				this.setToken(undefined);
 				this.$router.push({name: g_app.getRouteName("login")});
 			} else if (cmd == "editor") {
