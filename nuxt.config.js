@@ -14,7 +14,7 @@ module.exports = {
 	{src:"~/plugins/app", ssr: false},
 	{src:"~/plugins/persistedstate", ssr: false},
 	{src:"~/plugins/codemirror", ssr: false},
-	{src:"~/plugins/element-ui"},
+	//{src:"~/plugins/element-ui"},
 	//{src:"~/plugins/test", ssr: false},
 	],
 
@@ -74,11 +74,12 @@ module.exports = {
 				return;
 			}
 
-			config.entry["codemirror"] = ["~/plugins/codemirror"];
-			config.entry["elementUI"] = ["~/plugins/element-ui"];
+			config.entry["codemirrorVendor"] = ["~/plugins/codemirror"];
+			//config.entry["elementUI"] = ["~/plugins/element-ui"];
 			config.plugins[0] = new webpack.optimize.CommonsChunkPlugin({
 				//name:"vendor",
-				names: ["elementUI", "codemirror", "vendor"],
+				names: ["codemirrorVendor", "vendor"],
+				//names: ["elementUI", "codemirror", "vendor"],
 				//chunks: ["lodash", "axios"],
 				minChunks: Infinity,
 			});
