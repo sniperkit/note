@@ -68,6 +68,20 @@ DataSource.prototype.getDefaultDataSource = async function(ctx) {
 	return dataSource;
 }
 
+DataSource.prototype.upsert = async function(ctx) {
+}
+
+DataSource.prototype.all = async function(ctx) {
+	const username = ctx.state.user.username;
+	let list = await this.model.find({
+		username: username,
+	});
+
+	if (!list) return ERR.ERR_NOT_FOUND;
+
+	return list.get({plain:true});
+}
+
 DataSource.prototype.getRoutes = function() {
 	const prefix = "/dataSource";
 	const routes = [
@@ -75,6 +89,16 @@ DataSource.prototype.getRoutes = function() {
 		path: prefix + "/getDefaultDataSource",
 		method: "get",
 		action: "getDefaultDataSource",
+	},
+	{
+		path: prefix + "/listl",
+		method: "get",
+		action: "all",
+	},
+	{
+		path: prefix + "/upsert",
+		method: "get",
+		action: "upsert",
 	},
 	];
 
