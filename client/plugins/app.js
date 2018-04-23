@@ -4,7 +4,7 @@ import config from "@/config.js";
 import consts from "@/lib/consts.js";
 import storage from "@/lib/storage.js";
 import indexedDB from "@/lib/indexedDB.js";
-import {keepworkEndpoint} from "@@/common/api/keepwork.js";
+import {keepworkEndpoint} from "@@/common/api/note.js";
 
 config.baseURL = window.location.origin + config.apiUrlPrefix;
 

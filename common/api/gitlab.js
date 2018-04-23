@@ -1,4 +1,5 @@
 import gitlabApi from "../../client/lib/gitlab-api";
+//import gitlabApi from "@/lib/gitlab-api";
 //import gitlabApi from "node-gitlab-api";
 import {Base64} from "js-base64";
 import _ from "lodash";
@@ -62,7 +63,7 @@ const getUsernameByPath = function(path) {
 	return username;
 }
 
-function Gitlab(config){
+export function Gitlab(config){
 	config = _.mapKeys(config || {}, (value, key) => _.camelCase(key));
 	this.cfg = {
 		...defaultConfig,
@@ -104,7 +105,7 @@ Gitlab.prototype.createFile = function(path, options) {
 	return this.api.RepositoryFiles.create(this.cfg.projectId, path, this.cfg.branch, options);
 }
 
-Gitlab.prototype.removeFile = function(path, options) {
+Gitlab.prototype.deleteFile = function(path, options) {
 	return this.api.RepositoryFiles.remove(this.cfg.projectId, path, this.cfg.branch, options);
 }
 
@@ -119,6 +120,40 @@ Gitlab.prototype.getFileGitUrl = function(path) {
 	const url = this.cfg.rawBaseUrl + "/" + this.cfg.externalUsername + "/" + this.cfg.projectName + '/blob/' + "master" + '/' + path;
 	
 	return url;
+}
+
+Gitlab.prototype.upsertHook = async function(url, options) {
+	const hooks = await this.api.ProjectHooks.all(this.cfg.projectId, options);
+	const index = hooks.findIndex(hook => hook.url === url);
+	return index >= 0 ? hooks[index] : this.api.ProjectHooks.add(this.cfg.projectId, url, options);
+}
+
+Gitlab.prototype.getTableKey = function(opt) {
+	if (!opt || !opt.tablename || !opt.filename) {
+		return ;
+	}
+
+	const cfg = this.cfg;
+	const key = {
+		company: opt.company || "kw",
+		version: opt.version || "v0",
+		tablename: opt.tablename,
+		filename: opt.filename,
+	}
+	key.path = cfg.username + "_data/" +  key.company + "_"  + key.version + "_" + cfg.sitename + "/" + opt.tablename + "/" + opt.filename;
+
+	return key;
+}
+
+Gitlab.prototype.wrapTableData = function(key, data) {
+}
+
+Gitlab.prototype.upsertTableData = function(key, data, options) {
+	return self.upsertFile(key.path, {...key, data:data});
+}
+
+Gitlab.prototype.deleteTableData = function(key) {
+	return self.deleteFile(key.path);
 }
 
 gitlab.initConfig = function(config){
@@ -153,9 +188,9 @@ gitlab.createFile = function(path, options) {
 	return git.createFile(path, options);
 }
 
-gitlab.removeFile = function(path, options) {
+gitlab.deleteFile = function(path, options) {
 	const git = this.getGitByPath(path);
-	return git.removeFile(path, options);
+	return git.deleteFile(path, options);
 }
 
 gitlab.getTree = function(path, options) {

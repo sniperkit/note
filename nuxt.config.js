@@ -75,10 +75,10 @@ module.exports = {
 			}
 
 			config.entry["codemirrorVendor"] = ["~/plugins/codemirror"];
-			//config.entry["elementUI"] = ["~/plugins/element-ui"];
+			//config.entry["elementUIVendor"] = ["~/plugins/element-ui"];
 			config.plugins[0] = new webpack.optimize.CommonsChunkPlugin({
 				names: ["codemirrorVendor", "vendor"],
-				//names: ["elementUI", "codemirror", "vendor"],
+				//names: ["elementUIVendor" ,"codemirrorVendor", "vendor"],
 				minChunks: Infinity,
 			});
 

@@ -43,7 +43,10 @@
 //export ProjectCustomAttributes from './ProjectCustomAttributes';
 //export ProjectImportExport from './ProjectImportExport';
 //export ProjectIssueBoards from './ProjectIssueBoards';
-//export ProjectHooks from './ProjectHooks';
+
+import _ProjectHooks from './ProjectHooks';
+export const ProjectHooks = _ProjectHooks;
+
 //export ProjectMembers from './ProjectMembers';
 //export ProjectMilestones from './ProjectMilestones';
 //export ProjectSnippets from './ProjectSnippets';

@@ -2,15 +2,15 @@
 	<div class="container" style="margin-top:40px">
 		<el-row>
 			<el-col :span="8" :offset="8">
-				<el-form ref="registerForm" :model="registerForm" :rules="registerRules" label-width="80px">
+				<el-form ref="loginForm" :model="loginForm" :rules="loginRules" label-width="80px">
 					<el-form-item label="用户名:" prop="username">
-						<el-input v-model="registerForm.username"></el-input>
+						<el-input v-model="loginForm.username"></el-input>
 					</el-form-item>
 					<el-form-item label="密码:" prop="password">
-						<el-input type="password" v-model="registerForm.password" @keyup.native.enter="submitRegisterForm"></el-input>
+						<el-input type="password" v-model="loginForm.password" @keyup.native.enter="submitLoginForm"></el-input>
 					</el-form-item>
 					<el-form-item>
-						<el-button @click.prevent="submitRegisterForm">注册</el-button>
+						<el-button @click.prevent="submitLoginForm">登陆</el-button>
 					</el-form-item>
 				</el-form>
 			</el-col>
@@ -28,11 +28,13 @@ import {
 	Button,
 	Message,
 } from "element-ui";
-import Cookies from 'js-cookie';
 import {mapActions, mapGetters} from "vuex";
-
 import gitlab from "@@/common/api/gitlab.js";
-import {user, dataSource, keepworkEndpoint} from "@@/common/api/keepwork.js";
+import config from "@/config.js";
+import keepwork from "@@/common/api/keepwork.js";
+
+keepwork.endpoint.defaults.baseURL = config.keepwork.baseURL;
+
 export default {
 	components: {
 		[Button.name]: Button,
@@ -45,11 +47,11 @@ export default {
 
 	data:function(){
 		return {
-			registerForm:{
+			loginForm:{
 				username:"",
 				password:"",
 			},
-			registerRules: {
+			loginRules: {
 				username: [
 				{required:true, message:"用户名不能为空", trigger:"blur"}
 				],
@@ -68,37 +70,30 @@ export default {
 			setUserDataSource: "user/setUserDataSource",
 			setDataSource: "dataSource/setDataSource",
 		}),
-		async registerSuccess(token, userinfo) {
+		async loginSuccess(token, userinfo) {
 			const self = this;
-			keepworkEndpoint.defaults.headers.common['Authorization'] = token;
-			Cookies.set("token", token);
 			self.setToken(token);
 			self.setUser(userinfo);
 
-			const ds = await dataSource.getDefaultDataSource();
-			if (ds && ds.username) {
-				gitlab.initConfig(ds);
-				self.setDataSource(ds);
-				self.setUserDataSource(ds);
-			}
+			self.$router.push({name:g_app.getRouteName("site")});
 		},
-		submitRegisterForm() {
+		submitLoginForm() {
 			const self = this;
-			this.$refs.registerForm.validate(function(valid){
+			this.$refs.loginForm.validate(function(valid){
 				if (!valid) {
 					return;
 				}
 				
-				user.register({
-					username:self.registerForm.username,
-					password:self.registerForm.password,
+				keepwork.user.login({
+					username:self.loginForm.username,
+					password:self.loginForm.password,
 				}).then(function(data){
-					if (data.code != 0) {
-						Message(data.message);
+					if (data.error.id != 0) {
+						Message(data.error.message);
 						return;
 					}
 					data = data.data;
-					self.registerSuccess(data.token, data.userinfo);
+					self.loginSuccess(data.token, data.userinfo);
 				})
 			});
 		}
