@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Message  } from 'element-ui';
+import * as qiniu from "qiniu-js";
 
 export const keepworkEndpoint = axios.create({
 	//baseURL:"",
@@ -55,13 +56,80 @@ export const Site = function(config, endpoint) {
 	self.create = (...args) => self.httpPost("website/createSite", ...args);
 }
 
+export const Qiniu = function(config, endpoint) {
+	const self = this;
+	const outerBaseURL = config.outerBaseURL || "";
+	let data = null;
+
+	initHttpHelper(self, config, endpoint);
+
+	self.getQiniuOptions = async () => {
+		if (!self.uid) {
+			data = await self.httpGet(outerBaseURL + "qiniu/getUid");
+			if (!data || !data.data) {
+				return ;
+			}
+			self.uid = data.data.uid;
+		}
+		if (!self.token) {
+			data = await self.httpGet(outerBaseURL + "qiniu/getUploadToken");
+			if (!data || !data.data) {
+				return ;
+			}
+			self.token = data.data.token;
+		}
+
+		return {
+			token: self.token,
+			putExtra: {
+				//fname: "",
+				params: {
+					"x:uid": self.uid,
+				},
+				mimeType: null,
+			},
+			config: {
+				useCdnDomain: true,
+			},
+		}
+	}
+
+	self.upload = async (file, key, observer) => {
+		const option = await self.getQiniuOptions();
+		if (!option || !file) {
+			if (observer && observer.error) {
+				observer.error();
+			}
+		}
+		
+		key = key || file.name;
+
+		console.log(option);
+		const observable = qiniu.upload(file, key, option.token, option.putExtra, option.config);
+		observable.subscribe({
+			next(res) {
+				console.log(res);
+			},
+			error(err) {
+				console.log(err);
+			},
+			complete(res){
+				console.log(res);
+			}
+		});
+
+	}
+}
+
 export const Keepwork = function(config, endpoint) {
 	const self = this;
+	config = config || {};
 	initHttpHelper(self, config, endpoint);
 
 	self.user = new User(config, self.endpoint);
 	self.siteDataSource = new SiteDataSource(config, self.endpoint);
 	self.site = new Site(config, self.endpoint);
+	self.qiniu = new Qiniu(config, self.endpoint);
 }
 
 export default new Keepwork();

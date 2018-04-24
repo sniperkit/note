@@ -2,6 +2,7 @@ import gitlabApi from "../../client/lib/gitlab-api";
 //import gitlabApi from "@/lib/gitlab-api";
 //import gitlabApi from "node-gitlab-api";
 import {Base64} from "js-base64";
+import yaml from "js-yaml";
 import _ from "lodash";
 
 
@@ -92,16 +93,19 @@ Gitlab.prototype.getContent = function(path) {
 	return this.api.RepositoryFiles.show(this.cfg.projectId, path, this.cfg.ref).then(file => Base64.decode(file.content));
 }
 
-Gitlab.prototype.upsertFile = function(path, options) {
-	const file = this.getFile(path);
+Gitlab.prototype.upsertFile = async function(path, options) {
+	options = {...(options || {}), commit_message:"create or update"};
+	const file = await this.getFile(path).catch(() => {});
 	return file ? this.editFile(path, options) : this.createFile(path, options);
 }
 
 Gitlab.prototype.editFile = function(path, options) {
+	options = {...(options || {}), commit_message:"update"};
 	return this.api.RepositoryFiles.edit(this.cfg.projectId, path, this.cfg.branch, options);
 }
 
 Gitlab.prototype.createFile = function(path, options) {
+	options = {...(options || {}), commit_message:"create"};
 	return this.api.RepositoryFiles.create(this.cfg.projectId, path, this.cfg.branch, options);
 }
 
@@ -129,7 +133,7 @@ Gitlab.prototype.upsertHook = async function(url, options) {
 }
 
 Gitlab.prototype.getTableKey = function(opt) {
-	if (!opt || !opt.tablename || !opt.filename) {
+	if (!opt || !opt.type || !opt.filename) {
 		return ;
 	}
 
@@ -137,23 +141,43 @@ Gitlab.prototype.getTableKey = function(opt) {
 	const key = {
 		company: opt.company || "kw",
 		version: opt.version || "v0",
-		tablename: opt.tablename,
+		type: opt.type,
 		filename: opt.filename,
 	}
-	key.path = cfg.username + "_data/" +  key.company + "_"  + key.version + "_" + cfg.sitename + "/" + opt.tablename + "/" + opt.filename;
+	key.path = cfg.username + "_data/" +  key.company + "_"  + key.version + "_" + cfg.sitename + "/" + opt.type + "/" + opt.filename + ".yaml";
+
+	key.index_prefix = key.index_prefix || key.company;
+	key.index = [key.index_prefix, key.version, opt.type].join("_");
 
 	return key;
 }
 
 Gitlab.prototype.wrapTableData = function(key, data) {
+	return yaml.safeDump({
+		...key,
+		data: data || {},
+	});
 }
 
 Gitlab.prototype.upsertTableData = function(key, data, options) {
-	return self.upsertFile(key.path, {...key, data:data});
+	return this.upsertFile(key.path, {...(options || {}), content: this.wrapTableData(key, data)});
 }
 
 Gitlab.prototype.deleteTableData = function(key) {
-	return self.deleteFile(key.path);
+	return this.deleteFile(key.path);
+}
+
+Gitlab.prototype.upsertProject = async function(projectName) {
+	const nullFunc = () => {};
+	const self = this;
+	const projects = await self.api.Projects.all({owned: true, search:projectName}).catch(() => {});
+	if (!projects) return ;
+
+	if (projects.length > 0) return projects[0];
+
+	const project = await self.api.Projects.create({name:projectName}).catch(nullFunc);
+
+	return project;
 }
 
 gitlab.initConfig = function(config){

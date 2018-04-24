@@ -5,15 +5,14 @@ const defaultConfig = {
 	host: "http://10.28.18.7:9200",
 }
 
-const client = new elasticsearch.Client({
-	...defaultConfig,
-});
-
-export const elasticsearchFactory = (config) => {
-	return new elasticsearch.Client({
+export const ElasticsearchFactory = function(config){
+	this.api = new elasticsearch.Client({
 		...defaultConfig,
 		...(config || {}),
 	});
 }
 
-export default client;
+ElasticsearchFactory.prototype.search = function(opt, query) {
+}
+
+export default new ElasticsearchFactory();

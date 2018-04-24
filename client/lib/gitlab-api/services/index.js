@@ -14,7 +14,8 @@
 //export EpicDiscussions from './EpicDiscussions';
 
 //// Users
-//export Users from './Users';
+import _Users from './Users';
+export const Users = _Users;
 //export UserEmails from './UserEmails';
 //export UserImpersonationTokens from './UserImpersonationTokens';
 //export UserKeys from './UserKeys';
@@ -38,7 +39,8 @@
 //export Pipelines from './Pipelines';
 //export PipelineSchedules from './PipelineSchedules';
 //export PipelineScheduleVariables from './PipelineScheduleVariables';
-//export Projects from './Projects';
+import _Projects from './Projects';
+export const Projects = _Projects;
 //export ProjectAccessRequests from './ProjectAccessRequests';
 //export ProjectCustomAttributes from './ProjectCustomAttributes';
 //export ProjectImportExport from './ProjectImportExport';

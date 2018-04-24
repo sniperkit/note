@@ -2,13 +2,15 @@ import _ from "lodash";
 import joi from "joi";
 import wurl from "wurl";
 import yaml from "js-yaml";
-
+import elasticsearch from "elasticsearch";
 import ERR from "../common/error.js";
 import config from "../config.js";
-import esClient from "../../common/api/elasticSearch.js";
 import {gitlabFactory} from "../../common//api/gitlab.js";
 import gitlab from "../../common/api/gitlab.js";
-//import {gitlabFactory} from "../../vue/src//api/gitlab.js";
+
+const esClient = new elasticsearch.Client({
+	host:config.elasticsearch.baseURL,
+})
 
 // 获取GIT的ES数据
 const getGitData = async function(git, path) {
@@ -70,10 +72,10 @@ Gitlab.prototype.submitESData = async function(item) {
 	const tablename = item.tablename;
 	const path = item.path;
 	const action = item.action;
-	const indexs = [data.index_prefix || "kw", tablename, data.version || "v0"];
+	const index = data.index || [data.index_prefix || "kw", data.version || "v0", tablename].join("_");
 	const esData = {
-		index: indexs.join("_"),
-		type: tablename,
+		index: index,
+		type: data.type || tablename,
 		id: path.replace(/\//g, "_"),
 		body: data.data || {},
 	}
@@ -99,14 +101,14 @@ Gitlab.prototype.webhook = async function(ctx) {
 		rawBaseUrl:origin,
 		project_id:params.project_id,
 		external_username: params.user_username,
-		username:"xiaoyao",	
+		//username:"xiaoyao",	
 		token:config.gitlabToken,
 	}
 	const git = gitlabFactory(gitcfg);
 	
 	// 取出文件列表
 	const filelist = [];
-	const dataFileReg = /^[\w\d]+_data\/([_\w]+)\/.+\.yaml$/;
+	const dataFileReg = /^[\w\d]+_data\/[^\/]+\/([_\w]+)\/.+\.yaml$/;
 	const filelistAddItem = (path, oper, action) => {
 		if (!dataFileReg.test(path)) return;
 		

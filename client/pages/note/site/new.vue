@@ -8,7 +8,7 @@
 				<el-input type="text" v-model="site.description"></el-input> 
 			</el-form-item> 
 			<el-form-item label="LOGO:"> 
-				<el-input type="text"></el-input> 
+				<input class="file-input" type="file" @change="selectFile"/>
 			</el-form-item> 
 			<el-form-item>
 				<el-button @click.prevent="clickNewSiteBtn">新增</el-button>
@@ -26,7 +26,6 @@ import {
 } from "element-ui";
 
 import keepwork from "@/components/keepwork.js";
-import {Gitlab} from "@@/common/api/gitlab.js";
 
 export default {
 	mixins: [keepwork],
@@ -46,50 +45,27 @@ export default {
 
 	methods: {
 		clickNewSiteBtn() {
-			console.log(this.site);
-			
+			this.site.sitename = this.site.sitename || "xiaoyao";
+			this.site.description = this.site.description || "this is a description";
+			if (!this.git) return;
+
+			const git = this.git;
+			git.upsertTableData(git.getTableKey({
+				type:'sitetable',
+				filename: this.site.sitename,
+				company: "kw", // 表所属公司 推荐使用简写
+			}), this.site);
+		},
+
+		// 上传七牛文件
+		selectFile() {
+			const file = event.target.files[0];
+			console.log(file);
+			this.keepwork.qiniu.upload(file, "test.jpg");
 		},
 	},
 
 	async mounted() {
-		const siteParams = {
-			username: this.user.username,
-			sitename: this.sitename,
-		};
-
-		let data = await this.keepwork.site.getByName(siteParams);
-		let siteinfo = null;
-
-		// keepwork网站不存在 则创建网站
-		if (!data || !data.data) {
-			data = await this.keepwork.site.create(siteParams);
-			siteinfo = data.siteinfo;
-		} else {
-			siteinfo = data.data;
-		}
-
-		// 获取网站数据源
-		data = await this.keepwork.siteDataSource.get(siteParams);
-		if (!data || !data.data) {
-			console.log("-----------------server inner error-----------------");
-			return
-		}
-
-		// 初始化git api 
-		const gitcfg = data.data;
-		this.git = new Gitlab({
-			apiBaseUrl: gitcfg.rawBaseUrl,
-			rawBaseUrl: gitcfg.rawBaseUrl,
-			projectId: gitcfg.projectId,
-			projectName: gitcfg.projectName,
-			externalUsername: gitcfg.dataSourceUsername,
-			token: gitcfg.dataSourceToken,
-			username: gitcfg.username,
-			sitename: gitcfg.sitename,
-		});
-
-		// 注册钩子
-		this.git.upsertHook("http://47.52.20.34:8088/api/v0/gitlab/webhook");
 	}
 
 }

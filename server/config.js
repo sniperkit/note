@@ -16,6 +16,20 @@ const defaultConfig = {
 		username: "wuxiangan",
 		password: "xxxxxx", 
 	},
+
+	elasticsearch: {
+		baseURL: "http://10.28.18.7:9200", 
+	},
+
+
+	gitlab: {
+		token: "",
+	},
+
+	qiniu: {
+		accessKey:"",
+		secretKey:"",
+	},
 }
 
 const productionConfig = {

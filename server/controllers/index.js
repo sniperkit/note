@@ -7,12 +7,14 @@ import code from "./code.js";
 import user from "./user.js";
 import dataSource from "./dataSource.js";
 import gitlab from "./gitlab.js"; 
+import qiniu from "./qiniu.js";
 
 export const controllers = {
 	code,
 	user,
 	dataSource,
 	gitlab,
+	qiniu,
 }
 
 export const registerControllerRouter = function(router) {

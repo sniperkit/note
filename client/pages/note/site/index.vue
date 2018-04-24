@@ -18,22 +18,28 @@ import {
 import {mapActions, mapGetters} from "vuex";
 
 import config from "@/config.js";
-import keepwork from "@@/common/api/keepwork";
+import {ElasticsearchFactory} from "@@/common/api/elasticSearch.js";
+import keepwork from "@/components/keepwork.js";
 
-keepwork.endpoint.defaults.baseURL = config.keepwork.baseURL;
+const elasticsearch = new ElasticsearchFactory({
+	host: config.elasticsearch.baseURL,
+});
 
 export default {
+	mixins: [keepwork],
 	components: {
 		[Button.name]: Button,
 	},
 
 	data: function() {
 		return {
-			sites: [
-			{
-				sitename: "xiaoyao",
-				description: "this is demo",
+			tableOptions: {
+				type: "sitetable",    // 表名      必选
+				index_prefix: "kw",   // 前缀限定  可选
+				version: "v0",        // 版本 可选
+				company: "kw",        // 公司 可选
 			},
+			sites: [
 			],
 		}
 	},
@@ -51,8 +57,22 @@ export default {
 
 	},
 
-	mounted() {
-		keepwork.endpoint.defaults.headers.common['Authorization'] = "Bearer " + this.token;
+	async mounted() {
+		const key = this.git.getTableKey(tableOptions);
+		if (key) {
+			console.log("数据源初始化失败");
+			return;
+		}
+
+		const sites = await elasticsearch.api.search({
+			index: key.index,
+			type: key.type,
+			body: {
+				// es 查询语句 
+			}
+		});
+
+		this.sites = sites || [];
 	},
 }
 
