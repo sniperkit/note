@@ -10,7 +10,7 @@ export default {
 		return {
 			keepwork: new Keepwork({
 				baseURL: config.keepwork.baseURL,
-				outerBaseURL: config.outerBaseURL,
+				proxyBaseURL: config.keepwork.proxyBaseURL,
 			}),
 			sitename: "demo",
 		};

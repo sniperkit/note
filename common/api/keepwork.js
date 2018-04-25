@@ -66,19 +66,19 @@ export function Qiniu(options) {
 
 	const apiRequest = (method, url) => (data, config) => httpRequest(method || "get", url, data, Object.assign(self.options, config));
 	
-	const outerBaseURL = options.outerBaseURL || "";
+	const proxyBaseURL = options.proxyBaseURL || "";
 
 	self.getQiniuOptions = async () => {
 		let data = null;
 		if (!self.uid) {
-			data = await self.httpGet(outerBaseURL + "qiniu/getUid");
+			data = await self.httpGet(proxyBaseURL + "qiniu/getUid");
 			if (!data || !data.data) {
 				return ;
 			}
 			self.uid = data.data.uid;
 		}
 		if (!self.token) {
-			data = await self.httpGet(outerBaseURL + "qiniu/getUploadToken");
+			data = await self.httpGet(proxyBaseURL + "qiniu/getUploadToken");
 			if (!data || !data.data) {
 				return ;
 			}

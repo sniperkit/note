@@ -75,7 +75,7 @@ export default {
 			self.setToken(token);
 			self.setUser(userinfo);
 
-			self.$router.push({name:g_app.getRouteName("site")});
+			self.$router.push({name:g_app.getRouteName("demo")});
 		},
 		submitLoginForm() {
 			const self = this;

@@ -1,5 +1,5 @@
 
-const config = {
+const defaultConfig = {
 	urlPrefix: "note",
 	apiUrlPrefix: "/api/v0/",
 	pageSuffix:".md",
@@ -8,8 +8,11 @@ const config = {
 	host: "0.0.0.0",
 	port: 7654,
 
+	baseURL: "http://wxaxiaoyao.cn/api/v0/",
+
 	keepwork: {
 		baseURL: "http://stage.keepwork.com/api/wiki/models/",
+		proxyBaseURL: "http://wxaxiaoyao.cn/api/v0/",
 	},
 
 	ESService: {
@@ -19,11 +22,8 @@ const config = {
 	elasticsearch: {
 		baseURL: "http://10.28.18.7:9200", 
 	},
-
-	outerNetIP: "47.52.20.34",
 }
 
-config.baseURL = "http://" + config.host + ":" + config.port + config.apiUrlPrefix;
-config.outerBaseURL = "http://" + config.outerNetIP + ":" + config.port + config.apiUrlPrefix;
+//defaultConfig.baseURL = "http://" + defaultConfig.host + ":" + defaultConfig.port + defaultConfig.apiUrlPrefix;
 
-export default config;
+export default defaultConfig;
