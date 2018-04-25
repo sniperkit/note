@@ -1,69 +1,75 @@
 import axios from "axios";
-import { Message  } from 'element-ui';
 import * as qiniu from "qiniu-js";
 
-export const keepworkEndpoint = axios.create({
-	//baseURL:"",
-});
-
-const resultHandle = res => {
-	const error = res.data.error;
-	if (error.id) {
-		Message.error(error.message);
+export function httpRequest(method, url, data, config) {
+	method = (method || "get").toLowerCase();
+	config = {...(config || {}), method:method, url:url};
+	if (method == "get" || method == "delete" || method == "head" || method == "options") {
+		config.params = data;
+	} else {
+		config.data = data;
 	}
 
-	return res.data.data;
+	return axios.request(config).then(res => res.data).catch((e => console.log(e)));
 }
 
-export const post = (...args) => keepworkEndpoint.post(...args).then(res => res.data);
+export const httpGet = (url, data, config) => httpRequest("get", url, data, config);
+export const httpPost = (url, data, config) => httpRequest("post", url, data, config);
+export const httpPut = (url, data, config) => httpRequest("put", url, data, config);
+export const httpDelete = (url, data, config) => httpRequest("delete", url, data, config);
 
-export const get = (url, params, config) => keepworkEndpoint.get(url, {
-   	params:params,
-	...(config || {}),
-}).then(res => res.data);
-
-const initHttpHelper = (obj, config, endpoint) => {
-	obj.endpoint = endpoint || axios.create(config || {});
-	obj.httpPost = (...args) => obj.endpoint.post(...args).then(res => res.data);
-	obj.httpGet = (url, params, config) => obj.endpoint.get(url, {params: params}).then(res => res.data);
-	//obj.setConfig = (config) => obj.endpoint.defaults = {...(obj.endpoint.defaults || {}), ...(config || {})};
-}
-
-export const User = function(config, endpoint) {
-	const self = this;
-	initHttpHelper(self, config, endpoint);
+function initHttpOptions(self, options) {
+	options = options || {};
+	options.headers = options.headers || {};
 	
-	self.login = (...args) => self.httpPost("user/login", ...args);
-	self.register = (...args) => self.httpPost("user/register", ...args);
-	self.isLogin = (...args) => self.httpGet("user/isLogin", ...args).then(res => res.data);
+	self.options = options;
+	self.httpGet = httpGet;
+	self.httpPost = httpPost;
+	self.httpPut = httpPut;
+	self.httpDelete = httpDelete;
 }
 
-export const SiteDataSource = function(config, endpoint) {
+export function User(options) {
 	const self = this;
-	initHttpHelper(self, config, endpoint);
+	initHttpOptions(self, options);
 
-	self.get = (...args) => self.httpGet("site_data_source/getSiteDataSource", ...args);
+	const apiRequest = (method, url) => (data, config) => httpRequest(method || "get", url, data, Object.assign(self.options, config));
+
+
+	self.login = apiRequest("post", "user/login");
+	self.register = apiRequest("post", "user/register");
+	self.isLogin = apiRequest("get", "user/isLogin");
 }
 
-
-export const Site = function(config, endpoint) {
+export function SiteDataSource(options) {
 	const self = this;
+	initHttpOptions(self, options);
 
-	initHttpHelper(self, config, endpoint);
+	const apiRequest = (method, url) => (data, config) => httpRequest(method || "get", url, data, Object.assign(self.options, config));
 
-	// 获取站定信息
-	self.getByName = (...args) => self.httpGet("website/getByName", ...args);
-	self.create = (...args) => self.httpPost("website/createSite", ...args);
+	self.get = apiRequest("get", "site_data_source/getSiteDataSource");
 }
 
-export const Qiniu = function(config, endpoint) {
+export function Site(options) {
 	const self = this;
-	const outerBaseURL = config.outerBaseURL || "";
-	let data = null;
+	initHttpOptions(self, options);
 
-	initHttpHelper(self, config, endpoint);
+	const apiRequest = (method, url) => (data, config) => httpRequest(method || "get", url, data, Object.assign(self.options, config));
+
+	self.getByName = apiRequest("get", "website/getByName");
+	self.create = apiRequest("post", "website/createSite");
+}
+
+export function Qiniu(options) {
+	const self = this;
+	initHttpOptions(self, options);
+
+	const apiRequest = (method, url) => (data, config) => httpRequest(method || "get", url, data, Object.assign(self.options, config));
+	
+	const outerBaseURL = options.outerBaseURL || "";
 
 	self.getQiniuOptions = async () => {
+		let data = null;
 		if (!self.uid) {
 			data = await self.httpGet(outerBaseURL + "qiniu/getUid");
 			if (!data || !data.data) {
@@ -82,7 +88,6 @@ export const Qiniu = function(config, endpoint) {
 		return {
 			token: self.token,
 			putExtra: {
-				//fname: "",
 				params: {
 					"x:uid": self.uid,
 				},
@@ -95,8 +100,8 @@ export const Qiniu = function(config, endpoint) {
 	}
 
 	self.upload = async (file, key, observer) => {
-		const option = await self.getQiniuOptions();
-		if (!option || !file) {
+		const opts = await self.getQiniuOptions();
+		if (!opts || !file) {
 			if (observer && observer.error) {
 				observer.error();
 			}
@@ -104,9 +109,8 @@ export const Qiniu = function(config, endpoint) {
 		
 		key = key || file.name;
 
-		console.log(option);
-		const observable = qiniu.upload(file, key, option.token, option.putExtra, option.config);
-		observable.subscribe({
+		const observable = qiniu.upload(file, key, opts.token, opts.putExtra, opts.config);
+		observable.subscribe(observer || {
 			next(res) {
 				console.log(res);
 			},
@@ -117,19 +121,20 @@ export const Qiniu = function(config, endpoint) {
 				console.log(res);
 			}
 		});
+	},
 
-	}
+	// params: {key:string, expires:number}
+	self.getDownloadUrl = apiRequest("get", "qiniu/getDownloadUrl");
 }
 
-export const Keepwork = function(config, endpoint) {
+export function Keepwork(options){
 	const self = this;
-	config = config || {};
-	initHttpHelper(self, config, endpoint);
+	initHttpOptions(self, options);
 
-	self.user = new User(config, self.endpoint);
-	self.siteDataSource = new SiteDataSource(config, self.endpoint);
-	self.site = new Site(config, self.endpoint);
-	self.qiniu = new Qiniu(config, self.endpoint);
+	self.user = new User(self.options);
+	self.siteDataSource = new SiteDataSource(self.options);
+	self.site = new Site(self.options);
+	self.qiniu = new Qiniu(self.options);
 }
 
 export default new Keepwork();

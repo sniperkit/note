@@ -69,6 +69,13 @@ DataSource.prototype.getDefaultDataSource = async function(ctx) {
 }
 
 DataSource.prototype.upsert = async function(ctx) {
+	const params = ctx.request.body;
+
+	const result = await this.model.upsert(params);
+
+	console.log(result);
+
+	return ERR.ERR_OK;
 }
 
 DataSource.prototype.all = async function(ctx) {
@@ -83,7 +90,7 @@ DataSource.prototype.all = async function(ctx) {
 }
 
 DataSource.prototype.getRoutes = function() {
-	const prefix = "/dataSource";
+	const prefix = "dataSource";
 	const routes = [
 	{
 		path: prefix + "/getDefaultDataSource",

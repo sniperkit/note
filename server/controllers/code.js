@@ -14,7 +14,7 @@ Code.prototype.pushCode = function() {
 
 Code.prototype.getRoutes = function() {
 	const self = this;
-	const prefix = "/code";
+	const prefix = "code";
 	const routes = [
 	{
 		path: prefix + "/push_code",

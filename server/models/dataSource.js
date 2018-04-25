@@ -27,11 +27,7 @@ const DataSource = sequelize.define("dataSource", {
 		//allowNull, false,
 	},
 
-	apiBaseUrl: {
-		type: Sequelize.STRING(64),
-	},
-
-	rawBaseUrl: {
+	baseUrl: {
 		type: Sequelize.STRING(64),
 	},
 

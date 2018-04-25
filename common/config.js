@@ -12,6 +12,14 @@ const config = {
 		baseURL: "http://stage.keepwork.com/api/wiki/models/",
 	},
 
+	ESService: {
+		baseURL: "http://47.52.20.34:7654/api/v0/",
+	},
+
+	elasticsearch: {
+		baseURL: "http://10.28.18.7:9200", 
+	},
+
 	outerNetIP: "47.52.20.34",
 }
 

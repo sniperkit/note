@@ -12,7 +12,7 @@ export default {
 				baseURL: config.keepwork.baseURL,
 				outerBaseURL: config.outerBaseURL,
 			}),
-			sitename: "site",
+			sitename: "demo",
 		};
 	},
 
@@ -24,51 +24,53 @@ export default {
 		}),
 	},
 
-	async mounted() {
-		if (!this.token || !this.user || !this.user.username) {
-			this.$router.push("/note/site/login");
-			return ;
+	methods: {
+		async loadData() {
+			if (!this.token || !this.user || !this.user.username) {
+				this.$router.push("/note/demo/login");
+				return ;
+			}
+
+			this.keepwork.options.headers['Authorization'] = "Bearer " + this.token;
+
+			const siteParams = {
+				username: this.user.username,
+				sitename: this.sitename,
+			};
+
+			let data = await this.keepwork.site.getByName(siteParams);
+			let siteinfo = null;
+
+			// keepwork网站不存在 则创建网站
+			if (!data || !data.data) {
+				data = await this.keepwork.site.create(siteParams);
+				siteinfo = data.siteinfo;
+			} else {
+				siteinfo = data.data;
+			}
+
+			// 获取网站数据源
+			data = await this.keepwork.siteDataSource.get(siteParams);
+			if (!data || !data.data) {
+				console.log("-----------------server inner error-----------------");
+				return
+			}
+
+			// 初始化git api 
+			const gitcfg = data.data;
+			this.git = new Gitlab({
+				apiBaseUrl: gitcfg.rawBaseUrl,
+				rawBaseUrl: gitcfg.rawBaseUrl,
+				projectId: gitcfg.projectId,
+				projectName: gitcfg.projectName,
+				externalUsername: gitcfg.dataSourceUsername,
+				token: gitcfg.dataSourceToken,
+				username: gitcfg.username,
+				sitename: gitcfg.sitename,
+			});
+
+			// 注册钩子
+			this.git.upsertHook(config.outerBaseURL + "gitlab/webhook");
 		}
-
-		this.keepwork.endpoint.defaults.headers.common['Authorization'] = "Bearer " + this.token;
-
-		const siteParams = {
-			username: this.user.username,
-			sitename: this.sitename,
-		};
-
-		let data = await this.keepwork.site.getByName(siteParams);
-		let siteinfo = null;
-
-		// keepwork网站不存在 则创建网站
-		if (!data || !data.data) {
-			data = await this.keepwork.site.create(siteParams);
-			siteinfo = data.siteinfo;
-		} else {
-			siteinfo = data.data;
-		}
-
-		// 获取网站数据源
-		data = await this.keepwork.siteDataSource.get(siteParams);
-		if (!data || !data.data) {
-			console.log("-----------------server inner error-----------------");
-			return
-		}
-
-		// 初始化git api 
-		const gitcfg = data.data;
-		this.git = new Gitlab({
-			apiBaseUrl: gitcfg.rawBaseUrl,
-			rawBaseUrl: gitcfg.rawBaseUrl,
-			projectId: gitcfg.projectId,
-			projectName: gitcfg.projectName,
-			externalUsername: gitcfg.dataSourceUsername,
-			token: gitcfg.dataSourceToken,
-			username: gitcfg.username,
-			sitename: gitcfg.sitename,
-		});
-
-		// 注册钩子
-		this.git.upsertHook(config.outerBaseURL + "gitlab/webhook");
-	},
+	}
 }

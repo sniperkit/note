@@ -5,7 +5,8 @@ import yaml from "js-yaml";
 import elasticsearch from "elasticsearch";
 import ERR from "../common/error.js";
 import config from "../config.js";
-import {gitlabFactory} from "../../common//api/gitlab.js";
+import {Key} from "../../common/api/common.js";
+import {gitlabFactory} from "../../common/api/gitlab.js";
 import gitlab from "../../common/api/gitlab.js";
 
 const esClient = new elasticsearch.Client({
@@ -69,17 +70,15 @@ Gitlab.prototype.formatESData = function(data, tablename) {
 
 Gitlab.prototype.submitESData = async function(item) {
 	const data = item.data || {};
-	const tablename = item.tablename;
-	const path = item.path;
 	const action = item.action;
-	const index = data.index || [data.index_prefix || "kw", data.version || "v0", tablename].join("_");
+	const key = new Key(data.key);
 	const esData = {
-		index: index,
-		type: data.type || tablename,
-		id: path.replace(/\//g, "_"),
+		index: key.index(),
+		type: key.type,
+		id: key.uid(),
 		body: data.data || {},
 	}
-	esData.body.path = path;
+	esData.body.path = key.path();
 
 	let res = null;
 	try {
@@ -101,22 +100,18 @@ Gitlab.prototype.webhook = async function(ctx) {
 		rawBaseUrl:origin,
 		project_id:params.project_id,
 		external_username: params.user_username,
-		//username:"xiaoyao",	
-		token:config.gitlabToken,
+		token:config.gitlab.token,
 	}
 	const git = gitlabFactory(gitcfg);
 	
 	// 取出文件列表
 	const filelist = [];
-	const dataFileReg = /^[\w\d]+_data\/[^\/]+\/([_\w]+)\/.+\.yaml$/;
+	const dataFileReg = /^__data__\/.+\.yaml$/;
 	const filelistAddItem = (path, oper, action) => {
 		if (!dataFileReg.test(path)) return;
 		
-		const tablename = path.match(dataFileReg)[1];
-		
 		filelist.push({
 			path:path, 
-			tablename:tablename,
 			oper:oper,
 			action:action,
 		});
@@ -133,8 +128,6 @@ Gitlab.prototype.webhook = async function(ctx) {
 		promises.push(git.getContent(item.path).then(content => {
 			item.content = content;
 			item.data = self.getGitFileData(content) || {};
-			//console.log(item);
-			//item.esData = self.formatESData(item.data),
 		}));
 	});
 
@@ -160,7 +153,7 @@ Gitlab.prototype.gitlab = async (ctx) => {
 }
 
 Gitlab.prototype.getRoutes = function() {
-	const prefix = "/gitlab";
+	const prefix = "gitlab";
 	const routes = [
 	{
 		path: prefix + "/webhook",

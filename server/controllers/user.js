@@ -84,7 +84,7 @@ User.prototype.isLogin = async function(ctx) {
 
 User.prototype.getRoutes = function() {
 	const self = this;
-	const prefix = "/user";
+	const prefix = "user";
 	const routes = [
 	{
 		path: prefix + "/register",

@@ -23,7 +23,7 @@ const defaultConfig = {
 
 
 	gitlab: {
-		token: "",
+		token: "18ayouuEsKRo_yM1P5eF",
 	},
 
 	qiniu: {

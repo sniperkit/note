@@ -31,7 +31,7 @@ import {
 import Cookies from 'js-cookie';
 import {mapActions, mapGetters} from "vuex";
 import gitlab from "@@/common/api/gitlab.js";
-import {user, dataSource, keepworkEndpoint} from "@@/common/api/note.js";
+import noteEndpoint from "@@/common/api/note.js";
 
 export default {
 	components: {
@@ -70,12 +70,12 @@ export default {
 		}),
 		async loginSuccess(token, userinfo) {
 			const self = this;
-			keepworkEndpoint.defaults.headers.common['Authorization'] = token;
+			noteEndpoint.options.headers['Authorization'] = token;
 			Cookies.set("token", token);
 			self.setToken(token);
 			self.setUser(userinfo);
 
-			const ds = await dataSource.getDefaultDataSource();
+			const ds = await noteEndpoint.dataSource.getDefaultDataSource();
 			if (ds && ds.username) {
 				gitlab.initConfig(ds);
 				self.setDataSource(ds);
@@ -90,7 +90,7 @@ export default {
 					return;
 				}
 				
-				user.login({
+				noteEndpoint.user.login({
 					username:self.loginForm.username,
 					password:self.loginForm.password,
 				}).then(function(data){

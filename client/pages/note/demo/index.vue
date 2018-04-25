@@ -3,9 +3,10 @@
 		<div>
 			<el-button @click="clickNewSiteBtn">新增</el-button>
 		</div>
-		<div v-for="(site, index) in sites" :key="index">
-			<h3>{{site.sitename}}</h3>
+		<div v-for="(site, index) in sites.list" :key="index">
+			<h3>{{site.name}}</h3>
 			<p>{{site.description}}</p>
+			<img :src="site.logoUrl" style="width:100px; height:100px;">
 		</div>
 	</div>
 </template>
@@ -19,6 +20,7 @@ import {mapActions, mapGetters} from "vuex";
 
 import config from "@/config.js";
 import {ElasticsearchFactory} from "@@/common/api/elasticSearch.js";
+import {Key} from "@@/common/api/common.js";
 import keepwork from "@/components/keepwork.js";
 
 const elasticsearch = new ElasticsearchFactory({
@@ -33,14 +35,14 @@ export default {
 
 	data: function() {
 		return {
-			tableOptions: {
-				type: "sitetable",    // 表名      必选
-				index_prefix: "kw",   // 前缀限定  可选
+			key: new Key({
+				type: "tablename",    // 表名      必选
 				version: "v0",        // 版本 可选
-				company: "kw",        // 公司 可选
+				prefix: "kw",         // 前缀限定 可选
+			}),
+			sites: {
+				list: [],
 			},
-			sites: [
-			],
 		}
 	},
 
@@ -52,27 +54,19 @@ export default {
 
 	methods: {
 		clickNewSiteBtn() {
-			this.$router.push({name: g_app.getRouteName("site-new")});
+			this.$router.push({name: g_app.getRouteName("demo-new")});
 		},
 
 	},
 
 	async mounted() {
-		const key = this.git.getTableKey(tableOptions);
-		if (key) {
-			console.log("数据源初始化失败");
-			return;
-		}
+		await this.loadData();
 
-		const sites = await elasticsearch.api.search({
-			index: key.index,
-			type: key.type,
-			body: {
-				// es 查询语句 
-			}
-		});
+		const key = this.key;
+		const sites = await elasticsearch.search(key);
+		this.sites = sites;
 
-		this.sites = sites || [];
+		console.log(sites);
 	},
 }
 

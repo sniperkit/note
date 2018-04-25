@@ -71,15 +71,9 @@ export function Gitlab(config){
 		...((gitlab.gits[config.username] || {}).cfg || {}),
 		...(config || {}),
 	};
-	//console.log(cfg);
 	
 	const gitcfg = {url: this.cfg.rawBaseUrl, token: this.cfg.token};
-	//this.api = {
-		////RepositoryFiles: new RepositoryFiles(gitcfg),
-		////Repositories: new Repositories(gitcfg),
-	//}
 	this.api = new gitlabApi({url:this.cfg.rawBaseUrl, token:this.cfg.token});
-	//return this;
 }
 
 Gitlab.prototype.getFile = function(path) {
@@ -133,38 +127,42 @@ Gitlab.prototype.upsertHook = async function(url, options) {
 }
 
 Gitlab.prototype.getTableKey = function(opt) {
-	if (!opt || !opt.type || !opt.filename) {
-		return ;
-	}
+	opt = opt || {};
 
 	const cfg = this.cfg;
 	const key = {
 		company: opt.company || "kw",
 		version: opt.version || "v0",
-		type: opt.type,
-		filename: opt.filename,
+		username: opt.username || cfg.username || "__username__",
+		sitename: opt.sitename || cfg.sitename || "__sitename__",
+		type: opt.type || "__type__",
+		key: opt.key || "__key__",
 	}
-	key.path = cfg.username + "_data/" +  key.company + "_"  + key.version + "_" + cfg.sitename + "/" + opt.type + "/" + opt.filename + ".yaml";
+	key.path = () => key.username + "_data/" +  key.company + "_"  + key.version + "_" + key.sitename + "/" + opt.type + "/" + opt.key + ".yaml";
 
+	key.index = [key.index_prefix, key.version, key.type].join("_");
 	key.index_prefix = key.index_prefix || key.company;
-	key.index = [key.index_prefix, key.version, opt.type].join("_");
 
 	return key;
 }
 
 Gitlab.prototype.wrapTableData = function(key, data) {
 	return yaml.safeDump({
-		...key,
+		key: _.omitBy(key, _.isFunction),
 		data: data || {},
 	});
 }
 
 Gitlab.prototype.upsertTableData = function(key, data, options) {
-	return this.upsertFile(key.path, {...(options || {}), content: this.wrapTableData(key, data)});
+	return this.upsertFile(key.path(), {...(options || {}), content: this.wrapTableData(key, data)});
 }
 
 Gitlab.prototype.deleteTableData = function(key) {
-	return this.deleteFile(key.path);
+	return this.deleteFile(key.path());
+}
+
+Gitlab.prototype.searchTableData = function(key, query) {
+	return ;
 }
 
 Gitlab.prototype.upsertProject = async function(projectName) {
@@ -230,4 +228,5 @@ gitlab.initConfig(keepworkConfig);
 gitlab.initConfig(xiaoyaoConfig);
 
 export const gitlabFactory = (config) => new Gitlab(config);
+
 export default gitlab;

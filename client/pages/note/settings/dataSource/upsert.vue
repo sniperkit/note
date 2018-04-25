@@ -78,7 +78,7 @@ export default {
 			//this.dataSource.projectId = project.id;
 			//this.dataSource.projectName = project.name;
 			
-			console.log(project);
+			//console.log(project);
 		}
 	},
 }

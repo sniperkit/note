@@ -1,43 +1,68 @@
 import axios from "axios";
-import { Message  } from 'element-ui';
 
-export const keepworkEndpoint = axios.create({
-	//baseURL:"",
-});
-
-const resultHandle = res => {
-	const error = res.data.error;
-	if (error.id) {
-		Message.error(error.message);
+export function httpRequest(method, url, data, config) {
+	method = (method || "get").toLowerCase();
+	config = {...(config || {}), method:method, url:url};
+	if (method == "get" || method == "delete" || method == "head" || method == "options") {
+		config.params = data;
+	} else {
+		config.data = data;
 	}
 
-	return res.data.data;
+	return axios.request(config).then(res => res.data).catch((e => console.log(e)));
 }
 
-export const post = (...args) => keepworkEndpoint.post(...args).then(res => res.data);
+export const httpGet = (url, data, config) => httpRequest("get", url, data, config);
+export const httpPost = (url, data, config) => httpRequest("post", url, data, config);
+export const httpPut = (url, data, config) => httpRequest("put", url, data, config);
+export const httpDelete = (url, data, config) => httpRequest("delete", url, data, config);
 
-export const get = (url, params, config) => keepworkEndpoint.get(url, {
-   	params:params,
-	...(config || {}),
-}).then(res => res.data);
 
-export const user = {
-	login: (...args) => post("user/login", ...args),
-	register: (...args) => post("user/register", ...args),
-	isLogin: (...args) => get("user/isLogin", ...args).then(res => res.data),
+function initHttpOptions(self, options) {
+	options = options || {};
+	options.headers = options.headers || {};
+	
+	self.options = options;
+	self.httpGet = httpGet;
+	self.httpPost = httpPost;
+	self.httpPut = httpPut;
+	self.httpDelete = httpDelete;
 }
 
-export const dataSource = {
-	getDefaultDataSource: (...args) => get("dataSource/getDefaultDataSource", ...args).then(res => res.data),
+export function User(options) {
+	const self = this;
+
+	initHttpOptions(self, options);
+
+	const apiRequest = (method, url) => (data, config) => httpRequest(method || "get", url, data, Object.assign(self.options, config));
+
+
+	self.login = apiRequest("post", "user/login");
+	self.register = apiRequest("post", "user/register");
+	self.isLogin = apiRequest("get", "user/isLogin");
+}
+
+export function DataSource(options) {
+	const self = this;
+
+	initHttpOptions(self, options);
+
+	const apiRequest = (method, url) => (data, config) => httpRequest(method || "get", url, data, Object.assign(self.options, config));
+	
+	self.getDefaultDataSource = apiRequest("get", "dataSource/getDefaultDataSource");
 }
 
 export const mod = {
+
 }
 
-export const keepwork = {
-	user,
-	dataSource,
-	mod,
+export function Note(options){
+	const self = this;
+	initHttpOptions(self, options);
+
+
+	self.user = new User(self.options);
+	self.dataSource = new DataSource(self.options);
 }
 
-export default keepwork;
+export default new Note();

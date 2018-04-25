@@ -33,7 +33,7 @@ import gitlab from "@@/common/api/gitlab.js";
 import config from "@/config.js";
 import keepwork from "@@/common/api/keepwork.js";
 
-keepwork.endpoint.defaults.baseURL = config.keepwork.baseURL;
+keepwork.options.baseURL = config.keepwork.baseURL;
 
 export default {
 	components: {
