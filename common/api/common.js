@@ -35,7 +35,7 @@ export function Key(opt = {}) {
 	self.getTable = () => table;
 
 	self.path = (id) => "__data__/" +  table.index() + "/" + (id || self.id) + ".yaml";
-	self.uid = (id) => self.path(id).replace(/\//g, "_");
+	self.uid = (id) => self.path(id).replace(/\//g, "_").replace(/\.yaml/, "");
 }
 
 Key.prototype.parsePath = function(path) {

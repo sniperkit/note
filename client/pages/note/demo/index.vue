@@ -66,7 +66,7 @@ export default {
 		clickDeleteBtn(m, index) {
 			this.datas.splice(index, 1);
 			if (this.git) {
-				this.git.deleteTableData(this.table.getKey(m.name))
+				this.git.deleteTableData(this.table.getKey(m.name || m.id))
 			}
 		},
 	},
@@ -75,6 +75,7 @@ export default {
 		await this.loadData();
 		const demo = await elasticsearch.search(this.table);
 		this.datas = demo.list;
+		console.log(this.datas);
 	},
 }
 

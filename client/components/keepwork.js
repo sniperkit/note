@@ -70,7 +70,7 @@ export default {
 			});
 
 			// 注册钩子
-			this.git.upsertHook(config.proxyBaseURL + "gitlab/webhook");
+			this.git.upsertHook(config.ESService.baseURL + "gitlab/webhook");
 		}
 	}
 }
