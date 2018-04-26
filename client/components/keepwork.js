@@ -10,7 +10,7 @@ export default {
 		return {
 			keepwork: new Keepwork({
 				baseURL: config.keepwork.baseURL,
-				proxyBaseURL: config.keepwork.proxyBaseURL,
+				proxyBaseURL: config.QiniuService.baseURL,
 			}),
 			sitename: "demo",
 		};

@@ -21,7 +21,7 @@ Qiniu.prototype.getUploadToken = function() {
 	const options = {
 		scope: bucketName,
 		expires: 3600 * 24 * 365,
-		callbackUrl: config.QiniuService + "qiniu/callback",
+		callbackUrl: config.QiniuService.baseURL + "qiniu/callback",
 		callbackBody: '{"key":"$(key)","hash":"$(etag)","size":$(fsize),"bucket":"$(bucket)","uid":"$(x:uid)"}',
 		callbackBodyType: 'application/json'
 	}
