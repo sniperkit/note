@@ -15,7 +15,7 @@ export const ElasticsearchFactory = function(config){
 ElasticsearchFactory.prototype.search = function(key, query) {
 	return this.api.search({
 		index: key.index(),
-		type: key.type,
+		type: key.type(),
 		body: query,
 	}).then(data => ({total: data.hits.total, list: data.hits.hits.map(val => ({...val._source, id:val._id}))}));	
 }

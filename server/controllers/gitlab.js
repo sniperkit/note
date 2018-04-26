@@ -5,7 +5,7 @@ import yaml from "js-yaml";
 import elasticsearch from "elasticsearch";
 import ERR from "../common/error.js";
 import config from "../config.js";
-import {Key} from "../../common/api/common.js";
+import {Key, getKeyByPath} from "../../common/api/common.js";
 import {gitlabFactory} from "../../common/api/gitlab.js";
 import gitlab from "../../common/api/gitlab.js";
 
@@ -71,10 +71,17 @@ Gitlab.prototype.formatESData = function(data, tablename) {
 Gitlab.prototype.submitESData = async function(item) {
 	const data = item.data || {};
 	const action = item.action;
-	const key = new Key(data.key);
+	const path = item.path;
+	const key = item.key;
+	if (!key){
+		console.log("无效数据");
+		return;
+	}
+
+	const table = key.getTable();
 	const esData = {
-		index: key.index(),
-		type: key.type,
+		index: table.index(),
+		type: table.type(),
 		id: key.uid(),
 		body: data.data || {},
 	}
@@ -82,7 +89,7 @@ Gitlab.prototype.submitESData = async function(item) {
 
 	let res = null;
 	try {
-		//console.log(item, esData);
+		console.log(item, esData);
 		res = await (esClient[action])(esData);
 	} catch(e) {
 		console.log(e);
@@ -93,7 +100,6 @@ Gitlab.prototype.submitESData = async function(item) {
 Gitlab.prototype.webhook = async function(ctx) {
 	const self = this;
 	const params = ctx.request.body;
-	const commit = params.commits[0];
 	const project_url = params.project.http_url;
 	const origin = wurl("protocol", project_url) + "://" + wurl("hostname", project_url);
 	const gitcfg = {
@@ -109,8 +115,10 @@ Gitlab.prototype.webhook = async function(ctx) {
 	const dataFileReg = /^__data__\/.+\.yaml$/;
 	const filelistAddItem = (path, oper, action) => {
 		if (!dataFileReg.test(path)) return;
-		
-		filelist.push({
+		const key = getKeyByPath(path);
+
+		key && filelist.push({
+			key:key,
 			path:path, 
 			oper:oper,
 			action:action,
@@ -125,10 +133,12 @@ Gitlab.prototype.webhook = async function(ctx) {
 
 	const promises = [];
 	_.each(filelist, (item) => {
-		promises.push(git.getContent(item.path).then(content => {
-			item.content = content;
-			item.data = self.getGitFileData(content) || {};
-		}));
+		if (item.action != "delete") {
+			promises.push(git.getContent(item.path).then(content => {
+				item.content = content;
+				item.data = self.getGitFileData(content) || {};
+			}));
+		}
 	});
 
 	await Promise.all(promises);

@@ -9,10 +9,12 @@ const defaultConfig = {
 	port: 7654,
 
 	baseURL: "http://wxaxiaoyao.cn/api/v0/",
+	proxyBaseURL: "http://47.52.20.34:7654/api/v0/",
 
 	keepwork: {
 		baseURL: "http://stage.keepwork.com/api/wiki/models/",
-		proxyBaseURL: "http://wxaxiaoyao.cn/api/v0/",
+		proxyBaseURL: "http://47.52.20.34:7654/api/v0/",
+		//proxyBaseURL: "http://wxaxiaoyao.cn/api/v0/",
 	},
 
 	ESService: {

@@ -104,6 +104,7 @@ Gitlab.prototype.createFile = function(path, options) {
 }
 
 Gitlab.prototype.deleteFile = function(path, options) {
+	options = {...(options || {}), commit_message:"delete"};
 	return this.api.RepositoryFiles.remove(this.cfg.projectId, path, this.cfg.branch, options);
 }
 
@@ -124,26 +125,6 @@ Gitlab.prototype.upsertHook = async function(url, options) {
 	const hooks = await this.api.ProjectHooks.all(this.cfg.projectId, options);
 	const index = hooks.findIndex(hook => hook.url === url);
 	return index >= 0 ? hooks[index] : this.api.ProjectHooks.add(this.cfg.projectId, url, options);
-}
-
-Gitlab.prototype.getTableKey = function(opt) {
-	opt = opt || {};
-
-	const cfg = this.cfg;
-	const key = {
-		company: opt.company || "kw",
-		version: opt.version || "v0",
-		username: opt.username || cfg.username || "__username__",
-		sitename: opt.sitename || cfg.sitename || "__sitename__",
-		type: opt.type || "__type__",
-		key: opt.key || "__key__",
-	}
-	key.path = () => key.username + "_data/" +  key.company + "_"  + key.version + "_" + key.sitename + "/" + opt.type + "/" + opt.key + ".yaml";
-
-	key.index = [key.index_prefix, key.version, key.type].join("_");
-	key.index_prefix = key.index_prefix || key.company;
-
-	return key;
 }
 
 Gitlab.prototype.wrapTableData = function(key, data) {

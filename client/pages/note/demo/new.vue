@@ -12,6 +12,7 @@
 			</el-form-item> 
 			<el-form-item>
 				<el-button @click.prevent="clickNewDemoBtn">新增</el-button>
+				<el-button @click.prevent="clickBackBtn">返回</el-button>
 			</el-form-item>
 		</el-form>
 	</div>
@@ -23,9 +24,10 @@ import {
 	FormItem,
 	Input,
 	Button,
+	Message,
 } from "element-ui";
 
-import {Key} from "@@/common/api/common.js";
+import {Table} from "@@/common/api/common.js";
 import keepwork from "@/components/keepwork.js";
 
 export default {
@@ -43,8 +45,8 @@ export default {
 				name: "xiaoyao",
 				description: "this is a description",
 		   	},
-			key: new Key({
-				type: "tablename",    // 表名      必选
+			table: new Table({
+				tablename: "tablename",    // 表名      必选
 				version: "v0",        // 版本 可选
 				prefix: "kw",         // 前缀限定 可选
 			}),
@@ -52,12 +54,17 @@ export default {
 	},
 
 	methods: {
+		clickBackBtn() {
+			this.$router.push({name: g_app.getRouteName("demo")});
+		},
 		clickNewDemoBtn() {
 			if (!this.git) return;
 
 			const demo = this.demo;
 			const git = this.git;
-			git.upsertTableData(this.key.setKey(demo.name), demo);
+			git.upsertTableData(this.table.getKey(demo.name), demo).then(() => {
+				Message("记录提交成功");
+			});
 		},
 
 		// 上传七牛文件
@@ -72,6 +79,7 @@ export default {
 						return ;
 					}
 					self.demo.logoUrl = data.downloadUrl;
+					Message("文件上传成功");
 				}
 			});
 		},
