@@ -1,6 +1,7 @@
 import Koa from 'koa'
 import { Nuxt, Builder } from 'nuxt'
 
+const config = require('../nuxt.config.js');
 import server from "./server.js";
 import _config from "./config.js";
 
@@ -8,7 +9,6 @@ async function start () {
   const app = new Koa()
 
   // Import and Set Nuxt.js options
-  let config = require('../nuxt.config.js')
   config.dev = !(app.env === 'production')
 
   // Instantiate nuxt.js

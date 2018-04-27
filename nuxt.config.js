@@ -7,6 +7,7 @@ module.exports = {
 	srcDir: "client/",
 
 	env: {
+		ENV: process.env.ENV,
 		rootdir,
 	},
 

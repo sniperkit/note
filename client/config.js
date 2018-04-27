@@ -1,24 +1,36 @@
+import _ from "lodash";
+
 import commonConfig from "../common/config.js";
 
 const defaultConfig = {
-	...commonConfig,
 	tagModsPath: "keepwork_data/tag_mods.json",
 }
 
 const productionConfig = {
-	//baseURL: window.location.origin + "/api/v0/",
 }
 
 const developmentConfig = {
-	//baseURL: "http://localhost:8888/api/v1/",
-	baseURL: "http://localhost:8088/api/v0/",
+	ESService: {
+		baseURL: "http://10.28.18.2:10004/api/v0/",
+	},
+
+	QiniuService: {
+		baseURL: "http://10.28.18.2:10004/api/v0/",
+	},
 }
 
-//console.log(process.env.NODE_ENV)
+const localConfig = {
+
+}
+
 
 const configs = {
-	"production": Object.assign({}, defaultConfig, productionConfig),
-	"development": Object.assign({}, defaultConfig, developmentConfig),
+	"local": _.merge(commonConfig, defaultConfig, localConfig),
+	"production": _.merge(commonConfig, defaultConfig, productionConfig),
+	"development": _.merge(commonConfig, defaultConfig, developmentConfig),
 }
 
-export default configs[process.env.NODE_ENV];
+
+console.log(process.env.ENV);
+
+export default configs[process.env.ENV];
