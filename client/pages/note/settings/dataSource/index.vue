@@ -11,7 +11,10 @@
 
 
 <script>
-import {dataSource} from "@@/common/api/note.js";
+
+import {mapActions, mapGetters} from "vuex";
+
+import api from "@@/common/api/note.js";
 
 import {
 	Button,
@@ -32,8 +35,16 @@ export default {
 		}
 	},
 
-	mounted() {
+	computed: {
+		...mapGetters({
+			token: "user/token",
+			user: "user/user",
+			isAuthenticated: "user/isAuthenticated",
+		}),
+	},
 
+	async mounted() {
+		this.dataSources = await api.dataSource.getByUsername(this.user.username) || [];
 	}
 }
 </script>

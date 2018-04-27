@@ -70,7 +70,9 @@ DataSource.prototype.getDefaultDataSource = async function(ctx) {
 
 DataSource.prototype.upsert = async function(ctx) {
 	const params = ctx.request.body;
+	const username = ctx.state.user.username;
 
+	params.username = username;
 	const result = await this.model.upsert(params);
 
 	console.log(result);
@@ -78,15 +80,26 @@ DataSource.prototype.upsert = async function(ctx) {
 	return ERR.ERR_OK;
 }
 
-DataSource.prototype.all = async function(ctx) {
-	const username = ctx.state.user.username;
-	let list = await this.model.find({
+DataSource.prototype.getByUsername = async function(ctx) {
+	const params = ctx.request.query;
+	const authUsername = ctx.state.user.username;
+	const username = params.username || authUsername;
+
+	if (!username) return ERR.ERR_PARAMS;
+
+	let exclude = [];
+	if (username != authUsername) {
+		exclude = exclude.concat(["token", "externalPassword"]);
+	}
+
+	let list = await this.model.findAll({
 		username: username,
+		attributes: {exclude},
 	});
 
 	if (!list) return ERR.ERR_NOT_FOUND;
 
-	return list.get({plain:true});
+	return list;
 }
 
 DataSource.prototype.getRoutes = function() {
@@ -98,14 +111,15 @@ DataSource.prototype.getRoutes = function() {
 		action: "getDefaultDataSource",
 	},
 	{
-		path: prefix + "/listl",
+		path: prefix + "/getByUsername",
 		method: "get",
-		action: "all",
+		action: "getByUsername",
 	},
 	{
 		path: prefix + "/upsert",
-		method: "get",
+		method: "post",
 		action: "upsert",
+		requireAuth: true,
 	},
 	];
 

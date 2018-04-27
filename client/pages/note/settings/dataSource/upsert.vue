@@ -13,8 +13,8 @@
 		<el-form-item label="TOKEN">
 			<el-input v-model="dataSource.token" placeholder="TOKEN"></el-input>
 		</el-form-item>
-		<el-form-item label="baseURL">
-			<el-input v-model="dataSource.baseURL" placeholder="baseURL"></el-input>
+		<el-form-item label="baseUrl">
+			<el-input v-model="dataSource.baseUrl" placeholder="baseUrl"></el-input>
 		</el-form-item>
 		<el-form-item>
 			<el-button type="primary" @click="submitDataSource">提交</el-button>
@@ -33,6 +33,7 @@ import {
 	Message,
 } from "element-ui";
 
+import api from "@@/common/api/note.js";
 import {Gitlab} from "@@/common/api/gitlab.js";
 
 export default {
@@ -48,6 +49,7 @@ export default {
 	data: function() {
 		return {
 			dataSource: {
+				name: "gitlab",
 				type: "gitlab",
 				token: "Ed9S7hSfiruewMR-jitR",
 				baseURL: "https://gitlab.com",
@@ -58,6 +60,9 @@ export default {
 	methods: {
 		async submitDataSource() {
 			console.log(this.dataSource);
+			const result = await api.dataSource.upsert(this.dataSource);
+			console.log(result);
+
 			//const git = new Gitlab({
 			//	token: this.dataSource.token,
 			//	apiBaseUrl: this.dataSource.baseURL,

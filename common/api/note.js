@@ -50,6 +50,8 @@ export function DataSource(options) {
 	const apiRequest = (method, url) => (data, config) => httpRequest(method || "get", url, data, Object.assign(self.options, config));
 	
 	self.getDefaultDataSource = apiRequest("get", "dataSource/getDefaultDataSource");
+	self.getByUsername =  apiRequest("get", "dataSource/getByUsername");
+	self.upsert = apiRequest("post", "dataSource/upsert");
 }
 
 export const mod = {

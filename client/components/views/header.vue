@@ -10,7 +10,7 @@
 						</span>
 						<el-dropdown-menu slot="dropdown">
 							<el-dropdown-item>我的主页</el-dropdown-item>
-							<el-dropdown-item>设置</el-dropdown-item>
+							<el-dropdown-item command="settings">设置</el-dropdown-item>
 							<el-dropdown-item command="editor">编辑器</el-dropdown-item>
 							<el-dropdown-item command="tagModEditor">Tag编辑器</el-dropdown-item>
 							<el-dropdown-item command="adiModEditor">Adi编辑器</el-dropdown-item>
@@ -66,11 +66,9 @@ export default {
 			if (cmd == "logout") {
 				this.setToken(undefined);
 				this.$router.push({name: g_app.getRouteName("login")});
-			} else if (cmd == "editor") {
-				this.$router.push({name: g_app.getRouteName("editor")});
-			} else if (cmd == "tagModEditor" || cmd == "adiModEditor") {
-				this.$router.push({name: g_app.getRouteName(cmd)});
+				return;
 			}
+			this.$router.push({name: g_app.getRouteName(cmd)});
 		},
 		clickLoginBtn() {
 			this.$router.push({name: g_app.getRouteName("login")});
