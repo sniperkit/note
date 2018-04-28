@@ -1,5 +1,7 @@
 import axios from "axios";
 
+import {Err} from "../error.js";
+
 export function httpRequest(method, url, data, config) {
 	method = (method || "get").toLowerCase();
 	config = {...(config || {}), method:method, url:url};
@@ -9,7 +11,7 @@ export function httpRequest(method, url, data, config) {
 		config.data = data;
 	}
 
-	return axios.request(config).then(res => res.data).catch((e => console.log(e)));
+	return axios.request(config).then(res => new Err(res.data.code, res.data.message, res.data.data)).catch((e => console.log(e)));
 }
 
 export const httpGet = (url, data, config) => httpRequest("get", url, data, config);
@@ -52,6 +54,7 @@ export function DataSource(options) {
 	self.getDefaultDataSource = apiRequest("get", "dataSource/getDefaultDataSource");
 	self.getByUsername =  apiRequest("get", "dataSource/getByUsername");
 	self.upsert = apiRequest("post", "dataSource/upsert");
+	self.delete = apiRequest("delete", "dataSource/delete");
 }
 
 export const mod = {

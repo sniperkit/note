@@ -51,39 +51,19 @@ export default {
 			dataSource: {
 				name: "gitlab",
 				type: "gitlab",
-				token: "Ed9S7hSfiruewMR-jitR",
-				baseURL: "https://gitlab.com",
+				//token: "Ed9S7hSfiruewMR-jitR",
+				baseUrl: "https://gitlab.com",
 			},
 		}
 	},
 
 	methods: {
 		async submitDataSource() {
-			console.log(this.dataSource);
 			const result = await api.dataSource.upsert(this.dataSource);
-			console.log(result);
-
-			//const git = new Gitlab({
-			//	token: this.dataSource.token,
-			//	apiBaseUrl: this.dataSource.baseURL,
-			//	rawBaseUrl: this.dataSource.baseURL,
-			//});
-			
-			// 获取用户信息
-			//const user = await git.api.Users.current().catch(()=>{});
-			//if (!user) {
-			//	Message.message("配置信息无效");
-			//}
-
-			//this.dataSource.externalUsername = user.username;
-			//this.dataSource.externalUserId = user.id;
-
-			//// 获取默认仓库信息
-			//const project = git.upsertProject("notedatasource");
-			//this.dataSource.projectId = project.id;
-			//this.dataSource.projectName = project.name;
-			
-			//console.log(project);
+			if (result.code != 0) {
+				return Message(result.message);
+			}
+			return;
 		}
 	},
 }

@@ -2,9 +2,12 @@ import _ from "lodash";
 import joi from "joi";
 import jwt from "jwt-simple";
 
+import {Gitlab} from "../..//common/api/gitlab.js";
 import config from "../config.js";
 import ERR from "../common/error.js";
 import DataSourceModel from "../models/dataSource.js";
+
+const defaultProjectName = "notedatasource";
 
 const defaultDataSource = {
 	username:"keepwork",
@@ -65,17 +68,57 @@ DataSource.prototype.getDefaultDataSource = async function(ctx) {
 		dataSource.externalPassword = undefined;
 	}
 
-	return dataSource;
+	return ERR.ERR_OK.setData(dataSource);
+}
+
+DataSource.prototype.delete = async function(ctx) {
+	const params = ctx.request.query;
+
+	if (!params.id) {
+		return ERR.ERR_PARAMS;
+	}
+
+	const ret = await this.model.destroy({where: {id:params.id}});
+
+	return ERR.ERR_OK;
 }
 
 DataSource.prototype.upsert = async function(ctx) {
 	const params = ctx.request.body;
 	const username = ctx.state.user.username;
 
-	params.username = username;
-	const result = await this.model.upsert(params);
+	if (!params || !params.name || !params.type || !params.token || !params.baseUrl) {
+		return ERR.ERR_PARAMS;
+	}
 
-	console.log(result);
+	params.username = username;
+
+	const git = new Gitlab({
+		token: params.token,
+		apiBaseUrl: params.baseUrl,
+		rawBaseUrl: params.baseUrl,
+	});
+	
+	//  获取用户信息
+	
+	const user = await git.api.Users.current().catch(()=>{});
+	if (!user) {
+		return ERR.ERR.setMessage("配置信息无效, 获取用户信息失败");
+	}
+
+	params.externalUsername = user.username;
+	params.externalUserId = user.id;
+
+	// 获取默认仓库信息
+	const project = git.upsertProject(defaultProjectName);
+	if (!params) {
+		return ERR.ERR.setMessage("配置信息无效, 创建git项目失败");
+	}
+	params.projectId = project.id;
+	params.projectName = project.name;
+	
+	//console.log(project);
+	await this.model.upsert(params);
 
 	return ERR.ERR_OK;
 }
@@ -119,6 +162,12 @@ DataSource.prototype.getRoutes = function() {
 		path: prefix + "/upsert",
 		method: "post",
 		action: "upsert",
+		requireAuth: true,
+	},
+	{
+		path: prefix + "/delete",
+		method: "delete",
+		action: "delete",
 		requireAuth: true,
 	},
 	];

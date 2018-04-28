@@ -4,7 +4,9 @@
 		<el-table-column fixed prop="type" label="类型"></el-table-column>
 		<el-table-column fixed prop="token" label="TOKEN"></el-table-column>
 		<el-table-column fixed="right" label="操作">
-			<el-button>编辑</el-button>
+			<template slot-scope="{row, $index}">
+				<el-button type="text" @click="clickDeleteBtn(row)">删除</el-button>
+			</template>
 		</el-table-column>
 	</el-table>
 </template>
@@ -20,6 +22,7 @@ import {
 	Button,
 	Table,
 	TableColumn,
+	Message,
 } from "element-ui";
 
 export default {
@@ -43,8 +46,21 @@ export default {
 		}),
 	},
 
+	methods: {
+		async clickDeleteBtn(row, index) {
+			const result = await api.dataSource.delete({id:row.id});
+			if (result.code != 0){
+				return Message(result.message);
+			}
+
+			this.dataSources.splice(index, 1);
+		},
+	},
+
 	async mounted() {
-		this.dataSources = await api.dataSource.getByUsername(this.user.username) || [];
+		const ret = await api.dataSource.getByUsername(this.user.username);
+
+		this.dataSources = ret.data || [];
 	}
 }
 </script>
