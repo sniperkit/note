@@ -24,7 +24,7 @@ const DataSource = sequelize.define("dataSource", {
 
 	token: {
 		type: Sequelize.STRING(128),
-		//allowNull, false,
+		allowNull, false,
 	},
 
 	baseUrl: {
