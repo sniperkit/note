@@ -28,6 +28,17 @@ Err.prototype.isOk = function() {
 	return this.code == 0;
 }
 
+Err.prototype.getData = function() {
+	return this.data;
+}
+
+Err.prototype.getMessage = function() {
+	return this.message;
+}
+
+Err.prototype.getCode = function() {
+	return this.code;
+}
 export const ERR = new Err(-1, "unknown error");
 export const ERR_OK = new Err();
 export const ERR_PARAMS = new Err(1, "参数错误");

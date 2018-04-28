@@ -20,6 +20,14 @@ Err.prototype.setData = function(data){
 	return this;
 }
 
+Err.prototype.isErr = function() {
+	return this.code != 0;
+}
+
+Err.prototype.isOk = function() {
+	return this.code == 0;
+}
+
 Err.prototype.getData = function() {
 	return this.data;
 }

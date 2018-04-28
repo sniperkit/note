@@ -142,6 +142,27 @@ Qiniu.prototype.getUid = function(ctx) {
 	return ERR_OK.setData({uid:uid});
 }
 
+// 获取指定key的上传token
+Qiniu.prototype.getUploadTokenByKey = function(ctx) {
+	const params = ctx.request.query || {};
+	if (!params.key) {
+		return ERR_PARAMS;
+	}
+	const options = {
+		scope: bucketName + ":" + params.key,
+		//expires: 3600 * 24 * 365, // 默认一个小时
+		callbackUrl: config.QiniuService.baseURL + "qiniu/callback",
+		callbackBody: '{"key":"$(key)","hash":"$(etag)","size":$(fsize),"bucket":"$(bucket)","uid":"$(x:uid)"}',
+		callbackBodyType: 'application/json',
+	}
+
+	const mac = new qiniu.auth.digest.Mac(accessKey, secretKey);
+	const putPolicy = new qiniu.rs.PutPolicy(options);
+	const token = putPolicy.uploadToken(mac);
+
+	return ERR_OK.setData(token);
+}
+
 Qiniu.prototype.getUploadToken = function(ctx) {
 	const options = {
 		scope: bucketName,
@@ -155,7 +176,7 @@ Qiniu.prototype.getUploadToken = function(ctx) {
 	const putPolicy = new qiniu.rs.PutPolicy(options);
 	const token = putPolicy.uploadToken(mac);
 
-	return ERR_OK.setData({token:token});
+	return ERR_OK.setData(token);
 }
 
 Qiniu.prototype.getDownloadUrl = function(ctx) {
@@ -208,6 +229,11 @@ Qiniu.prototype.getRoutes = function() {
 		path: prefix + "/getUid",
 		method: "get",
 		action: "getUid",
+	},
+	{
+		path: prefix + "/getUploadTokenByKey",
+		method: "get",
+		action: "getUploadTokenByKey",
 	},
 	{
 		path: prefix + "/getUploadToken",

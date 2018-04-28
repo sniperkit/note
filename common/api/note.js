@@ -57,6 +57,18 @@ export function DataSource(options) {
 	self.delete = apiRequest("delete", "dataSource/delete");
 }
 
+// 七牛api
+export function Qiniu(options) {
+	const self = this;
+
+	initHttpOptions(self, options);
+
+	const apiRequest = (method, url) => (data, config) => httpRequest(method || "get", url, data, Object.assign(self.options, config));
+	
+	self.getUploadToken = apiRequest("get", "qiniu/getUploadToken");
+	self.getUploadTokenByKey = apiRequest("get", "qiniu/getUploadTokenByKey");
+}
+
 export const mod = {
 
 }
@@ -68,6 +80,7 @@ export function Note(options){
 
 	self.user = new User(self.options);
 	self.dataSource = new DataSource(self.options);
+	self.qiniu = new Qiniu(self.options);
 }
 
 export default new Note();
