@@ -67,6 +67,21 @@ export function Qiniu(options) {
 	
 	self.getUploadToken = apiRequest("get", "qiniu/getUploadToken");
 	self.getUploadTokenByKey = apiRequest("get", "qiniu/getUploadTokenByKey");
+	self.upload = apiRequest("post", "qiniu/upload");
+}
+
+export function Files(options) {
+	const self = this;
+
+	initHttpOptions(self, options);
+
+	const apiRequest = (method, url) => (data, config) => httpRequest(method || "get", url, data, Object.assign(self.options, config));
+	
+	self.getByUsername = apiRequest("get", "files/getByUsername");
+	self.getContent = apiRequest("get", "files/getContent");
+	self.getFile = apiRequest("get", "files/getFile");
+	self.uploadFile = apiRequest("post", "files/uploadFile");
+	self.deleteFile = apiRequest("delete", "files/deleteFile");
 }
 
 export const mod = {
@@ -77,10 +92,10 @@ export function Note(options){
 	const self = this;
 	initHttpOptions(self, options);
 
-
 	self.user = new User(self.options);
 	self.dataSource = new DataSource(self.options);
 	self.qiniu = new Qiniu(self.options);
+	self.files = new Files(self.options);
 }
 
 export default new Note();

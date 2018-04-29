@@ -60,14 +60,15 @@ export default {
 
 	methods: {
 		...mapActions({
-			setToken: "user/setToken",
+			setUser: "user/setUser",
 		}),
 		handleCommand(cmd){
 			if (cmd == "logout") {
-				this.setToken(undefined);
+				this.setUser({});
 				this.$router.push({name: g_app.getRouteName("login")});
 				return;
 			}
+
 			this.$router.push({name: g_app.getRouteName(cmd)});
 		},
 		clickLoginBtn() {

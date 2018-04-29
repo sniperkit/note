@@ -3,7 +3,7 @@ import joi from "joi";
 import wurl from "wurl";
 import yaml from "js-yaml";
 import elasticsearch from "elasticsearch";
-import ERR from "../common/error.js";
+import ERR from "../../common/error.js";
 import config from "../config.js";
 import {Key, getKeyByPath} from "../../common/api/common.js";
 import {gitlabFactory} from "../../common/api/gitlab.js";

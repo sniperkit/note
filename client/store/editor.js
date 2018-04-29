@@ -1,8 +1,10 @@
 import vue from "vue";
 import {Base64} from "js-base64";
 import Hashes from "jshashes";
+import {Message} from "element-ui";
+import * as qiniu from "qiniu-js";
 import consts from "@/lib/consts.js";
-import gitlab from "@@/common/api/gitlab.js";
+import api from "@@/common/api/note.js";
 
 const SET_PAGE_PATH = 'SET_PAGE_PATH';
 const SET_PAGE_CONTENT = 'SET_PAGE_CONTENT';
@@ -39,12 +41,13 @@ const gitsha = function(content) {
 }
 
 const treeNodeToPage = function(node) {
-	let paths = node.path.split("/");
+	let paths = node.key.split("/");
 	let page = {
-		name:node.name,
-		path:node.path,
-		type:node.type,
-		id:node.id,
+		name:paths[paths.length-1],
+		path:node.key,
+		type:"blob",
+		sha:node.sha,
+		hash: node.hash,
 		username:paths[0],
 	}
 
@@ -53,6 +56,21 @@ const treeNodeToPage = function(node) {
 
 	return page;
 }
+//const treeNodeToPage = function(node) {
+	//let paths = node.path.split("/");
+	//let page = {
+		//name:node.name,
+		//path:node.path,
+		//type:node.type,
+		//sha:node.id,
+		//username:paths[0],
+	//}
+
+	//page.name = page.name.replace(/\.md$/, "");
+	//page.url = page.path.replace(/\.md$/, "");
+
+	//return page;
+//}
 
 export const state = () => ({
 	tagId:null, // 当前tag id
@@ -79,7 +97,7 @@ export const getters = {
 	getPages: (state) => state.pages,
 	getPageByPath: (state) => (path) => (state.pages[path] || {}),
 	getPageContentByPath: (state) => (path) => (state.pages[path] || {}).content,
-	getGit: (state) => (key) => (state.gits[key] || {projectId:4980659, git:gitlab.api, ref:"master", rootPath:"xiaoyao"}),
+	//getGit: (state) => (key) => (state.gits[key] || {projectId:4980659, git:gitlab.api, ref:"master", rootPath:"xiaoyao"}),
 };
 
 export const actions = {
@@ -134,8 +152,15 @@ export const actions = {
 		let {path} = page;
 		let _loadPageFromServer = async function() {
 			commit(SET_PAGE, {path:path, isRefresh:true});
-			let file = await gitlab.getFile(page.path);
-			page.id = file.blob_id;
+			
+			const result = await api.files.getFile({key:path});
+			if (result.isErr()) {
+				Message(result.getMessage());
+			}
+			const file = result.getData();
+			//gitlab.getFile(page.path);
+			page.sha = file.sha;
+			page.hash = file.hash;
 			page.content = file.content;
 			page.isRefresh = false;
 			commit(SET_PAGE, page);
@@ -156,11 +181,11 @@ export const actions = {
 				return;
 			}
 			var oldpage = getPageByPath(path);
-			if (data.id == oldpage.id) {
+			if (data.hash == oldpage.hash) {
 				console.log("本地最新");
 				_loadPageFromDB(data);
 
-			} else if (data.id != oldpage.id && oldpage.isModify) {
+			} else if (data.hash != oldpage.hash && oldpage.isModify) {
 				console.log("冲突");
 				_loadPageFromDB(data);
 			} else {
@@ -178,19 +203,30 @@ export const actions = {
 		if (!path) {
 			return;
 		}
-
-		let oper =  (state.pages[path] && state.pages[path].id) ? "editFile" : "createFile";
+		const cachePage = state.pages[path] || {};
+		let oper =  cachePage.sha ? "editFile" : "createFile";
 
 		commit(SET_PAGE, {...page, isRefresh:true});
-		await gitlab[oper](path, {
-			content:content,
-			commit_message: 'update with keepwork editor',
-		}).catch(function(){
-		});
 
 		let sha = gitsha(content);
-		commit(SET_PAGE, {...page, isRefresh:false});
-		dispatch("indexDB_savePage", {...page, isModify:false, id:sha});
+		const result = await api.files.uploadFile({
+			key:path, 
+			content: content,
+			username: cachePage.username,
+			sha: sha,
+		});
+		if (result.isErr()) {
+			Message(result.getMessage());
+		}
+		const hash = result.getData().hash;
+		//gitlab[oper](path, {
+			//content:content,
+			//commit_message: 'update with keepwork editor',
+		//}).catch(function(){
+		//});
+
+		commit(SET_PAGE, {...page, sha, hash, isRefresh:false});
+		dispatch("indexDB_savePage", {...page, isModify:false, sha:sha});
 	},
 	async deletePage(context, page) {
 		let {path} = page;
@@ -201,9 +237,14 @@ export const actions = {
 		}
 
 		commit(SET_PAGE, {path:path, isRefresh:true});
-		await gitlab.removeFile(path, {
-			commit_message: 'delete by keepwork',
-		});
+		const result = await api.files.deleteFile({key:path});
+		if (result.isErr()) {
+			Message(result.getMessage());
+		}
+
+		//await gitlab.deleteFile(path, {
+			//commit_message: 'delete by keepwork',
+		//});
 		commit(SET_PAGE, {path:path, isRefresh:false});
 
 		dispatch("indexDB_deletePage", path);
@@ -211,12 +252,14 @@ export const actions = {
 	},
 	async loadTree(context, payload) {
 		let {commit, getters: {getGit}} = context;
-		let list = await gitlab.getTree(payload.path, {...payload, recursive: true,}) || [];
+		let result = await api.files.getByUsername({username: payload.path});
+		if (result.isErr()) return ;
+		//let list = await gitlab.getTree(payload.path, {...payload, recursive: true,}) || [];
 		let pages = {};
+		let list = result.data.items || [];
 		list.forEach(function(node){
-			pages[node.path] = treeNodeToPage(node);
+			pages[node.key] = treeNodeToPage(node);
 		});
-
 		commit(SET_PAGES, pages);
 	}
 };

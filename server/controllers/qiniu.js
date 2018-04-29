@@ -2,7 +2,7 @@ import axios from "axios";
 import qiniu from "qiniu";
 const uuidv1 = require('uuid/v1');
 import config from "../config.js";
-import {ERR_OK, ERR, ERR_PARAMS} from "../common/error.js";
+import {ERR, ERR_OK, ERR_PARAMS} from "../../common/error.js";
 
 const accessKey = config.qiniu.accessKey;
 const secretKey = config.qiniu.secretKey;
@@ -12,10 +12,14 @@ const bucketDomian = config.qiniu.bucketDomian;
 export const Qiniu = function() {
 }
 
-function getUploadToken(options) {
-	options = options || {
-		scope: bucketName,
-		expires: 3600 * 24 * 365,
+function getUploadToken(opt = {}) {
+	let scope = bucketName;
+
+	if (opt.key) scope += ":" + opt.key;
+	const options = {
+		scope: scope,
+		expires: opt.expires,
+		returnBody: '{"key":"$(key)","hash":"$(etag)","fsize":$(fsize),"bucket":"$(bucket)"}',
 	};
 
 	const mac = new qiniu.auth.digest.Mac(accessKey, secretKey);
@@ -54,7 +58,7 @@ Qiniu.prototype.move = async function(ctx) {
 	const result = await new Promise((resolve, reject) => {
 		bucketManager.move(bucketName, params.srcKey, bucketName, params.dstKey, {force:true}, function(respErr, respBody, respInfo){
 			if (respErr || respInfo.statusCode != 200) {
-				return reject(ERR.setMessage(respErr || (respInfo.statusCode + respBody)));
+				return resolve(ERR.setMessage(respErr).setData({statusCode: respInfo.statusCode, body:respBody}));
 			}
 			
 			return resolve(ERR_OK);
@@ -75,7 +79,7 @@ Qiniu.prototype.delete = async function(ctx) {
 	const result = await new Promise((resolve, reject) => {
 		bucketManager.delete(bucketName, params.key, function(respErr, respBody, respInfo){
 			if (respErr || respInfo.statusCode != 200) {
-				return reject(ERR.setMessage(respErr || (respInfo.statusCode + respBody)));
+				return resolve(ERR.setMessage(respErr).setData({statusCode: respInfo.statusCode, body:respBody}));
 			}
 			
 			return resolve(ERR_OK);
@@ -87,7 +91,7 @@ Qiniu.prototype.delete = async function(ctx) {
 
 // 获取文件列表
 Qiniu.prototype.list = async function(ctx) {
-	const params = ctx.request.query || {};
+	const params = ctx.state.params;
 
 	const options = {
 		limit: params.limit || 200,
@@ -99,7 +103,7 @@ Qiniu.prototype.list = async function(ctx) {
 	const result = await new Promise((resolve, reject) => {
 		bucketManager.listPrefix(bucketName, options, function(respErr, respBody, respInfo){
 			if (respErr || respInfo.statusCode != 200) {
-				return reject(ERR.setMessage(respErr || (respInfo.statusCode + respBody)));
+				return resolve(ERR.setMessage(respErr).setData({statusCode: respInfo.statusCode, body:respBody}));
 			}
 			return resolve(ERR_OK.setData({
 				marker: respBody.marker,
@@ -121,16 +125,15 @@ Qiniu.prototype.upload = async function(ctx) {
 
 	const formUploader = new qiniu.form_up.FormUploader(config);
 	const putExtra = new qiniu.form_up.PutExtra();
-	const uploadToken = getUploadToken();
+	const uploadToken = getUploadToken(params);
 
 	const result = await new Promise((resolve, reject) => {
 		formUploader.put(uploadToken, params.key, params.content, putExtra, function(respErr, respBody, respInfo){
 			if (respErr || respInfo.statusCode != 200) {
-				return reject(ERR.setMessage(respInfo.statusCode + respBody));
+				return resolve(ERR.setMessage(respErr).setData({statusCode: respInfo.statusCode, body:respBody}));
 			} 
 
-			//console.log(respBody);
-			return resolve(ERR_OK);
+			return resolve(ERR_OK.setData(respBody));
 		});
 	});
 
@@ -144,7 +147,7 @@ Qiniu.prototype.getUid = function(ctx) {
 
 // 获取指定key的上传token
 Qiniu.prototype.getUploadTokenByKey = function(ctx) {
-	const params = ctx.request.query || {};
+	const params = ctx.state.params;
 	if (!params.key) {
 		return ERR_PARAMS;
 	}

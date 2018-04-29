@@ -3,7 +3,7 @@ import joi from "joi";
 import jwt from "jwt-simple";
 
 import config from "../config.js";
-import {ERR, ERR_OK} from "../common/error.js";
+import {ERR, ERR_OK, ERR_PARAMS} from "../../common/error.js";
 import userModel from "../models/user.js";
 
 export const User = function() {
@@ -28,6 +28,10 @@ User.prototype.find = function() {
 
 User.prototype.register = async function(ctx) {
 	const params = ctx.request.body;
+	const usernameReg = /^[\w\d]+$/;
+	if (!usernameReg.text(params.username)) {
+		return ERR_PARAMS;
+	}
 	let user = await this.model.findOne({
 		where: {
 			username: params.username,
@@ -43,13 +47,14 @@ User.prototype.register = async function(ctx) {
 
 	if (!user) return ERR;
 
-	return ERR_OK.setData({
-		token: jwt.encode({
-			userId: user._id, 
-			username: user.username
-		}, config.secret),
-		userinfo: user,
-	});
+	const token = jwt.encode({
+		userId: user.id, 
+		username: user.username
+	}, config.secret);
+
+	user.token = token;
+
+	return ERR_OK.setData(user);
 }
 
 User.prototype.login = async function(ctx) {
@@ -67,14 +72,14 @@ User.prototype.login = async function(ctx) {
 
 	user = user.get({plain:true});
 
+	const token = jwt.encode({
+		userId: user.id, 
+		username: user.username
+	}, config.secret);
 
-	return ERR_OK.setData({
-		token: jwt.encode({
-			userId: user._id, 
-			username: user.username
-		}, config.secret),
-		userinfo: user,
-	});
+	user.token = token;
+
+	return ERR_OK.setData(user);
 }
 
 User.prototype.isLogin = async function(ctx) {

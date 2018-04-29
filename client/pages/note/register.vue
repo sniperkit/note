@@ -30,9 +30,7 @@ import {
 } from "element-ui";
 import Cookies from 'js-cookie';
 import {mapActions, mapGetters} from "vuex";
-
-import gitlab from "@@/common/api/gitlab.js";
-import noteEndpoint from "@@/common/api/note.js";
+import api from "@@/common/api/note.js";
 
 export default {
 	components: {
@@ -64,44 +62,31 @@ export default {
 	},
 	methods: {
 		...mapActions({
-			setToken:"user/setToken",
 			setUser: "user/setUser",
-			setUserDataSource: "user/setUserDataSource",
-			setDataSource: "dataSource/setDataSource",
 		}),
-		async registerSuccess(token, userinfo) {
+		async submitRegisterForm() {
 			const self = this;
-			noteEndpoint.options.headers['Authorization'] = token;
-			Cookies.set("token", token);
-			self.setToken(token);
-			self.setUser(userinfo);
-
-			const ds = await noteEndpoint.dataSource.getDefaultDataSource();
-			if (ds && ds.username) {
-				gitlab.initConfig(ds);
-				self.setDataSource(ds);
-				self.setUserDataSource(ds);
-			}
-		},
-		submitRegisterForm() {
-			const self = this;
-			this.$refs.registerForm.validate(function(valid){
-				if (!valid) {
-					return;
-				}
-				
-				noteEndpoint.user.register({
-					username:self.registerForm.username,
-					password:self.registerForm.password,
-				}).then(function(data){
-					if (data.code != 0) {
-						Message(data.message);
-						return;
-					}
-					data = data.data;
-					self.registerSuccess(data.token, data.userinfo);
-				})
+			const ret = await new Promise((resolve, reject) => {
+				self.$refs.registerForm.validate(valid => resolve(valid));
 			});
+			if (!ret) return;
+
+			const result = await api.user.register({
+				username:self.registerForm.username,
+				password:self.registerForm.password,
+			});
+			
+			if (result.isErr()) {
+				Message(result.getMessage());
+				return;;
+			}
+
+			const user = result.getData();
+			const token = user.token;
+			api.options.headers['Authorization'] = token;
+			Cookies.set("token", token);
+			self.setUser(user);
+			self.$router.push({name:g_app.getRouteName("home")});
 		}
 	},
 }

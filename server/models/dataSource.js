@@ -24,7 +24,7 @@ const DataSource = sequelize.define("dataSource", {
 
 	token: {
 		type: Sequelize.STRING(128),
-		allowNull, false,
+		allowNull: false,
 	},
 
 	baseUrl: {
@@ -46,6 +46,9 @@ const DataSource = sequelize.define("dataSource", {
 	isDefault: {
 		type: Sequelize.BOOLEAN,
 	},
+}, {
+	charset: "utf8mb4",
+	collate: 'utf8mb4_bin',
 });
 
 //DataSource.sync({force:true}).then(() => {

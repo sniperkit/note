@@ -30,8 +30,7 @@ import {
 } from "element-ui";
 import Cookies from 'js-cookie';
 import {mapActions, mapGetters} from "vuex";
-import gitlab from "@@/common/api/gitlab.js";
-import noteEndpoint from "@@/common/api/note.js";
+import api from "@@/common/api/note.js";
 
 export default {
 	components: {
@@ -63,45 +62,31 @@ export default {
 	},
 	methods: {
 		...mapActions({
-			setToken:"user/setToken",
 			setUser: "user/setUser",
-			setUserDataSource: "user/setUserDataSource",
-			setDataSource: "dataSource/setDataSource",
 		}),
-		async loginSuccess(token, userinfo) {
+		async submitLoginForm() {
 			const self = this;
-			noteEndpoint.options.headers['Authorization'] = token;
-			Cookies.set("token", token);
-			self.setToken(token);
-			self.setUser(userinfo);
-
-			const ds = await noteEndpoint.dataSource.getDefaultDataSource();
-			if (ds && ds.username) {
-				gitlab.initConfig(ds);
-				self.setDataSource(ds);
-				self.setUserDataSource(ds);
-			}
-			self.$router.push({name:g_app.getRouteName("home")});
-		},
-		submitLoginForm() {
-			const self = this;
-			this.$refs.loginForm.validate(function(valid){
-				if (!valid) {
-					return;
-				}
-				
-				noteEndpoint.user.login({
-					username:self.loginForm.username,
-					password:self.loginForm.password,
-				}).then(function(data){
-					if (data.code != 0) {
-						Message(data.message);
-						return;
-					}
-					data = data.data;
-					self.loginSuccess(data.token, data.userinfo);
-				})
+			const ret = await new Promise((resolve, reject) => {
+				self.$refs.loginForm.validate(valid => resolve(valid));
 			});
+			if (!ret) return;
+
+			const result = await api.user.login({
+				username:self.loginForm.username,
+				password:self.loginForm.password,
+			});
+			
+			if (result.isErr()) {
+				Message(result.getMessage());
+				return;;
+			}
+
+			const user = result.getData();
+			const token = user.token;
+			api.options.headers['Authorization'] = token;
+			Cookies.set("token", token);
+			self.setUser(user);
+			self.$router.push({name:g_app.getRouteName("home")});
 		}
 	},
 }

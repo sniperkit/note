@@ -37,7 +37,13 @@ const Files = sequelize.define("files", {
 	sha: {
 		type: Sequelize.STRING(64),
 	},
+}, {
+	charset: "utf8mb4",
+	collate: 'utf8mb4_bin',
 });
 
+//Files.sync({force:true}).then(() => {
+	//console.log("create files table successfully");
+//});
 
-export define Files;
+export default Files;

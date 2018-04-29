@@ -17,6 +17,13 @@ const Group = sequelize.define("group", {
 		type: Sequelize.STRING(48),
 		allowNull: false,
 	}
+}, {
+	charset: "utf8mb4",
+	collate: 'utf8mb4_bin',
 });
+
+//Group.sync({force:true}).then(() => {
+  //console.log("create files table successfully");
+//});
 
 export default Group;

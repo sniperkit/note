@@ -36,6 +36,9 @@ const Group = sequelize.define("group", {
 		type: Sequelize.INT,
 		defaultValue: USER_ACCESS_LEVEL_NONE,
 	},
+}, {
+	charset: "utf8mb4",
+	collate: 'utf8mb4_bin',
 });
 
 export default Group;

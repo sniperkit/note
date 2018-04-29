@@ -42,6 +42,9 @@ const User = sequelize.define('user', {
 	sex: {
 		type: Sequelize.STRING(4),
 	},
+}, {
+	charset: "utf8mb4",
+	collate: 'utf8mb4_bin',
 });
 
 //User.sync({force:true}).then(() => {

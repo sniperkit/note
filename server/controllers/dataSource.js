@@ -2,9 +2,9 @@ import _ from "lodash";
 import joi from "joi";
 import jwt from "jwt-simple";
 
-import {Gitlab} from "../..//common/api/gitlab.js";
+import {Gitlab} from "../../common/api/gitlab.js";
 import config from "../config.js";
-import ERR from "../common/error.js";
+import ERR from "../../common/error.js";
 import DataSourceModel from "../models/dataSource.js";
 
 const defaultProjectName = "notedatasource";

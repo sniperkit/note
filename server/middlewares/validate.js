@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import joi from 'joi';
 
-import {ERR_PARAMS} from "../common/error.js";
+import {ERR_PARAMS} from "../../common/error.js";
 
 export const validate = (schema = {}) => {
 	const { opt = {} } = schema;

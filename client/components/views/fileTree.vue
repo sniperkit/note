@@ -73,6 +73,7 @@
 import {
 	Form,
 	FormItem,
+	Input,
 	Button,
 	Dialog,
 	Select,
@@ -97,6 +98,7 @@ export default {
 		[Select.name]: Select,
 		[Option.name]: Option,
 		[Tree.name]: Tree,
+		[Input.name]: Input,
 	},
 	data: function(){
 		return {

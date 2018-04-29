@@ -5,7 +5,7 @@ const defaultConfig = {
 	pageSuffix:".md",
 	tagModsPath: "keepwork_data/tag_mods.json",
 
-	host: "0.0.0.0",
+	host: "127.0.0.1",
 	port: 7654,
 
 	baseURL: "http://wxaxiaoyao.cn/api/v0/",
