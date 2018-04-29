@@ -1,4 +1,5 @@
 import _ from "lodash";
+import api from "@@/common/api/note.js";
 
 import commonConfig from "../common/config.js";
 
@@ -20,7 +21,7 @@ const developmentConfig = {
 }
 
 const localConfig = {
-
+	baseURL: "http://localhost:7654/api/v0/",
 }
 
 
@@ -31,6 +32,11 @@ const configs = {
 }
 
 
+const config = configs[process.env.ENV];
+
+api.options.baseURL = config.baseURL;
+
 console.log(process.env.ENV);
 
-export default configs[process.env.ENV];
+export default config;
+

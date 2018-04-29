@@ -257,7 +257,7 @@ export default {
 			}, 10);	
 		},
 		clickOpenBtn(data) {
-			
+			window.open(window.location.origin + "/" + data.path.replace(/\..*$/,""));
 		},
 		clickGitBtn(data) {
 			window.open(gitlab.getFileGitUrl(data.path));

@@ -30,6 +30,4 @@ const defaultConfig = {
 	},
 }
 
-//defaultConfig.baseURL = "http://" + defaultConfig.host + ":" + defaultConfig.port + defaultConfig.apiUrlPrefix;
-
 export default defaultConfig;

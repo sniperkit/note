@@ -3,12 +3,24 @@ const webpack = require("webpack");
 
 const rootdir = path.resolve(".");
 
+//console.log(path.resolve(__dirname, "client/pages/note/userpage.vue"));
+
 module.exports = {
 	srcDir: "client/",
 
 	env: {
 		ENV: process.env.ENV,
 		rootdir,
+	},
+
+	router: {
+		extendRoutes(routes) {
+			routes.push({
+				name: "userpage",
+				path:"*",
+				component: path.resolve(__dirname, "client/pages/note/userpage.vue"),
+			})
+		},
 	},
 
 	plugins: [
