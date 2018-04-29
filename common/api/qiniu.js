@@ -3,19 +3,14 @@ import ERR from "../error.js";
 import api from "./note.js";
 
 
-const qiniu = {
-
-}
-
-
-qiniu.upload = async (params) => {
+const qiniuUpload = async (key, file, token) => {
 	let data = null;
-	if (!params.token) {
-		data = await api.qiniu.getUploadTokenByKey({key:params.key});
+	if (!token) {
+		data = await api.qiniu.getUploadTokenByKey({key:key});
 		if (data.isErr()) {
-			return data;
+			return ;
 		}
-		params.token = data.getData();
+		token = data.getData();
 	}
 
 	const opts =  {
@@ -27,17 +22,31 @@ qiniu.upload = async (params) => {
 			useCdnDomain: true,
 		},
 	}
-	const observable = qiniu.upload(blob, key, opts.token, opts.putExtra, opts.config);
-	observable.subscribe({
-		next(res) {
-			console.log(res);
-		},
-		error(err) {
-			console.log(err);
-		},
-		complete(res){
-			console.log(res);
-		}
-	});
-	
+	const observable = qiniu.upload(file, key, opts.token, opts.putExtra, opts.config);
+
+	const ok = await new Promise((resolve, reject) => {
+		observable.subscribe({
+			next(res) {
+				//console.log(res);
+			},
+			error(err) {
+				console.log(err);
+				resolve(false);
+				//console.log(err);
+			},
+			complete(res){
+				resolve(true);
+				//console.log(res);
+			}
+		});
+	})
+
+	if (!ok) return;
+
+	data = await api.qiniu.getDownloadUrl({key:key});
+	if (data.isErr()) return;
+
+	return data.getData();
 }
+
+export default qiniuUpload;

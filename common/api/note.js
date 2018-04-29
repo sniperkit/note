@@ -69,6 +69,7 @@ export function Qiniu(options) {
 	self.getUploadToken = apiRequest("get", "qiniu/getUploadToken");
 	self.getUploadTokenByKey = apiRequest("get", "qiniu/getUploadTokenByKey");
 	self.upload = apiRequest("post", "qiniu/upload");
+	self.getDownloadUrl = apiRequest("get", "qiniu/getDownloadUrl");
 }
 
 export function Files(options) {

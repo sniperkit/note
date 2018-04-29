@@ -27,6 +27,7 @@ module.exports = {
 	{src:"~/plugins/app", ssr: false},
 	{src:"~/plugins/persistedstate", ssr: false},
 	{src:"~/plugins/codemirror", ssr: false},
+	{src:"~/plugins/vueImgInputer", ssr: false},
 	//{src:"~/plugins/element-ui"},
 	//{src:"~/plugins/test", ssr: false},
 	],

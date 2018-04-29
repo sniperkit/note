@@ -1,5 +1,8 @@
 <template>
 	<el-form ref="form" :model="user" label-width="80px">
+		<el-form-item label="头像" v-if="isClient">
+			<VueImgInputer v-model="portrait" :imgSrc="user.portrait" theme="light" size="large"></VueImgInputer></VueImgInputer>
+		</el-form-item>
 		<el-form-item label="昵称">
 			<el-input v-model="user.nickname" placeholder="昵称"></el-input>
 		</el-form-item>
@@ -31,6 +34,7 @@ import {
 import {mapActions, mapGetters} from "vuex";
 
 import api from "@@/common/api/note.js";
+import qiniuUpload from "@@/common/api/qiniu.js";
 
 export default {
 	components: {
@@ -44,7 +48,9 @@ export default {
 
 	data: function() {
 		return {
+			isClient: false,
 			user: {},
+			portrait:null,
 		}
 	},
 
@@ -59,6 +65,13 @@ export default {
 			setUser: "user/setUser",
 		}),
 		async clickSubmitBtn() {
+			if (this.portrait) {
+				const key= "note/portrait/" + this.user.username + "-" + this.portrait.name;
+				const url = await qiniuUpload(key, this.portrait);
+				//console.log(url);
+				this.user.portrait = url;
+			}
+
 			const result = await api.user.setBaseInfo(this.user);
 			if (result.isErr()) {
 				Message(result.getMessage());
@@ -70,6 +83,7 @@ export default {
 	},
 
 	mounted() {
+		this.isClient = true;
 		this.user = {...this.userinfo};
 	}
 

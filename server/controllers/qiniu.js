@@ -159,6 +159,10 @@ Qiniu.prototype.getUploadTokenByKey = function(ctx) {
 		callbackBodyType: 'application/json',
 	}
 
+	if (params.key.indexOf("note/") == 0) {
+		options.callbackUrl = options.callbackBody = options.callbackBodyType = undefined;
+	}
+
 	const mac = new qiniu.auth.digest.Mac(accessKey, secretKey);
 	const putPolicy = new qiniu.rs.PutPolicy(options);
 	const token = putPolicy.uploadToken(mac);
@@ -247,6 +251,11 @@ Qiniu.prototype.getRoutes = function() {
 		path: prefix + "/callback",
 		method: "post",
 		action: "callback",
+	},
+	{
+		path: prefix + "/getDownloadUrl",
+		method: "get",
+		action: "getDownloadUrl",
 	},
 	];
 
