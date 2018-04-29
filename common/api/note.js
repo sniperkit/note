@@ -41,6 +41,7 @@ export function User(options) {
 
 	self.login = apiRequest("post", "user/login");
 	self.register = apiRequest("post", "user/register");
+	self.setBaseInfo = apiRequest("put", "user/setBaseInfo");
 	self.isLogin = apiRequest("get", "user/isLogin");
 }
 

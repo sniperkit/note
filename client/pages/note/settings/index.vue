@@ -1,21 +1,5 @@
 <template>
-	<el-form ref="form" :model="user" label-width="80px">
-		<el-form-item label="昵称">
-			<el-input v-model="user.nickname" placeholder="昵称"></el-input>
-		</el-form-item>
-		<el-form-item label="类型">
-			<el-radio-group v-model="user.sex">
-				<el-radio :label="男">男</el-radio>
-				<el-radio :label="女">女</el-radio>
-			</el-radio-group>
-		</el-form-item>
-		<el-form-item label="简介">
-			<el-input v-model="user.description" placeholder="简介"></el-input>
-		</el-form-item>
-		<el-form-item>
-			<el-button type="primary" @click="submitDataSource">提交</el-button>
-		</el-form-item>
-	</el-form>
+	<div>hello world</div>
 </template>
 
 <script>

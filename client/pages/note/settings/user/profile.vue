@@ -5,15 +5,15 @@
 		</el-form-item>
 		<el-form-item label="类型">
 			<el-radio-group v-model="user.sex">
-				<el-radio :label="男">男</el-radio>
-				<el-radio :label="女">女</el-radio>
+				<el-radio label="男">男</el-radio>
+				<el-radio label="女">女</el-radio>
 			</el-radio-group>
 		</el-form-item>
 		<el-form-item label="简介">
 			<el-input v-model="user.description" placeholder="简介"></el-input>
 		</el-form-item>
 		<el-form-item>
-			<el-button type="primary" @click="submitDataSource">提交</el-button>
+			<el-button type="primary" @click="clickSubmitBtn">提交</el-button>
 		</el-form-item>
 	</el-form>
 </template>
@@ -30,6 +30,8 @@ import {
 } from "element-ui";
 import {mapActions, mapGetters} from "vuex";
 
+import api from "@@/common/api/note.js";
+
 export default {
 	components: {
 		[Form.name]: Form,
@@ -42,14 +44,34 @@ export default {
 
 	data: function() {
 		return {
+			user: {},
 		}
 	},
 
 	computed: {
 		...mapGetters({
-			user: "user/user",
+			userinfo: "user/user",
 		}),
 	},
+
+	methods: {
+		...mapActions({
+			setUser: "user/setUser",
+		}),
+		async clickSubmitBtn() {
+			const result = await api.user.setBaseInfo(this.user);
+			if (result.isErr()) {
+				Message(result.getMessage());
+			}
+
+			this.setUser(this.user);
+			Message("用户信息修改成功");
+		}
+	},
+
+	mounted() {
+		this.user = {...this.userinfo};
+	}
 
 }
 </script>

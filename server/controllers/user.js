@@ -26,6 +26,23 @@ User.prototype.find = function() {
 
 }
 
+User.prototype.setBaseInfo = async function(ctx) {
+	const params = ctx.state.params;
+
+	const data = this.model.update(params, {
+		where: {
+			username: params.username,
+		},
+		fields: ["nickname", "sex", "description"],
+	});
+
+	if (!data) {
+		return ERR.setMessage("更新失败");
+	}
+
+	return ERR_OK;
+}
+
 User.prototype.register = async function(ctx) {
 	const params = ctx.request.body;
 	const usernameReg = /^[\w\d]+$/;
@@ -93,6 +110,12 @@ User.prototype.getRoutes = function() {
 	const self = this;
 	const prefix = "user";
 	const routes = [
+	{
+		path: prefix + "/setBaseInfo",
+		method: "put",
+		action: "setBaseInfo",
+		authenticated: true,
+	},
 	{
 		path: prefix + "/register",
 		method: "post",
