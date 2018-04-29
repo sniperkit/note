@@ -29,7 +29,7 @@ User.prototype.find = function() {
 User.prototype.register = async function(ctx) {
 	const params = ctx.request.body;
 	const usernameReg = /^[\w\d]+$/;
-	if (!usernameReg.text(params.username)) {
+	if (!usernameReg.test(params.username)) {
 		return ERR_PARAMS;
 	}
 	let user = await this.model.findOne({
@@ -46,6 +46,7 @@ User.prototype.register = async function(ctx) {
 	});
 
 	if (!user) return ERR;
+	user = user.get({plain:true});
 
 	const token = jwt.encode({
 		userId: user.id, 
@@ -58,7 +59,8 @@ User.prototype.register = async function(ctx) {
 }
 
 User.prototype.login = async function(ctx) {
-	const params = ctx.request.body;
+	const params = ctx.state.params;
+	console.log(params);
 	let user = await this.model.findOne({
 		where: {
 			username: params.username,

@@ -16,9 +16,9 @@ const User = sequelize.define('user', {
 	password: {
 		type: Sequelize.STRING(48),
 
-		set(val) {
-			this.setDataValue("password", val.toUpperCase());
-		},
+		//set(val) {
+			//this.setDataValue("password", val.toUpperCase());
+		//},
 	},
 
 	email: {
@@ -32,7 +32,7 @@ const User = sequelize.define('user', {
 	},
 
 	nickname: {
-		type: Sequelize.STRING,
+		type: Sequelize.STRING(48),
 	},
 
 	portrait: {
@@ -42,6 +42,11 @@ const User = sequelize.define('user', {
 	sex: {
 		type: Sequelize.STRING(4),
 	},
+
+	description: {
+		type: Sequelize.STRING(128),
+	},
+
 }, {
 	charset: "utf8mb4",
 	collate: 'utf8mb4_bin',

@@ -40,7 +40,6 @@ export default {
 
 	computed: {
 		...mapGetters({
-			token: "user/token",
 			user: "user/user",
 			isAuthenticated: "user/isAuthenticated",
 		}),

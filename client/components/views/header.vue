@@ -77,6 +77,10 @@ export default {
 		clickRegisterBtn() {
 			this.$router.push({name: g_app.getRouteName("register")});
 		},
+	},
+
+	mounted() {
+		console.log(this.user);
 	}
 }
 </script>

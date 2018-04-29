@@ -3,6 +3,8 @@
 </template>
 
 <script>
+import 'github-markdown-css/github-markdown.css';
+
 import {mapActions, mapGetters} from "vuex";
 import tag from "@/components/common/tag.js";
 import {tags} from "@/lib/tags";

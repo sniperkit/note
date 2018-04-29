@@ -32,7 +32,7 @@
 					</span>
 					<span class="tree-node-btn-group">
 						<i @click.stop="clickOpenBtn(data)"class="fa fa-external-link" aria-hidden="true" data-toggle="tooltip" title="访问"></i>
-						<i @click.stop="clickGitBtn(data)" class="fa fa-git" aria-hidden="true" data-toggle="tooltip" title="git"></i>
+						<!--<i @click.stop="clickGitBtn(data)" class="fa fa-git" aria-hidden="true" data-toggle="tooltip" title="git"></i>-->
 						<i @click.stop="clickCloseBtn(data)" class="fa fa-times" aria-hidden="true" data-toggle="tooltip" title="关闭"></i>
 					</span>
 				</span>
@@ -59,7 +59,7 @@
 					</span>
 					<span class="tree-node-btn-group">
 						<i @click.stop="clickOpenBtn(data)"class="fa fa-external-link" aria-hidden="true" data-toggle="tooltip" title="访问"></i>
-						<i @click.stop="clickGitBtn(data)" class="fa fa-git" aria-hidden="true" data-toggle="tooltip" title="git"></i>
+						<!--<i @click.stop="clickGitBtn(data)" class="fa fa-git" aria-hidden="true" data-toggle="tooltip" title="git"></i>-->
 						<i @click.stop="clickDeleteBtn(data, node)" class="fa fa-trash-o" aria-hidden="true" data-toggle="tooltip" title="删除"></i>
 					</span>
 				</span>
@@ -84,7 +84,7 @@ import {
 } from "element-ui";
 import vue from "vue";
 import {mapActions, mapGetters} from "vuex";
-import gitlab from "@@/common/api/gitlab.js";
+//import gitlab from "@@/common/api/gitlab.js";
 import config from "@/config.js";
 
 vue.use(Loading.directive);
@@ -259,9 +259,9 @@ export default {
 		clickOpenBtn(data) {
 			window.open(window.location.origin + "/" + data.path.replace(/\..*$/,""));
 		},
-		clickGitBtn(data) {
-			window.open(gitlab.getFileGitUrl(data.path));
-		},
+		//clickGitBtn(data) {
+		//	window.open(gitlab.getFileGitUrl(data.path));
+		//},
 		clickNewFileBtn(data) {
 			this.isShowNewFile = true;
 			this.newFileForm.data = data;
