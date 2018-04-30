@@ -33,7 +33,7 @@ User.prototype.setBaseInfo = async function(ctx) {
 		where: {
 			username: params.username,
 		},
-		fields: ["nickname", "sex", "description"],
+		fields: ["nickname", "sex", "description", "portrait"],
 	});
 
 	if (!data) {
@@ -77,7 +77,6 @@ User.prototype.register = async function(ctx) {
 
 User.prototype.login = async function(ctx) {
 	const params = ctx.state.params;
-	console.log(params);
 	let user = await this.model.findOne({
 		where: {
 			username: params.username,
@@ -101,6 +100,25 @@ User.prototype.login = async function(ctx) {
 	return ERR_OK.setData(user);
 }
 
+User.prototype.modifyPassword = async function(ctx) {
+	const params = ctx.state.params;
+	const username = ctx.state.user.username;
+
+	const result = await this.model.update({
+		password: params.newpassword,
+	}, {
+		where: {
+			username: username,
+			password: params.oldpassword,
+		}
+	});
+
+	if (!result) return ERR;
+	if (result[0] == 0) return ERR.setMessage("密码错误");
+
+	return ERR_OK;
+}
+
 User.prototype.isLogin = async function(ctx) {
 	this.model.findById(1);
 	return "hello world";
@@ -110,6 +128,12 @@ User.prototype.getRoutes = function() {
 	const self = this;
 	const prefix = "user";
 	const routes = [
+	{
+		path: prefix + "/modifyPassword",
+		method: "put",
+		action: "modifyPassword",
+		authenticated: true,
+	},
 	{
 		path: prefix + "/setBaseInfo",
 		method: "put",

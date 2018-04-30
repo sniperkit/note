@@ -5,7 +5,7 @@
 				<el-submenu :index='index("user/profile")'>
 					<template slot="title" style="background-color: blue">用户信息</template>
 					<el-menu-item :index='index("user/profile")'>基本信息</el-menu-item>
-					<el-menu-item :index='index("dataSource/upsert")'>账号安全</el-menu-item>
+					<el-menu-item :index='index("user/accountSafe")'>账号安全</el-menu-item>
 				</el-submenu>
 				<el-submenu :index='index("dataSource")'>
 					<template slot="title" style="background-color: blue">数据源</template>
@@ -44,9 +44,14 @@ export default {
 
 	methods: {
 		index(path) {
+			if (this.activeItem && this.activeItem.indexOf(path) == 0) {
+				return this.activeItem;
+			}
 			return "/" + config.urlPrefix + "/settings/" + path;
 		},
 		open(index) {
+			if (this.activeItem == index) return;
+
 			this.$router.push(index);
 			this.activeItem = index;
 		},

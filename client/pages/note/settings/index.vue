@@ -1,28 +1,10 @@
 <template>
-	<div>hello world</div>
+	<div></div>
 </template>
 
 <script>
-import {
-	Form,
-	FormItem,
-	Button,
-	Input,
-	RadioGroup,
-	Radio,
-	Message,
-} from "element-ui";
-import {mapActions, mapGetters} from "vuex";
 
 export default {
-	components: {
-		[Form.name]: Form,
-		[FormItem.name]: FormItem,
-		[Button.name]: Button,
-		[Input.name]: Input,
-		[RadioGroup.name]: RadioGroup,
-		[Radio.name]: Radio,
-	},
 
 	data: function() {
 		return {
@@ -30,10 +12,11 @@ export default {
 	},
 
 	computed: {
-		...mapGetters({
-			user: "user/user",
-		}),
 	},
+
+	mounted() {
+		this.$router.replace(({name: g_app.getRouteName("settings-user-profile")}))
+	}
 
 }
 </script>
