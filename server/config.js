@@ -31,6 +31,7 @@ const defaultConfig = {
 }
 
 const productionConfig = {
+	host: "127.0.0.1"
 }
 
 const developmentConfig = {
