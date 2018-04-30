@@ -31,12 +31,12 @@ const configs = {
 	"development": _.merge(commonConfig, defaultConfig, developmentConfig),
 }
 
-
-const config = configs[process.env.ENV];
+const ENV = process.env.ENV || process.env.NODE_ENV;
+const config = configs[ENV];
 
 api.options.baseURL = config.baseURL;
 
-console.log(process.env.ENV);
+console.log(ENV);
 
 export default config;
 

@@ -50,6 +50,9 @@ const configs = {
 	"development": _.merge(commonConfig, defaultConfig, developmentConfig, config),
 }
 
-console.log(process.env.ENV);
+const ENV = process.env.ENV || process.env.NODE_ENV;
+const _config = configs[ENV];
 
-export default configs[process.env.ENV];
+console.log(ENV);
+
+export default _config;
