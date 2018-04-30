@@ -6,6 +6,10 @@ import config from "./.config.js";
 const defaultConfig = {
 	secret: "keepwork",
 
+	baseURL: "http://127.0.0.1:3000/api/v0/",
+	host: "127.0.0.1",
+	port: 3000,
+
 	database: {
 		//port:3306,
 		host: '39.106.11.114',
@@ -31,7 +35,6 @@ const defaultConfig = {
 }
 
 const productionConfig = {
-	host: "127.0.0.1"
 }
 
 const developmentConfig = {

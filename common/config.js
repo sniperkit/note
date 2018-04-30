@@ -6,7 +6,7 @@ const defaultConfig = {
 	tagModsPath: "keepwork_data/tag_mods.json",
 
 	host: "127.0.0.1",
-	port: 7654,
+	port: 3000,
 
 	baseURL: "http://wxaxiaoyao.cn/api/v0/",
 	proxyBaseURL: "http://47.52.20.34:7654/api/v0/",
