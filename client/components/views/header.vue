@@ -3,9 +3,9 @@
 		<div class="container full-height flex-col">
 			<div class="flex-row">
 				<div v-show="isLogin">
-					<el-dropdown @command="handleCommand">
+					<el-dropdown @command="handleCommand" trigger="click">
 						<span class="el-dropdown-link" style="cursor:pointer">
-							{{user.aliasname || user.usernam || "逍遥"}}
+							{{user.nickname || user.username || "逍遥"}}
 							<i class="el-icon-arrow-down el-icon--right"></i>
 						</span>
 						<el-dropdown-menu slot="dropdown">
