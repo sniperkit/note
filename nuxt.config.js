@@ -61,7 +61,7 @@ module.exports = {
   	 ** Build configuration
   	 */
   	build: {
-		analyze: true,
+		//analyze: true,
 		vendor: [
 			"lodash",
 			"axios",

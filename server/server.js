@@ -12,6 +12,9 @@ import registerControllerRouter from "./controllers/index.js";
 //import log from "./log.js";
 import config from "./config.js";
 import models from "./models/index.js";
+import api from "../common/api/note.js";
+
+api.options.baseURL = config.baseURL;
 
 const apiRouter = new Router({
 	prefix: config.apiUrlPrefix,
