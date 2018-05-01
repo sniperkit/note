@@ -17,7 +17,7 @@
 				<el-button type="primary" @click="clickSubmitNewFileBtn()">确 定</el-button>
 			</div>
 		</el-dialog>
-		<el-tree ref="openedTreeComp" :data="openedPageTree" :props="fileTreeProps" node-key="path" :default-expand-all="true" :highlight-current="true" @node-click="clickSelectPage">
+		<el-tree ref="openedTreeComp" :data="openedPageTree" :props="treeprops" node-key="path" :default-expand-all="true" :highlight-current="true" @node-click="clickSelectPage">
 			<span class="custom-tree-node" slot-scope="{node, data}">
 				<span v-if="data.type == 'tree'" class="custom-tree-node">
 					<span>
@@ -38,7 +38,7 @@
 				</span>
 			</span>
 		</el-tree>
-		<el-tree ref="treeComp" :data="fileTree" :props="fileTreeProps" 
+		<el-tree ref="treeComp" :props="treeprops" lazy :load="loadTreeNode"
 			node-key="path" :highlight-current="true" @node-click="clickSelectPage">
 			<span class="custom-tree-node" slot-scope="{node, data}">
 				<span v-if="data.type == 'tree'" class="custom-tree-node">
@@ -84,8 +84,8 @@ import {
 } from "element-ui";
 import vue from "vue";
 import {mapActions, mapGetters} from "vuex";
-//import gitlab from "@@/common/api/gitlab.js";
 import config from "@/config.js";
+import api from "@@/common/api/note.js";
 
 vue.use(Loading.directive);
 
@@ -102,16 +102,15 @@ export default {
 	},
 	data: function(){
 		return {
-			projectId:4980659,
-			rootPath: "xiaoyao",
-			fileTreeProps: {
+			treeprops: {
 				children:"nodes",
 				label:"name",
+				isLeaf: "leaf",
 			},
-			fileTree:[],
 			openedPages:{},
 			isShowNewFile:false,
 			newFileForm:{ type:"blob", isLoading:false },
+			sites: {},
 		};
 	},
 
@@ -121,9 +120,14 @@ export default {
 			tagId: 'editor/getTagId',
 			pagePath: 'editor/getPagePath',
 			getPageByPath: 'editor/getPageByPath',
-			pages: 'editor/getPages',
 			switchPage: 'editor/switchPage',
+			pages: "editor/getPages",
 		}),
+
+		username() {
+			return this.user.username;
+		},
+
 		openedPageTree() {
 			let tree = {name:"已打开页面", type:"tree", path:"", nodes:[]};
 			for (var key in this.openedPages) {
@@ -150,24 +154,55 @@ export default {
 		...mapActions({
 			setPagePath: "editor/setPagePath",
 			setPage: "editor/setPage",
+			setPages: "editor/setPages",
 			savePage: "editor/savePage",
 			loadPage: "editor/loadPage",
 			deletePage: "editor/deletePage",
 			setSwitchPage: "editor/setSwitchPage",
-			loadTree: "editor/loadTree",
 		}),
-		getFileTree() {
-			var pages = this.pages;
-			var roottree = [], i, j, k, name;
-			this.filetreeMap = {};
 
+		async getSites() {
+			let result = await api.site.getByUsername({username: this.user.username});
+			const sites = result.getData() || [];
+			sites.forEach(site => {
+				site.name = site.sitename;
+				site.type = "tree";
+				this.sites[site.sitename] = site;
+			});
+			return sites;
+		},
+
+		async getSitePage(site) {
+			const self = this;
+			const result = await api.files.list({prefix: [site.username, site.sitename].join("/")});
+			if (result.isErr()) return;
+			const pages = result.getData().items  || [];
+			const pagemap = {};
+			pages.forEach(page => {
+				const paths = page.key.split("/");
+				page.name = paths[paths.length-1];
+				page.path = page.key;
+				page.type = "blob";
+				page.leaf = true;
+				page.username = paths[0];
+				page.name = page.name.replace(/\..*$/, "");
+				page.url = page.path.replace(/\..*$/, "");
+
+				pagemap[page.key] = page;
+			});
+			self.setPages(pagemap);
+			return self.generateTreeNodes(pages);
+		},
+
+		generateTreeNodes(pages) {
+			var roottree = [], i, j, k, name;
 			for (var key in pages) {
 				var node = pages[key];
 				var paths = node.path.split("/");
 				var tree = roottree;
 				var path = "";
 
-				if (node.type == "blob" && node.path.indexOf(".md") < 0) {
+				if (node.path.indexOf(".md") < 0) {
 					continue;
 				}
 
@@ -197,20 +232,31 @@ export default {
 				}
 
 				if (k == tree.length) {
-					tree.push({nodes:[]});
+					tree.push(node);
 				} 
-				tree = tree[k];
-
-				tree.type = node.type;
-				tree.id = node.id;
-				tree.path = node.path;
-				tree.name = node.name;
-				tree.username = paths[0];
-				tree.sitename = paths[1];
-				this.filetreeMap[tree.path] = tree;
 			}
 
-			return roottree;
+			return roottree[0].nodes[0].nodes;
+		},
+
+		async loadTreeNode(node, resolve) {
+			const self = this;
+			//console.log(node);
+			if (node.level == 0) {
+				return resolve([{
+					name:"我的站点",
+					type: 'tree',
+					path: self.user.username,
+				}]);
+			} else if (node.level == 1) {
+				const sites = await self.getSites();
+				return resolve(sites);
+			} else if (node.level == 2){
+				const pages = await self.getSitePage(node.data);
+				return resolve(pages);
+			} else {
+				return resolve([]);
+			}
 		},
 		isRefresh(data) {
 			return (this.getPageByPath(data.path) || {}).isRefresh;
@@ -302,17 +348,10 @@ export default {
 	},
 
 	async mounted() {
-		await this.loadTree({path:this.user.username});
-		const username = this.user.username;
-		this.fileTree = this.getFileTree();
-		const rootnode = this.fileTree[0] || {username:username, path:username, aliasname:"我的页面", url:username, name:username, type:"tree"};
-		this.fileTree[0] = rootnode;
-		rootnode.aliasname = "我的页面";
-
-		const hash = this.$route.hash;
-		const path =  hash.substring(1) + config.pageSuffix;
-		const data = this.filetreeMap[path];
-		data && this.clickSelectPage(data);
+		//const hash = this.$route.hash;
+		//const path =  hash.substring(1) + config.pageSuffix;
+		//const data = this.filetreeMap[path];
+		//data && this.clickSelectPage(data);
 
 	},
 

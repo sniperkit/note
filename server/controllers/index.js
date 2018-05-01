@@ -9,6 +9,7 @@ import dataSource from "./dataSource.js";
 import gitlab from "./gitlab.js"; 
 import qiniu from "./qiniu.js";
 import files from "./files.js";
+import site from "./site.js";
 
 export const controllers = {
 	code,
@@ -17,6 +18,7 @@ export const controllers = {
 	gitlab,
 	qiniu,
 	files,
+	site,
 }
 
 const getParams = (ctx) => {

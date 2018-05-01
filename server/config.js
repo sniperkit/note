@@ -45,9 +45,9 @@ const localConfig = {
 }
 
 const configs = {
-	"local": _.merge(commonConfig, defaultConfig, localConfig, config),
-	"production": _.merge(commonConfig, defaultConfig, productionConfig, config),
-	"development": _.merge(commonConfig, defaultConfig, developmentConfig, config),
+	"local": _.merge({}, commonConfig, defaultConfig, localConfig, config),
+	"production": _.merge({}, commonConfig, defaultConfig, productionConfig, config),
+	"development": _.merge({}, commonConfig, defaultConfig, developmentConfig, config),
 }
 
 const ENV = process.env.ENV || process.env.NODE_ENV;

@@ -2,6 +2,8 @@ import joi from "joi";
 import Sequelize from "sequelize";
 
 import ERR from "../../common/error.js";
+import gitlab from "../../common/api/gitlab.js";
+
 import qiniu from "./qiniu.js";
 import filesModel from "../models/files.js";
 
@@ -9,6 +11,10 @@ const {like, gt, lte, ne, in: opIn} = Sequelize.Op;
 
 export const Files = function(){
 	this.model = filesModel;
+}
+
+function writeGitFile(params) {
+	gitlab.upsertFile(params.key, {content:params.content});
 }
 
 Files.prototype.getContent = async function(ctx) {
@@ -47,6 +53,9 @@ Files.prototype.uploadFile = async function(ctx) {
 	params.hash = result.getData().hash;
 	await this.model.upsert(params);
 
+	// 往git写一份
+	writeGitFile(params);
+
 	return ERR.ERR_OK.setData({hash:params.hash});
 }
 
@@ -62,6 +71,21 @@ Files.prototype.deleteFile = async function(ctx) {
 	}});
 
 	return ERR.ERR_OK;
+}
+
+Files.prototype.list = async function(ctx) {
+	const params = ctx.state.params;
+
+	ctx.state.params = {
+		prefix: params.prefix || "",
+	}
+
+	const result = await qiniu.list(ctx);
+	if (result.isErr()) return result;
+
+	const data = result.getData();
+
+	return ERR.ERR_OK.setData(data);
 }
 
 Files.prototype.getByUsername = async function(ctx) {
@@ -87,6 +111,11 @@ Files.prototype.getRoutes = function() {
 	const self = this;
 	const prefix = "files";
 	const routes = [
+	{
+		path: prefix + "/list",
+		method: "get",
+		action: "list",
+	},
 	{
 		path: prefix + "/getByUsername",
 		method: "get",

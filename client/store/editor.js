@@ -83,6 +83,7 @@ export const state = () => ({
 	switchPage:false, // 是否切换页面
 	pages:{},       // 页面节点信息
 	gits:{},        // 数据源
+	sites: {},      // 网站列表
 	mode:consts.EDITOR_MODE_NORMAL,
 });
 
@@ -146,6 +147,9 @@ export const actions = {
 		}
 
 		dispatch("indexDB_savePage", page);
+	},
+	setPages({commit}, pages) {
+		commit(SET_PAGES, pages);
 	},
 	loadPage(context, page) {
 		let {commit, state, dispatch, getters:{getPageByPath}} = context;
@@ -250,18 +254,6 @@ export const actions = {
 		dispatch("indexDB_deletePage", path);
 		commit(DELETE_PAGE, path);
 	},
-	async loadTree(context, payload) {
-		let {commit, getters: {getGit}} = context;
-		let result = await api.files.getByUsername({username: payload.path});
-		if (result.isErr()) return ;
-		//let list = await gitlab.getTree(payload.path, {...payload, recursive: true,}) || [];
-		let pages = {};
-		let list = result.data.items || [];
-		list.forEach(function(node){
-			pages[node.key] = treeNodeToPage(node);
-		});
-		commit(SET_PAGES, pages);
-	}
 };
 
 export const mutations = {

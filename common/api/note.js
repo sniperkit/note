@@ -80,6 +80,7 @@ export function Files(options) {
 
 	const apiRequest = (method, url) => (data, config) => httpRequest(method || "get", url, data, Object.assign(self.options, config));
 	
+	self.list = apiRequest("get", "files/list");
 	self.getByUsername = apiRequest("get", "files/getByUsername");
 	self.getContent = apiRequest("get", "files/getContent");
 	self.getFile = apiRequest("get", "files/getFile");
@@ -91,6 +92,18 @@ export const mod = {
 
 }
 
+export function Site(options) {
+	const self = this;
+
+	initHttpOptions(self, options);
+
+	const apiRequest = (method, url) => (data, config) => httpRequest(method || "get", url, data, Object.assign(self.options, config));
+
+	self.create = apiRequest("post", "site/create");
+	self.update = apiRequest("put", "site/update");
+	self.getByUsername = apiRequest("get", "site/getByUsername");
+}
+
 export function Note(options){
 	const self = this;
 	initHttpOptions(self, options);
@@ -99,6 +112,7 @@ export function Note(options){
 	self.dataSource = new DataSource(self.options);
 	self.qiniu = new Qiniu(self.options);
 	self.files = new Files(self.options);
+	self.site = new Site(self.options);
 }
 
 export default new Note();

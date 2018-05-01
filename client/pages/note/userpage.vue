@@ -24,26 +24,8 @@ export default {
 		}
 	},
 
-	//async asyncData({req}) {
-	//	const path = req.ctx.request.path;
-	//	const key = path.substring(1) + config.pageSuffix;
-	//	const result = await api.files.getContent({key:key});
-	//	if (!result || result.isErr()) {
-	//		//Message(result.getMessage());
-	//		return;
-	//	}
-
-	//	const content = result.getData();
-	//	return {
-	//		content: content
-	//	};
-	//},
-
-	created() {
-	},
-
-	async mounted() {
-		const path = this.$route.path;
+	async asyncData({req}) {
+		const path = req.ctx.request.path;
 		const key = path.substring(1) + config.pageSuffix;
 		const result = await api.files.getContent({key:key});
 		if (!result || result.isErr()) {
@@ -51,7 +33,25 @@ export default {
 			return;
 		}
 
-		this.content = result.getData();
-	}
+		const content = result.getData();
+		return {
+			content: content
+		};
+	},
+
+	created() {
+	},
+
+	//async mounted() {
+	//	const path = this.$route.path;
+	//	const key = path.substring(1) + config.pageSuffix;
+	//	const result = await api.files.getContent({key:key});
+	//	if (!result || result.isErr()) {
+	//		//Message(result.getMessage());
+	//		return;
+	//	}
+
+	//	this.content = result.getData();
+	//}
 }
 </script>

@@ -89,8 +89,10 @@ Gitlab.prototype.getContent = function(path) {
 
 Gitlab.prototype.upsertFile = async function(path, options) {
 	options = {...(options || {}), commit_message:"create or update"};
-	const file = await this.getFile(path).catch(() => {});
-	return file ? this.editFile(path, options) : this.createFile(path, options);
+	const result = await this.editFile(path, options).catch((e) => {console.log(e)});
+	return result || this.createFile(path, options).catch(e => console.log(e));
+	//const file = await this.getFile(path).catch(() => {});
+	//return file ? this.editFile(path, options) : this.createFile(path, options);
 }
 
 Gitlab.prototype.editFile = function(path, options) {
@@ -194,6 +196,11 @@ gitlab.createFile = function(path, options) {
 gitlab.deleteFile = function(path, options) {
 	const git = this.getGitByPath(path);
 	return git.deleteFile(path, options);
+}
+
+gitlab.upsertFile = function(path, options) {
+	const git = this.getGitByPath(path);
+	return git.upsertFile(path, options);
 }
 
 gitlab.getTree = function(path, options) {

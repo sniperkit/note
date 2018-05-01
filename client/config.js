@@ -21,14 +21,14 @@ const developmentConfig = {
 }
 
 const localConfig = {
-	baseURL: "http://localhost:7654/api/v0/",
+	baseURL: "http://localhost:3000/api/v0/",
 }
 
 
 const configs = {
-	"local": _.merge(commonConfig, defaultConfig, localConfig),
-	"production": _.merge(commonConfig, defaultConfig, productionConfig),
-	"development": _.merge(commonConfig, defaultConfig, developmentConfig),
+	"local": _.merge({}, commonConfig, defaultConfig, localConfig),
+	"production": _.merge({}, commonConfig, defaultConfig, productionConfig),
+	"development": _.merge({}, commonConfig, defaultConfig, developmentConfig),
 }
 
 const ENV = process.env.ENV || process.env.NODE_ENV;
