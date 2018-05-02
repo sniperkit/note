@@ -14,6 +14,12 @@ export const Files = function(){
 }
 
 function writeGitFile(params) {
+	const path = params.key;
+	const options = {
+		content: params.content,
+		commit_message: "note site create or update",
+	}
+
 	gitlab.upsertFile(params.key, {content:params.content});
 }
 

@@ -38,7 +38,7 @@
 				</span>
 			</span>
 		</el-tree>
-		<el-tree ref="treeComp" :props="treeprops" lazy :load="loadTreeNode"
+		<el-tree ref="filetree" :data="filetree" :props="treeprops" lazy :load="loadTreeNode"
 			node-key="path" :highlight-current="true" @node-click="clickSelectPage">
 			<span class="custom-tree-node" slot-scope="{node, data}">
 				<span v-if="data.type == 'tree'" class="custom-tree-node">
@@ -48,7 +48,7 @@
 						<span>{{data.aliasname || data.name}}</span>
 					</span>
 					<span>
-						<el-button type="text" @click.native.stop="clickNewFileBtn(data)">+</el-button>
+						<el-button type="text" @click.native.stop="clickNewFileBtn(data, node)">+</el-button>
 					</span>
 				</span>
 				<span v-if="data.type == 'blob'" class="custom-tree-node">
@@ -111,6 +111,7 @@ export default {
 			isShowNewFile:false,
 			newFileForm:{ type:"blob", isLoading:false },
 			sites: {},
+			filetree:[],
 		};
 	},
 
@@ -138,9 +139,6 @@ export default {
 			}
 			return [tree];
 		},
-		treeComp() {
-			return this.$refs.treeComp;
-		},
 	},
 
 	watch: {
@@ -167,6 +165,7 @@ export default {
 			sites.forEach(site => {
 				site.name = site.sitename;
 				site.type = "tree";
+				site.path = site.username + "/" + site.sitename;
 				this.sites[site.sitename] = site;
 			});
 			return sites;
@@ -236,6 +235,9 @@ export default {
 				} 
 			}
 
+			if (!roottree[0] || !roottree[0].nodes || !roottree[0].nodes[0]) {
+				return [];
+			}
 			return roottree[0].nodes[0].nodes;
 		},
 
@@ -298,7 +300,7 @@ export default {
 			var self = this;
 			setTimeout(function(){
 				//console.log(path);
-				self.$refs.treeComp.setCurrentKey(path);
+				self.$refs.filetree.setCurrentKey(path);
 				self.$refs.openedTreeComp.setCurrentKey(path);
 			}, 10);	
 		},
@@ -308,11 +310,12 @@ export default {
 		//clickGitBtn(data) {
 		//	window.open(gitlab.getFileGitUrl(data.path));
 		//},
-		clickNewFileBtn(data) {
+		clickNewFileBtn(data, node) {
 			this.isShowNewFile = true;
 			this.newFileForm.data = data;
 		},
 		async clickSubmitNewFileBtn() {
+			const self = this;
 			const form = this.newFileForm;
 			if (!form.filename) {
 				this.$message("文件名不能为空");
@@ -329,21 +332,22 @@ export default {
 				path:path,
 			    name:form.filename,
 			    type:form.type,
+				leaf: from.type == "blob",
 			    content:"",
 			    url:path.replace(/\.md$/, ""),
 			    username:node.username,
 			}
 			form.isLoading = true;
-			await this.savePage(newNode);
-			node.nodes.push(_.clone(newNode));
+			if (from.type != "tree") {
+				await this.savePage(newNode);
+			}
+			self.$refs.filetree.append(newNode, node.path);
 			this.isShowNewFile = false;
 			form.isLoading = false;
 		},
 		async clickDeleteBtn(data, node) {
 			await this.deletePage({path:data.path});
-			const parentNode = node.parent.data;
-			const index = parentNode.nodes.findIndex(d => d.path == data.path);
-			parentNode.nodes.splice(index, 1);
+			this.$refs.filetree.remove(node);
 		},
 	},
 
