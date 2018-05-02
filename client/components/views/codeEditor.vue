@@ -1,21 +1,45 @@
 <template>
-	<codemirror  ref="cm" :value="value" class="kp_forbit_copy"
-		@change="textChange" 
-		@save="save"
-		@cursorActivity="cursorActivity"></codemirror>
+	<div style="height:100%" v-loading="loading" element-loading-text="文件上传中...">
+		<el-dialog title="文件上传" :visible.sync="fileUploadDialogVisible">
+			<div style="color:red; margin-top:-20px; margin-bottom:10px"><b>本页面存在同名文件会覆盖</b></div>
+			<el-input v-model="uploadFilename" placeholder="请输入文件名"></el-input>
+			<span slot="footer">
+				<el-button @click="fileUploadDialogVisible = false">取消</el-button>
+				<el-button type="primary" @click="fileUpload">确定</el-button>
+			</span>
+		</el-dialog>
+		<codemirror ref="cm" :value="value" class="kp_forbit_copy" @change="textChange" @save="save" @fileUpload="fileUploadEvent" @cursorActivity="cursorActivity">
+		</codemirror>
+	</div>
 </template>
 
 <script>
 import vue from "vue";
 import {mapActions, mapGetters} from "vuex";
 import {Base64} from "js-base64";
+import {
+	Dialog,
+	Input,
+	Button,
+	Message,
+} from "element-ui";
 
 import codemirror from "@/components/bases/codemirror.vue";
+import qiniuUpload from "@@/common/api/qiniu.js";
 const tempContentKey = "cmeditor_temp_content";
 
 export default {
+    components:{
+		[Dialog.name]: Dialog,
+		[Input.name]: Input,
+		[Button.name]: Button,
+		codemirror,
+    },
 	data: function() {
 		return {
+			fileUploadDialogVisible: false,
+			uploadFilename:"",
+			loading: false,
 			value:{
 				text:"",
 				filename:null,
@@ -114,6 +138,35 @@ export default {
 				content: text,
 			});
 		},
+
+		fileUploadEvent(file) {
+			this.fileUploadDialogVisible = true;
+			this.uploadFilename = file.name;
+			this.file = file;
+		},
+
+		async fileUpload() {
+			this.fileUploadDialogVisible = false;
+			if (!this.uploadFilename){
+				Message("文件名为空, 取消文件上传");
+				return;
+			};
+			this.loading = true;
+			
+			const file = this.file;
+			const paths = this.pagePath.split("/");
+			paths[paths.length-1] = this.uploadFilename;
+			const path = paths.join("/");
+			const url = await qiniuUpload(path, file);
+			const cmComp = this.$refs.cm;
+			let content = '['+ this.uploadFilename +'](' + url+')'; 
+			if (file.type.indexOf("image") == 0){
+				content = "!" + content;	
+			}
+			cmComp.insertContent(content);
+			this.loading = false;
+		},
+
 		cursorActivity() {
 
 		},
@@ -135,8 +188,5 @@ export default {
 	created() {
 	},
 
-    components:{
-		codemirror,
-    },
 }
 </script>

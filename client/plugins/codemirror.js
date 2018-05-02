@@ -50,3 +50,5 @@ vue.use(VueCodemirror, {
 		gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"],
 	}
 });
+
+window.CodeMirror = CodeMirror;

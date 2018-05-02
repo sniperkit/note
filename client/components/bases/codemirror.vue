@@ -5,6 +5,26 @@
 <script>
 import vue from "vue";
 
+function getEmptyLine(editor, lineNo) {
+	lineNo = lineNo || editor.getCursor().line || 0;
+
+	var content = editor.getLine(lineNo);
+	while (content){
+		content = editor.getLine(++lineNo);
+	}
+	if (content == undefined){
+		editor.replaceRange("\n",{line: lineNo, ch: 0});
+	}
+	return lineNo;
+}
+
+function line_keyword_nofocus(editor, lineNo, content) {
+	lineNo = lineNo || getEmptyLine(editor);
+
+	const originContent = editor.getLine(lineNo);
+	const offsetX = originContent && originContent.length;
+	editor.replaceRange(content, CodeMirror.Pos(lineNo, 0), CodeMirror.Pos(lineNo, offsetX));
+};
 	// 折叠wiki代码
 function foldWikiBlock(cm, changeObj) {
 	if (!changeObj) {
@@ -116,10 +136,46 @@ export default {
 				self.$emit("cursorActivity", pos);
 			});
 
+			self.codemirror.on("paste", function(cm, e) {
+				//console.log(e);
+				if (!(e.clipboardData && e.clipboardData.items.length)) {
+					alert("该浏览器不支持操作");
+					return;
+				}
+				for (var i = 0, len = e.clipboardData.items.length; i < len; i++) {
+					const item = e.clipboardData.items[i];
+					// console.log(item.kind+":"+item.type);
+					if (item.kind === "string") {
+						item.getAsString(function (str) {
+							// str 是获取到的字符串
+							//console.log('get str');
+							//console.log(str);
+						})
+					} else if (item.kind === "file") {
+						var file = item.getAsFile();
+						// pasteFile就是获取到的文件
+						self.$emit("fileUpload", file);
+					}
+				}
+			});
+			
+			self.codemirror.on("drop", function(cm, e){
+				if (!(e.dataTransfer && e.dataTransfer.files.length)) {
+					alert("该浏览器不支持操作");
+					return;
+				}
+				for (var i = 0; i < e.dataTransfer.files.length; i++) {
+					var file = e.dataTransfer.files[i];
+					self.$emit("fileUpload", file);
+				}
+				e.preventDefault();
+			});
+	
 			self.codemirror.setOption("extraKeys", this.keyMap);
 
 			self.codemirror.setValue(self.text);
 		},
+
 		swapDoc(filename, text) {
 			text = text || "";
 			if (filename) {
@@ -136,6 +192,9 @@ export default {
 			} else {
 				this.CodeMirror && this.CodeMirror.signal(this.codemirror, "change", this.codemirror);
 			}
+		},
+		insertContent(content, lineNo) {
+			line_keyword_nofocus(this.codemirror, lineNo, content);
 		},
 		getValue() {
 			return {

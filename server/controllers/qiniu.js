@@ -154,9 +154,9 @@ Qiniu.prototype.getUploadTokenByKey = function(ctx) {
 	const options = {
 		scope: bucketName + ":" + params.key,
 		//expires: 3600 * 24 * 365, // 默认一个小时
-		callbackUrl: config.QiniuService.baseURL + "qiniu/callback",
-		callbackBody: '{"key":"$(key)","hash":"$(etag)","size":$(fsize),"bucket":"$(bucket)","uid":"$(x:uid)"}',
-		callbackBodyType: 'application/json',
+		//callbackUrl: config.QiniuService.baseURL + "qiniu/callback",
+		//callbackBody: '{"key":"$(key)","hash":"$(etag)","size":$(fsize),"bucket":"$(bucket)","uid":"$(x:uid)"}',
+		//callbackBodyType: 'application/json',
 	}
 
 	if (params.key.indexOf("note/") == 0) {
@@ -174,9 +174,9 @@ Qiniu.prototype.getUploadToken = function(ctx) {
 	const options = {
 		scope: bucketName,
 		expires: 3600 * 24 * 365,
-		callbackUrl: config.QiniuService.baseURL + "qiniu/callback",
-		callbackBody: '{"key":"$(key)","hash":"$(etag)","size":$(fsize),"bucket":"$(bucket)","uid":"$(x:uid)"}',
-		callbackBodyType: 'application/json',
+		//callbackUrl: config.QiniuService.baseURL + "qiniu/callback",
+		//callbackBody: '{"key":"$(key)","hash":"$(etag)","size":$(fsize),"bucket":"$(bucket)","uid":"$(x:uid)"}',
+		//callbackBodyType: 'application/json',
 	}
 
 	const mac = new qiniu.auth.digest.Mac(accessKey, secretKey);

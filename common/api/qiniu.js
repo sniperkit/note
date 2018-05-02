@@ -41,7 +41,7 @@ const qiniuUpload = async (key, file, token) => {
 		});
 	})
 
-	if (!ok) return;
+	//if (!ok) return;
 
 	data = await api.qiniu.getDownloadUrl({key:key});
 	if (data.isErr()) return;
