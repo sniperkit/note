@@ -6,7 +6,7 @@
 		<el-table-column fixed prop="private" label="私有"></el-table-column>
 		<el-table-column fixed="right" label="操作">
 			<template slot-scope="{row, $index}">
-				<el-button type="text" @click="clickDeleteBtn(row)">删除</el-button>
+				<el-button type="text" @click="clickDeleteBtn(row, $index)">删除</el-button>
 			</template>
 		</el-table-column>
 	</el-table>
@@ -37,8 +37,14 @@ export default {
 	},
 
 	methods: {
-		clickDeleteBtn() {
+		async clickDeleteBtn(site, index) {
+			const result = await api.site.delete(site);
+			if (result.isErr()) {
+				Message(result.getMessage());
+				return;
+			}
 
+			this.sites.splice(index,1);
 		},
 	},
 

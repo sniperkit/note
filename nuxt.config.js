@@ -5,6 +5,7 @@ const rootdir = path.resolve(".");
 
 //console.log(path.resolve(__dirname, "client/pages/note/userpage.vue"));
 
+const pagepath = "client/pages/note/";
 module.exports = {
 	srcDir: "client/",
 
@@ -17,9 +18,9 @@ module.exports = {
 		extendRoutes(routes) {
 			routes.push({
 				name: "userpage",
-				path:"*",
-				component: path.resolve(__dirname, "client/pages/note/userpage.vue"),
-			})
+				path:"/:username/:sitename/:pagepath+",
+				component: path.resolve(__dirname, pagepath + "userpage.vue"),
+			});
 		},
 	},
 

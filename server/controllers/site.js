@@ -69,6 +69,25 @@ Site.prototype.update = async function(ctx) {
 	return ERR.ERR_OK;
 }
 
+Site.prototype.delete = async function(ctx) {
+	const params = ctx.state.params;
+	const username = ctx.state.user.username;
+	params.username = username;
+
+	const result = await this.model.destroy({
+		where: {
+			username: params.username,
+			sitename: params.sitename,
+		}
+	})
+
+	if (!result || result[0] == 0){
+		return ERR.ERR_NOT_FOUND;
+	}
+
+	return ERR.ERR_OK;
+}
+
 Site.prototype.getRoutes = function() {
 	const prefix = "site";
 	const routes = [
@@ -76,6 +95,18 @@ Site.prototype.getRoutes = function() {
 		path: prefix + "/getByUsername",
 		method: "get",
 		action: "getByUsername",
+	},
+	{
+		path: prefix + "/delete",
+		method: "delete",
+		action: "delete",
+		authenticated: true,
+		validate: {
+			query: {
+				sitename: joi.string().max(48).required(),
+				username: joi.string().max(48).required(),
+			},
+		},
 	},
 	{
 		path: prefix + "/update",

@@ -101,6 +101,7 @@ export function Site(options) {
 
 	self.create = apiRequest("post", "site/create");
 	self.update = apiRequest("put", "site/update");
+	self.delete = apiRequest("delete", "site/delete");
 	self.getByUsername = apiRequest("get", "site/getByUsername");
 }
 
