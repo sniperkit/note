@@ -11,7 +11,7 @@ export function httpRequest(method, url, data, config) {
 		config.data = data;
 	}
 
-	return axios.request(config).then(res => new Err(res.data.code, res.data.message, res.data.data)).catch((e => console.log(e)));
+	return axios.request(config).then(res => new Err(res.data.code, res.data.message, res.data.data)).catch(e => new Err(-1, "请求异常", e));
 }
 
 export const httpGet = (url, data, config) => httpRequest("get", url, data, config);
@@ -71,6 +71,7 @@ export function Qiniu(options) {
 	self.getUploadTokenByKey = apiRequest("get", "qiniu/getUploadTokenByKey");
 	self.upload = apiRequest("post", "qiniu/upload");
 	self.getDownloadUrl = apiRequest("get", "qiniu/getDownloadUrl");
+	self.get = apiRequest("get", "qiniu/get");
 }
 
 export function Files(options) {

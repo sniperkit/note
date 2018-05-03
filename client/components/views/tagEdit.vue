@@ -15,7 +15,7 @@
 						</el-autocomplete>
 						<el-button @click="clickAddStyle">添加</el-button>
 					</div>
-					<!--<JsonEditor :objData="styles || {}" v-model="tag.styles"></JsonEditor>-->
+					<JsonEditor :objData="styles || {}" v-model="tag.styles"></JsonEditor>
 				</el-tab-pane>
 				<el-tab-pane label="属性">
 					<div style="display:flex">
@@ -33,13 +33,13 @@
 						</el-autocomplete>
 						<el-button @click="clickAddAttr">添加</el-button>
 					</div>
-					<!--<JsonEditor :objData="attrs || {}" v-model="tag.attrs"></JsonEditor>-->
+					<JsonEditor :objData="attrs || {}" v-model="tag.attrs"></JsonEditor>
 				</el-tab-pane>
 				<el-tab-pane label="类名">
-					<!--<JsonEditor :objData="classes || {}" v-model="tag.classes"></JsonEditor>-->
+					<JsonEditor :objData="classes || {}" v-model="tag.classes"></JsonEditor>
 				</el-tab-pane>
 				<el-tab-pane label="变量">
-					<!--<JsonEditor :objData="vars || {}" v-model="tag.vars" ></JsonEditor>-->
+					<JsonEditor :objData="vars || {}" v-model="tag.vars" ></JsonEditor>
 				</el-tab-pane>
 			</el-tabs>
 			<div style="display:flex; flex-direction:column; width:40%">
@@ -173,7 +173,7 @@ export default {
 			this.tagValue = mdconf.jsonToMd(value);
 		},
 		clickUpdateTagValueBtn() {
-			console.log(this, this.tagKey);
+			//console.log(this, this.tagKey);
 			if (!this.tagKey) {
 				return;
 			}
@@ -182,7 +182,7 @@ export default {
 			if (_.isObject(oldvalue)) {
 				const value = mdconf.mdToJson(text);
 				if (_.isObject(value)) {
-					//_.merge(oldvalue, value);
+					_.each(oldvalue, (val, key) => delete oldvalue[key]);
 					_.each(value, (val, key) => vue.set(oldvalue, key, val));
 				}
 			} else if (_.isNumber(oldvalue)) {

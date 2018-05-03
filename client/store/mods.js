@@ -1,9 +1,11 @@
 import vue from "vue"; 
 import {Base64} from "js-base64";
-
-import gitlab from "@@/common/api/gitlab.js";
+import yaml from "js-yaml";
 
 //import mods from "../components/adi/mod/index.js";
+
+import api from "@@/common/api/note.js";
+import config from "@/config.js";
 
 const systemModPath = "https://gitlab.com/wxaxiaoyao/keepworkdatasource/raw/master/xiaoyao_data/mods.json";
 const defaultStyleName = "default";
@@ -119,9 +121,15 @@ export const actions = {
 			return;
 		}
 	
-		let content = await gitlab.getContent(g_app.config.tagModsPath);
-		let mods = fromJson(content) || {};
+		const result = await api.qiniu.get({key: config.tagModsPath});
+		if (!result || result.isErr()) return;
+	
+		const content = result.getData();		
+		let mods = yaml.load(content) || {};
+		//let mods = typeof(content) == "object" ? content : (fromJson(content) || {});
 		
+		//console.log(mods);
+
 		commit(SET_TAG_MODS, mods);
 		commit(SET_TAG_MODS_STATE, "loaded");
 	},
@@ -134,9 +142,11 @@ export const actions = {
 	},
 
 	async submitTagMods({state, getters, rootGetters}) {
-		await gitlab.editFile(g_app.config.tagModsPath, {
-			content:toJson(state.tagMods),
-			commit_message:"update with keepwork mod editor",
+		//console.log(state.tagMods, yaml.dump(state.tagMods), yaml.load(yaml.dump(state.tagMods)));
+		await api.files.uploadFile({
+			key: config.tagModsPath,
+			content:yaml.dump(state.tagMods),
+			//content:toJson(state.tagMods),
 		});
 	},
 }

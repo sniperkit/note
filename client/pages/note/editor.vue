@@ -64,10 +64,11 @@ export default {
 			theme: 'theme/theme',
 			pageContent: 'editor/getPageContent',
 			pagePath: "editor/getPagePath",
-			getTagMod: "mods/tagMod",
 		}),
 		renderContent() {
-			return this.themeContent ? (this.themeContent + "\n" + this.pageContent) : this.pageContent;
+			return this.pageContent;
+			const content = this.themeContent ? (this.themeContent + "\n" + this.pageContent) : this.pageContent;
+			return content;
 		},
 		codemirror() {
 			return this.$refs.codemirror.codemirror;
@@ -90,11 +91,11 @@ export default {
 				return;
 			}
 
-			if (!this.themes[themePath]) {
-				this.themes[themePath] = await api.files.getContent({key:themePath}).then(res => res.getData() || "");
+			if (this.themes[themePath] == undefined) {
+				const result = await api.files.getContent({key:themePath});
+				this.themes[themePath] = result && result.isOk() ? result.getData() : "";
 			}
 			this.themeContent = this.themes[themePath];
-			console.log(this.themeContent);
 		}
 	},
 	methods: {

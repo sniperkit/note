@@ -4,7 +4,7 @@
 			<fileTree></fileTree>
 		</el-tab-pane>	
 		<el-tab-pane label="模块">
-			<modTree></modTree>
+			<!--<modTree></modTree>-->
 		</el-tab-pane>
 	</el-tabs>
 </template>
@@ -25,7 +25,7 @@ export default {
 	components: {
 		[Tabs.name]: Tabs,
 		[TabPane.name]: TabPane,
-		modTree,
+		//modTree,
 		fileTree,
 		tagTree,
 		tagNav,

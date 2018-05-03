@@ -10,7 +10,7 @@
 						<mod-tree v-on:editModStyle="editModStyle"></mod-tree>
 					</el-tab-pane>
 					<el-tab-pane label="导出">
-						<el-form label-position="left" :model="mod">
+						<el-form label-position="left" :model="mod" v-loading="submitModLoading">
 							<el-form-item label="名称">
 								<el-input v-model="mod.modName"></el-input>
 							</el-form-item>
@@ -60,7 +60,7 @@ import {mapActions, mapGetters} from "vuex";
 import {tags} from "@/lib/tags";
 import "@/components/bases/index.js";
 import "@/components/common/index.js";
-//import adi from "@/components/bases/adi.js";
+import adi from "@/components/bases/adi.js";
 import modTree from "@/components/views/modTree.vue";
 import tagNav from "@/components/views/tagNav.vue";
 import tagEdit from "@/components/views/tagEdit.vue";
@@ -88,6 +88,7 @@ export default {
 	data: function() {
 		const tag = tags.getTag();
 		return {
+			submitModLoading:false,
 			rootTag: tag,
 			tag: tag,
 			mod: {},
@@ -109,14 +110,17 @@ export default {
 			this.tag = this.rootTag.findById(tagId);
 		},
 		tagMods: {
-			handler: function() {
+			handler:function() {
 				if (!this.isSubmitTagMods) {
 					return;
 				}
 				var self = this;
-				this.submitTagMods().then(function() {
+				self.submitModLoading = true;
+				this.submitTagMods().then(function(){
+					self.submitModLoading = false;
 					self.$message("模块提交成功");
 				}).catch(function(){
+					self.submitModLoading = false;
 					self.$message("模块提交失败");
 				});
 				this.isSubmitTagMods = false;
@@ -141,12 +145,12 @@ export default {
 		addTag(tag){
 			const containerTag = this.tag.getContainerTag();
 			let subtag = tags.getTag(tag.type);
-			//if (tag.source == "AdiComponent"){
-			//	subtag.vars = _.cloneDeep(adi.getComponentProperties(tag.type));
-			//	subtag.attrs[":source"] = "tag.vars";
-			//} else if (tag.source == "AdiMod") {
-			//	subtag = adi.setMod(tag.type).getTag();
-			//}
+			if (tag.source == "AdiComponent"){
+				subtag.vars = _.cloneDeep(adi.getComponentProperties(tag.type));
+				subtag.attrs[":source"] = "tag.vars";
+			} else if (tag.source == "AdiMod") {
+				subtag = adi.setMod(tag.type).getTag();
+			}
 			containerTag && containerTag.addTag(subtag);
 			this.setTagId(subtag.tagId);
 		},
@@ -169,7 +173,7 @@ export default {
 
 	async created() {
 		this.setMode("editor");
-		//adi.setTheme(this.theme);
+		adi.setTheme(this.theme);
 	},
 
 	mounted() {

@@ -165,7 +165,7 @@ export const actions = {
 			//gitlab.getFile(page.path);
 			page.sha = file.sha;
 			page.hash = file.hash;
-			page.content = file.content;
+			page.content = typeof(file.content) == "string" ? file.content : JSON.stringify(file.content);
 			page.isRefresh = false;
 			commit(SET_PAGE, page);
 			if (state.pagePath == path) {

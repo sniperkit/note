@@ -39,7 +39,11 @@ Files.prototype.getFile = async function(ctx) {
 	let result = await qiniu.get(ctx);
 	if (result.isErr()) return result;
 	
-	let record = await this.model.findOne({key:params.key});
+	let record = await this.model.findOne({
+		where : {
+			key: params.key,
+		},
+	});
 	if (!record) return ERR.ERR_NOT_FOUND;
 	record = record.get({plain:true});
 

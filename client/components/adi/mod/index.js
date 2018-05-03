@@ -1,4 +1,4 @@
-import ModMarkdown from './common/markdown'
+//import ModMarkdown from './common/markdown'
 import ModHeader from './web/header'
 import ModTitle from './web/title'
 import ModMixPosition from './web/mixPosition'
@@ -12,7 +12,7 @@ import ModVipRead from './web/vipRead'
 import ModComment from './web/comment'
 
 export default {
-  ModMarkdown,
+  //ModMarkdown,
   ModHeader,
   ModTitle,
   ModMixPosition,

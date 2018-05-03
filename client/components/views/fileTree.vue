@@ -190,7 +190,7 @@ export default {
 				pagemap[page.key] = page;
 			});
 			self.setPages(pagemap);
-			return self.generateTreeNodes(pages);
+			return self.generateTreeNodes(pagemap);
 		},
 
 		generateTreeNodes(pages) {

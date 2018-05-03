@@ -6,6 +6,6 @@ export default ({store}) => {
 	})(store);
 	createPersistedState({
 		storage: window.sessionStorage,
-		paths: ["dataSource", "mods"],
+		paths: ["dataSource",],
 	})(store);
 }

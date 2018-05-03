@@ -183,6 +183,5 @@ export default {
 </script>
 
 <style lang="less">
-@import url('./assets/styles/common.less');
-
+@import url('../../assets/jsonEditor/styles/common.less');
 </style>

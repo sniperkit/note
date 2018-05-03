@@ -4,7 +4,7 @@ import api from "@@/common/api/note.js";
 import commonConfig from "../common/config.js";
 
 const defaultConfig = {
-	tagModsPath: "keepwork_data/tag_mods.json",
+	tagModsPath: "note/note/mods.md",
 }
 
 const productionConfig = {

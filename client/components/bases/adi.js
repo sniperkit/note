@@ -1,10 +1,12 @@
 import vue from "vue";
 import _ from "lodash";
 
-import adiComponents from "../adi/common/index.js";
-import adiComponentProps from "../adi/common/comp.properties.js";
-import mods from "../adi/mod/index.js";
+import adiComponents from "@/components/adi/common/index.js";
+import adiComponentProps from "@/components/adi/common/comp.properties.js";
+import mods from "@/components/adi/mod/index.js";
 import {tags} from "@/lib/tags";
+
+//const mods = modList;
 
 for (var key in adiComponents){
 	//vue.component(key, adiComponents[key]);

@@ -80,6 +80,7 @@ export default {
 			setTagMod:"mods/setTagMod",
 			deleteTagMod: "mods/deleteTagMod",
 			setTagModStyle:"mods/setTagModStyle",
+			loadTagMods: "mods/loadTagMods",
 		}),
 		edit(data) {
 			this.$emit("editModStyle", data.style);
@@ -93,6 +94,10 @@ export default {
 				this.deleteTagMod(data.modName);
 			}
 		},
+	},
+
+	mounted() {
+		this.loadTagMods();
 	}
 }
 </script>
