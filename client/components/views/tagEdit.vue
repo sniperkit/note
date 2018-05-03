@@ -73,7 +73,7 @@ import mdconf from "../../lib/markdown/mdconf.js";
 import queryStyleKey from "./styleKey.js";
 import queryStyleValue from "./styleValue.js"
 
-//import "@/lib/jsonEditor";
+import "@/lib/jsonEditor";
 
 export default {
 	components: {

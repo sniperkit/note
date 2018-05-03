@@ -69,6 +69,9 @@
     "eslint-plugin-node": "^4.2.2",
     "eslint-plugin-promise": "^3.4.0",
     "eslint-plugin-standard": "^3.0.1",
+    "less": "^3.0.2",
+    "less-loader": "^4.1.0",
+    "node-sass": "^4.9.0",
     "nodemon": "^1.11.0",
     "scmp": "^2.0.0"
   }
