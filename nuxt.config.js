@@ -17,6 +17,11 @@ module.exports = {
 	router: {
 		extendRoutes(routes) {
 			routes.push({
+				name: "notfound",
+				path:"/note/:path*",
+				component: path.resolve(__dirname, pagepath + "notfound.vue"),
+			});
+			routes.push({
 				name: "userpage",
 				path:"/:username/:sitename/:pagepath+",
 				component: path.resolve(__dirname, pagepath + "userpage.vue"),
@@ -29,6 +34,7 @@ module.exports = {
 	{src:"~/plugins/persistedstate", ssr: false},
 	{src:"~/plugins/codemirror", ssr: false},
 	{src:"~/plugins/vueImgInputer", ssr: false},
+	//{src:"~/plugins/mxgraph", ssr: false},
 	//{src:"~/plugins/element-ui"},
 	//{src:"~/plugins/test", ssr: false},
 	],

@@ -31,11 +31,7 @@ export default {
 		tagNav,
 		tagEdit,
 	},
-	props: ["rootTag"],
 	methods: {
-		addTag(tag){
-			this.$emit("addTag", tag);
-		},
 	},
 }
 </script>

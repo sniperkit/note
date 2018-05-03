@@ -4,7 +4,7 @@
 		@mousemove.native="splitStripMousemove"
 		@mouseleave.native="splitStripMouseup">
 		<el-aside ref="splitStrip1" :width="splitStrip1_width">
-			<left :rootTag="rootTag" v-on:addTag="addTag"></left>
+			<left></left>
 		</el-aside>
 		<el-container ref="splitStrip1R">
 			<div class="split-strip kp_forbit_copy" @mousedown="splitStripMousedown('splitStrip1')"></div>
@@ -13,7 +13,7 @@
 			</el-aside>
 			<div class="split-strip kp_forbit_copy" @mousedown="splitStripMousedown('splitStrip2')"></div>
 			<el-main ref="splitStrip2R">
-				<page :text="pageContent"></page>
+				<page :text="renderContent"></page>
 			</el-main>
 		</el-container>
 	</el-container>
@@ -28,6 +28,8 @@ import {
 } from "element-ui";
 import vue from "vue";
 import {mapActions, mapGetters} from "vuex";
+
+import api from "@@/common/api/note.js";
 
 import {tags} from "@/lib/tags";
 //import components from "@/components/index.js";
@@ -47,45 +49,53 @@ export default {
 	},
 	//middleware: "authenticated",
 	data: function() {
-		var tag = tags.getTag("div");
 		return {
 			splitStrip1_width:"18%",
 			splitStrip2_width:"50%",
 			value:undefined,
 			mode:"editor",
 			text:"",
-			tag:tag,
-			rootTag:tag,
+			themeContent: "",
+			themes:{},
 		}
 	},
 	computed: {
 		...mapGetters({
 			theme: 'theme/theme',
-			tagId: 'editor/getTagId',
 			pageContent: 'editor/getPageContent',
+			pagePath: "editor/getPagePath",
 			getTagMod: "mods/tagMod",
 		}),
+		renderContent() {
+			return this.themeContent ? (this.themeContent + "\n" + this.pageContent) : this.pageContent;
+		},
 		codemirror() {
 			return this.$refs.codemirror.codemirror;
 		},
-		tagParams() {
-			return this.rootTag.getParams();
-		},
-
 	},
 	watch:{
 		theme: function(theme) {
 			//adi.setTheme(theme);
 		},
-		tagId:function(tagId) {
-			var tag = this.rootTag.findById(tagId);
-			if (tag) {
-				this.tag = tag;
+		pagePath: async function(path) {
+			if (!path) {
+				this.themeContent = "";
+				return;
 			}
-		},
-		pageContent:function(text) {
-			this.render(text);
-		},
+			const paths = path.split("/");
+			const themePath = [paths[0], paths[1], "theme.md"].join("/");
+
+			if (themePath == path) {
+				this.themeContent = "";
+				return;
+			}
+
+			if (!this.themes[themePath]) {
+				this.themes[themePath] = await api.files.getContent({key:themePath}).then(res => res.getData() || "");
+			}
+			this.themeContent = this.themes[themePath];
+			console.log(this.themeContent);
+		}
 	},
 	methods: {
 		...mapActions({
@@ -153,9 +163,6 @@ export default {
 
 			this.splitStrip = undefined;
 		},
-		render(text) {
-			this.text = this.pageContent;
-		},
 		addTag(tag, node, nodeComp) {
 			this.mode = "test";
 			if (!tag.type) {
@@ -174,7 +181,6 @@ export default {
 	},
 	mounted() {
 		//adi.setTheme(this.theme);
-		this.selectTag(this.rootTag);
 	},
 	beforeMount() {
 	},

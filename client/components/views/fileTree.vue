@@ -332,13 +332,13 @@ export default {
 				path:path,
 			    name:form.filename,
 			    type:form.type,
-				leaf: from.type == "blob",
+				leaf: form.type == "blob",
 			    content:"",
 			    url:path.replace(/\.md$/, ""),
 			    username:node.username,
 			}
 			form.isLoading = true;
-			if (from.type != "tree") {
+			if (form.type != "tree") {
 				await this.savePage(newNode);
 			}
 			self.$refs.filetree.append(newNode, node.path);
