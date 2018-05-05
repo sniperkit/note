@@ -9,6 +9,7 @@ import {mapActions, mapGetters} from "vuex";
 import tag from "@/components/common/tag.js";
 import {tags} from "@/lib/tags";
 import md from "@/lib/markdown";
+import "@/components/mods";
 
 
 export default {	
@@ -60,14 +61,14 @@ export default {
 			if (block.isMod) {
 				var mod = this.getTagMod(block.modName);
 				if (!mod || !mod.styles || !mod.styles[block.styleName]){
-					return tags.getTag();
+					return tags.getTag(block.cmdName);
 				}
 				var modStyle = mod.styles[block.styleName];
 				var tag = modStyle.tag;
 				tag = tags.getTagByTag(tag);
 				tag && tag.setVarsByKey(block.modParams);
 			} else {
-				tag = tags.htmlTag(md.render(block.text));
+				tag = tags.getTag("html", md.render(block.text));
 			}
 
 			return tag || tags.getTag();
@@ -78,14 +79,14 @@ export default {
 			const styleName = template.styleName || "default";
 			const mod = this.getTagMod(modName);
 			if (!mod || !mod.styles || !mod.styles[styleName]){
-				return tags.getTag();;
+				return tags.getTag(template.cmdName);;
 			}
 			const modStyle = mod.styles[styleName];
 			//console.log(mod, styleName, modStyle.tag);
 			return tags.getTagByTag(modStyle.tag);
 		},
 		getMainTag() {
-			return this.rootTag.getTagByKey("main") || this.rootTag;
+			return this.rootTag.getTagByKey("__main__") || this.rootTag;
 		},
 		parseText(text) {
 			const self = this;
@@ -93,6 +94,7 @@ export default {
 			var blocklist = md.parse(text);
 			if (md.template.isChange) {
 				self.rootTag = self.getTemplateTag(md.template);
+				console.log(self.rootTag);
 			}
 			var tag = self.getMainTag();
 			if (this.mainTagId != tag.tagId) {

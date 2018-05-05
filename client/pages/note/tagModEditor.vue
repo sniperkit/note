@@ -60,7 +60,7 @@ import {mapActions, mapGetters} from "vuex";
 import {tags} from "@/lib/tags";
 import "@/components/bases/index.js";
 import "@/components/common/index.js";
-import adi from "@/components/bases/adi.js";
+//import adi from "@/components/bases/adi.js";
 import modTree from "@/components/views/modTree.vue";
 import tagNav from "@/components/views/tagNav.vue";
 import tagEdit from "@/components/views/tagEdit.vue";
@@ -173,7 +173,7 @@ export default {
 
 	async created() {
 		this.setMode("editor");
-		adi.setTheme(this.theme);
+		//adi.setTheme(this.theme);
 	},
 
 	mounted() {

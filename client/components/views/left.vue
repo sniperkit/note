@@ -15,7 +15,7 @@ import {
 	TabPane,
 	Message,
 } from "element-ui";
-import modTree from "./modTree.vue";
+//import modTree from "./modTree.vue";
 import tagTree from "./tagTree.vue";
 import tagNav from "./tagNav.vue";
 import tagEdit from "./tagEdit.vue";

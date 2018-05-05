@@ -7,6 +7,10 @@ const rootdir = path.resolve(".");
 
 const pagepath = "client/pages/note/";
 module.exports = {
+	render: {
+		resourceHints: false,
+	},
+
 	srcDir: "client/",
 
 	env: {

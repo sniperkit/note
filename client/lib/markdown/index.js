@@ -39,9 +39,9 @@ export const mdFactory = function(options) {
 			var wikiCmdRE = /^```@([\w_\/]+)/;
 			var wikiModNameRE = /^([\w_]+)/;
 			var wikiStyleNameRE = /([\w_]+)$/;
-			var cmdName = line.match(wikiCmdRE)[1];
-			var modName = cmdName.match(wikiModNameRE)[1];
-			var styleName = cmdName.match(wikiStyleNameRE)[1];
+			var cmdName = (line.match(wikiCmdRE) || [])[1];
+			var modName = (cmdName.match(wikiModNameRE) || [])[1];
+			var styleName = (cmdName.match(wikiStyleNameRE) || [])[1];
 			var modParams = undefined;
 			try {
 				modParams = angular.fromJson(content)

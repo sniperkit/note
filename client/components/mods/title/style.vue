@@ -1,7 +1,6 @@
 <template>
 	<div style="display:flex">
-		<el-row></el-row>
-		<div>
+		<div @click="click">
 			<img src="/adi/logo.png" style="width:80px; height:80px">
 		</div>
 		<div style="display:flex; flex-direction: column;">
@@ -17,13 +16,15 @@
 
 <script>
 
-import title from "./title.js";
-
 export default {
-	data: function() {
-		return {}
+
+	methods: {
+		click() {
+			console.log("-------");
+		}
 	},
 
-	mixins: [title],
+	created() {
+	},
 }
 </script>

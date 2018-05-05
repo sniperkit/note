@@ -152,6 +152,7 @@ export default {
 		var tag = this.tag;
 		var subtag = undefined;
 		var vnodes = this.$slots.default || [];
+
 		tag.setTagName(this.tagName);
 		//console.log(vnodes, tag.tagId);
 	

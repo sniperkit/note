@@ -12,8 +12,7 @@
 							<el-dropdown-item>我的主页</el-dropdown-item>
 							<el-dropdown-item command="settings">设置</el-dropdown-item>
 							<el-dropdown-item command="editor">编辑器</el-dropdown-item>
-							<el-dropdown-item command="tagModEditor">Tag编辑器</el-dropdown-item>
-							<el-dropdown-item command="adiModEditor">Adi编辑器</el-dropdown-item>
+							<el-dropdown-item command="tagModEditor">模块编辑器</el-dropdown-item>
 							<el-dropdown-item divided command="logout">退出</el-dropdown-item>
 						</el-dropdown-menu>
 					</el-dropdown>
