@@ -61,8 +61,8 @@ module.exports = {
   	** Global CSS
   	*/
   	css: [
-		'font-awesome/css/font-awesome.min.css',
-		'~assets/css/main.css'
+		'~assets/css/main.css',
+		'~assets/iconfont/iconfont.css',
 	],
   	/*
   	** Customize the progress-bar color

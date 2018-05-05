@@ -21,19 +21,20 @@
 			<span class="custom-tree-node" slot-scope="{node, data}">
 				<span v-if="data.type == 'tree'" class="custom-tree-node">
 					<span>
+						<i class="iconfont icon-folder"></i>
 						<span>{{data.aliasname || data.name}}</span>
 					</span>
 				</span>
 				<span v-if="data.type == 'blob'" class="custom-tree-node">
 					<span class="tree-node-text">
 						<i v-show="data.isConflict" @click.stop="clickFixedConflict(data)" class="fa fa-warning" aria-hidden="true" data-toggle="tooltip" title="冲突"></i>
-						<i v-show="!data.isConflict" :class='isRefresh(data) ? "fa fa-refresh fa-spin" : isModify(data) ? "fa fa-pencil-square-o" : "fa fa-file-o"'></i>
+						<i v-show="!data.isConflict" :class='isRefresh(data) ? "iconfont icon-refresh" : isModify(data) ? "iconfont icon-edit" : "iconfont icon-file"'></i>
 						<span>{{data.aliasname || data.name}}</span>
 					</span>
 					<span class="tree-node-btn-group">
-						<i @click.stop="clickOpenBtn(data)"class="fa fa-external-link" aria-hidden="true" data-toggle="tooltip" title="访问"></i>
+						<i @click.stop="clickOpenBtn(data)"class="iconfont icon-open" aria-hidden="true" data-toggle="tooltip" title="访问"></i>
 						<!--<i @click.stop="clickGitBtn(data)" class="fa fa-git" aria-hidden="true" data-toggle="tooltip" title="git"></i>-->
-						<i @click.stop="clickCloseBtn(data)" class="fa fa-times" aria-hidden="true" data-toggle="tooltip" title="关闭"></i>
+						<i @click.stop="clickCloseBtn(data)" class="iconfont icon-close" aria-hidden="true" data-toggle="tooltip" title="关闭"></i>
 					</span>
 				</span>
 			</span>
@@ -43,8 +44,7 @@
 			<span class="custom-tree-node" slot-scope="{node, data}">
 				<span v-if="data.type == 'tree'" class="custom-tree-node">
 					<span>
-						<i v-show="data.isConflict" @click.stop="clickFixedConflict(data)" class="fa fa-warning" aria-hidden="true" data-toggle="tooltip" title="冲突"></i>
-						<i v-show="!data.isConflict" :class='isRefresh(data) ? "fa fa-refresh fa-spin" : isModify(data) ? "fa fa-pencil-square-o" : "fa fa-file-o"'></i>
+						<i class="iconfont icon-folder"></i>
 						<span>{{data.aliasname || data.name}}</span>
 					</span>
 					<span>
@@ -54,13 +54,13 @@
 				<span v-if="data.type == 'blob'" class="custom-tree-node">
 					<span class="tree-node-text">
 						<i v-show="data.isConflict" @click="clickFixedConflict(data)" class="fa fa-warning" aria-hidden="true" data-toggle="tooltip" title="冲突"></i>
-						<i v-show="!data.isConflict" :class='isRefresh(data) ? "fa fa-refresh fa-spin" : isModify(data) ? "fa fa-pencil-square-o" : "fa fa-file-o"'></i>
+						<i v-show="!data.isConflict" :class='isRefresh(data) ? "iconfont icon-refresh" : isModify(data) ? "iconfont icon-edit" : "iconfont icon-file"'></i>
 						<span>{{data.aliasname || data.name}}</span>
 					</span>
 					<span class="tree-node-btn-group">
-						<i @click.stop="clickOpenBtn(data)"class="fa fa-external-link" aria-hidden="true" data-toggle="tooltip" title="访问"></i>
+						<i @click.stop="clickOpenBtn(data)"class="iconfont icon-open" aria-hidden="true" data-toggle="tooltip" title="访问"></i>
 						<!--<i @click.stop="clickGitBtn(data)" class="fa fa-git" aria-hidden="true" data-toggle="tooltip" title="git"></i>-->
-						<i @click.stop="clickDeleteBtn(data, node)" class="fa fa-trash-o" aria-hidden="true" data-toggle="tooltip" title="删除"></i>
+						<i @click.stop="clickDeleteBtn(data, node)" class="iconfont icon-delete" aria-hidden="true" data-toggle="tooltip" title="删除"></i>
 					</span>
 				</span>
 			</span>
@@ -366,6 +366,10 @@ export default {
 </script>
 
 <style scoped>
+.icon-img {
+	width: 20px;
+	height: 100%;
+}
 .custom-tree-node {
 	flex: 1;
     display: flex;

@@ -1,6 +1,6 @@
 <template>
 	<div style="display:flex">
-		<div @click="click">
+		<div>
 			<img src="/adi/logo.png" style="width:80px; height:80px">
 		</div>
 		<div style="display:flex; flex-direction: column;">
@@ -17,14 +17,5 @@
 <script>
 
 export default {
-
-	methods: {
-		click() {
-			console.log("-------");
-		}
-	},
-
-	created() {
-	},
 }
 </script>
