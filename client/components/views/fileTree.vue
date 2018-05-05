@@ -48,7 +48,7 @@
 						<span>{{data.aliasname || data.name}}</span>
 					</span>
 					<span>
-						<el-button type="text" @click.native.stop="clickNewFileBtn(data, node)">+</el-button>
+						<i class="iconfont icon-plus" @click.native.stop="clickNewFileBtn(data, node)"></i> 
 					</span>
 				</span>
 				<span v-if="data.type == 'blob'" class="custom-tree-node">
@@ -366,10 +366,6 @@ export default {
 </script>
 
 <style scoped>
-.icon-img {
-	width: 20px;
-	height: 100%;
-}
 .custom-tree-node {
 	flex: 1;
     display: flex;
