@@ -65,6 +65,9 @@ import modTree from "@/components/views/modTree.vue";
 import tagNav from "@/components/views/tagNav.vue";
 import tagEdit from "@/components/views/tagEdit.vue";
 import tagTree from "@/components/views/tagTree.vue";
+
+import "@/components/mods";
+
 export default {
 	components: {
 		[Button.name]: Button,

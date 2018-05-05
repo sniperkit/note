@@ -1,5 +1,7 @@
 <template>
 	<div>
+		<i class="iconfont icon-home"></i>
+		<i class="iconfont icon-minus"></i>
 	</div>
 </template>
 

@@ -1,5 +1,5 @@
+import yaml from "js-yaml";
 import markdown from "./markdown.js";
-import mdconf from "./mdconf.js";
 
 // md 构造函数
 export const mdFactory = function(options) {
@@ -44,10 +44,10 @@ export const mdFactory = function(options) {
 			var styleName = (cmdName.match(wikiStyleNameRE) || [])[1];
 			var modParams = undefined;
 			try {
-				modParams = angular.fromJson(content)
+				modParams = yaml.load(content)
 			}
 			catch (e) {
-				modParams = mdconf.mdToJson(content) || content;
+				modParams = content;
 			}
 
 			block.modName = modName;

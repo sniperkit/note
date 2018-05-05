@@ -194,6 +194,10 @@ var tagTree = [
 			label: "default",
 			type: "template-default",
 		},
+		{
+			label: "leftMain",
+			type: "template-leftMain",
+		},
 		],
 	},
 	{

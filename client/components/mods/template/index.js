@@ -4,9 +4,11 @@ import _ from "lodash";
 import {tags} from "@/lib/tags";
 
 import _default from "./default.vue";
+import leftMain from "./leftMain.vue";
 
 export const styles = {
 	default: _default,
+	leftMain,
 }
 
 export const modName = "template";
@@ -18,8 +20,8 @@ for (var key in styles) {
 	let comp = new vue(style);
 	let vnode = comp.$mount()._vnode;
 
-	//console.log(tagKey);
-	//console.log(vnode);
+	console.log(tagKey);
+	console.log(vnode);
 
 	tags.registerTagFactory(tagKey, getTagFactoryByVNode(vnode));
 }

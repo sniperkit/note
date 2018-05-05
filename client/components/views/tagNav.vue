@@ -14,8 +14,10 @@
 		<span :style="customTreeNodeStyle" slot-scope="{ node, data }">
 			<span @click="clickSelectTag(data, node)">{{data.aliasname || data.name || data.key || data.tagName}}</span>
 			<span v-show="!isRootNode(data)" class="node-btn-container">
-				<span @click.stop="clickAddTag(data)"><i class="fa fa-plus" data-toggle="tooltip" title="添加"></i></span>
-				<span @click.stop="clickDeleteTag(data)"><i class="fa fa-minus" data-toggle="tooltip" title="删除"></i></span>
+				<!--<i @click.stop="clickAddTag(data)" class="iconfont icon-plus" data-toggle="tooltip" title="添加"></i>-->
+				<!--<i @click.stop="clickDeleteTag(data)" class="iconfont icon-minus" data-toggle="tooltip" title="删除"></i>-->
+				<i @click.stop="clickAddTag(data)" class="el-icon-plus" data-toggle="tooltip" title="添加"></i>
+				<i @click.stop="clickDeleteTag(data)" class="el-icon-minus" data-toggle="tooltip" title="删除"></i>
 			</span>
 		</span>
 	</el-tree>
@@ -154,7 +156,4 @@ export default {
 </script>
 
 <style scoped>
-.node-btn-container>span {
-	margin-right: 5px;
-}
 </style>
