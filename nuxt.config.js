@@ -76,7 +76,6 @@ module.exports = {
   	build: {
 		//analyze: true,
 		vendor: [
-			"js-yaml",
 			"lodash",
 			"axios",
 			"vuex-persistedstate",
@@ -107,7 +106,7 @@ module.exports = {
 				return;
 			}
 
-			config.entry["vendor1"] = ["~/plugins/codemirror"];
+			config.entry["vendor1"] = ["~/plugins/codemirror", "qiniu-js"];
 			config.entry["vendor2"] = ["~/plugins/element-ui"];
 			config.plugins[0] = new webpack.optimize.CommonsChunkPlugin({
 				names: ["vendor2" ,"vendor1", "vendor"],
