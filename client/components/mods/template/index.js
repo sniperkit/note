@@ -20,8 +20,8 @@ for (var key in styles) {
 	let comp = new vue(style);
 	let vnode = comp.$mount()._vnode;
 
-	console.log(tagKey);
-	console.log(vnode);
+	//console.log(tagKey);
+	//console.log(vnode);
 
 	tags.registerTagFactory(tagKey, getTagFactoryByVNode(vnode));
 }

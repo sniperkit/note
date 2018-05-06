@@ -5,7 +5,7 @@ const rootdir = path.resolve(".");
 
 //console.log(path.resolve(__dirname, "client/pages/note/userpage.vue"));
 
-const pagepath = "client/pages/note/";
+const pagepath = "client/pages/";
 module.exports = {
 	render: {
 		resourceHints: false,
@@ -23,12 +23,12 @@ module.exports = {
 			routes.push({
 				name: "notfound",
 				path:"/note/:path*",
-				component: path.resolve(__dirname, pagepath + "notfound.vue"),
+				component: path.resolve(__dirname, pagepath + "note/notfound.vue"),
 			});
 			routes.push({
 				name: "userpage",
 				path:"/:username/:sitename/:pagepath+",
-				component: path.resolve(__dirname, pagepath + "userpage.vue"),
+				component: path.resolve(__dirname, pagepath + "_user/userpage.vue"),
 			});
 		},
 	},
