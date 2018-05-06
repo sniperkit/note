@@ -13,8 +13,6 @@ import "@/components/mods";
 
 
 export default {	
-	name: "page",
-
 	components:{
 		tag,
 	},
