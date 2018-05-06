@@ -1,8 +1,5 @@
 import vue from "vue";
-import {Base64} from "js-base64";
-import Hashes from "jshashes";
 import {Message} from "element-ui";
-import * as qiniu from "qiniu-js";
 import consts from "@/lib/consts.js";
 import api from "@@/common/api/note.js";
 
@@ -13,32 +10,6 @@ const SET_PAGES = 'SET_PAGES';
 const SET_SWITCH_PAGE = 'SET_SWITCH_PAGE';
 const DELETE_PAGE = 'DELETE_PAGE';
 
-const sha1 = new Hashes.SHA1().setUTF8(true);
-
-
-const getStringByteLength = function(str) {
-	var totalLength = 0;     
-	var charCode;  
-	for (var i = 0; i < str.length; i++) {  
-		charCode = str.charCodeAt(i);  
-		if (charCode < 0x007f)  {     
-			totalLength++;     
-		} else if ((0x0080 <= charCode) && (charCode <= 0x07ff))  {     
-			totalLength += 2;     
-		} else if ((0x0800 <= charCode) && (charCode <= 0xffff))  {     
-			totalLength += 3;   
-		} else{  
-			totalLength += 4;   
-		}          
-	}  
-	return totalLength;   
-}
-
-const gitsha = function(content) {
-	var header = "blob " + getStringByteLength(content) + "\0";
-	var text = header + content;
-	return sha1.hex(text);
-}
 
 const treeNodeToPage = function(node) {
 	let paths = node.key.split("/");
@@ -212,12 +183,10 @@ export const actions = {
 
 		commit(SET_PAGE, {...page, isRefresh:true});
 
-		let sha = gitsha(content);
 		const result = await api.files.uploadFile({
 			key:path, 
 			content: content,
 			username: cachePage.username,
-			sha: sha,
 		});
 		if (result.isErr()) {
 			Message(result.getMessage());
@@ -229,8 +198,8 @@ export const actions = {
 		//}).catch(function(){
 		//});
 
-		commit(SET_PAGE, {...page, sha, hash, isRefresh:false});
-		dispatch("indexDB_savePage", {...page, isModify:false, sha:sha});
+		commit(SET_PAGE, {...page, hash, isRefresh:false});
+		dispatch("indexDB_savePage", {...page, isModify:false});
 	},
 	async deletePage(context, page) {
 		let {path} = page;
