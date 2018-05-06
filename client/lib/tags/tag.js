@@ -47,6 +47,7 @@ Tag.prototype.getAttrsHtml = function(tagName){
 		var value = vars[key];
 		var $data = $vars[key];
 		if (!$data || !$data.attrName) {
+			//str += " :" + key + '="tag.vars.' + key + '"';
 			continue;
 		}
 		var attrName = $data.attrName;

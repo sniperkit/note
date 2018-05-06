@@ -39,6 +39,8 @@ module.exports = {
 	{src:"~/plugins/codemirror", ssr: false},
 	{src:"~/plugins/vueImgInputer", ssr: false},
 	{src:"~/plugins/element-ui"},
+	//{src:"~/plugins/components", ssr: false},
+	{src:"~/plugins/components"},
 	//{src:"~/plugins/mxgraph", ssr: false},
 	//{src:"~/plugins/test", ssr: false},
 	],
@@ -96,6 +98,10 @@ module.exports = {
 		},
   	  	extend (config, ctx) {
 			config.resolve.alias["vue$"] = "vue/dist/vue.esm.js";
+			config.module.rules.push({
+				test: /\.(txt|html|yml)$/,
+				use: 'raw-loader',
+			});
 			if (config.name == "server") {
 				return;
 			}

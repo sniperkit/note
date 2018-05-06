@@ -4,14 +4,16 @@ import _ from "lodash";
 
 import common from "./common.js";
 import toc from "./toc.vue";
-import markdown from "./markdown.vue";
-import wikiCarousel from "./wikiCarousel.vue";
+//import markdown from "./markdown.vue";
+//import wikiCarousel from "./wikiCarousel.vue";
+import userpage from "./userpage.vue";
 //import adiComponents from "./adi.js";
 
-var components =  {
+const components =  {
+	userpage,
 	toc,
-	markdown,
-	wikiCarousel,
+	//markdown,
+	//wikiCarousel,
 }
 
 for (var key in components) {

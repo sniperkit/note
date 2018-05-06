@@ -76,9 +76,11 @@ tags.getTagByVNode = function(vnode) {
 }
 
 tags.getTag = function(key, data) {
-	key = _.camelCase(key || "div");
-	const factory = this.tagFactory[key] || this.tagFactory["div"];
-	return factory(data);
+	key = key || "div";
+	const factory = this.tagFactory[_.camelCase(key)];
+	if (factory) return factory(data);
+	
+	return tagFactory(_.kebabCase(key));
 }
 
 

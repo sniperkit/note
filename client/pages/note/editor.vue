@@ -13,7 +13,7 @@
 			</el-aside>
 			<div class="split-strip kp_forbit_copy" @mousedown="splitStripMousedown('splitStrip2')"></div>
 			<el-main ref="splitStrip2R">
-				<page :text="renderContent"></page>
+				<userpage :text="renderContent" :template="true"></userpage>
 			</el-main>
 		</el-container>
 	</el-container>
@@ -30,12 +30,11 @@ import vue from "vue";
 import {mapActions, mapGetters} from "vuex";
 
 import api from "@@/common/api/note.js";
-
 import {tags} from "@/lib/tags";
-//import components from "@/components/index.js";
-import page from "@/components/bases/page.vue";
+import userpage from "@/components/bases/userpage.vue";
 import left from "@/components/views/left.vue";
 import codeEditor from "@/components/views/codeEditor.vue";
+//import "@/components";
 
 export default {
 	components: {
@@ -45,7 +44,7 @@ export default {
 		[Main.name]:Main,
 		left,
 		codeEditor,
-		page,
+		userpage,
 	},
 	//middleware: "authenticated",
 	data: function() {

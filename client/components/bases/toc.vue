@@ -9,13 +9,10 @@
 
 <script>
 import _ from "lodash";
-import {mapActions, mapGetters} from "vuex";
 
-import md from "../../lib/markdown";
+import md from "@/lib/markdown";
 
 export default {
-	name: "toc",
-
 	data: function() {
 		return {
 			index:null,
@@ -46,9 +43,6 @@ export default {
 	},
 
 	computed: {
-		...mapGetters({
-			pageContent: 'getPageContent',
-		}),
 		headers() {
 			const text = this.vars.useMainContent ? this.pageContent : this.vars.text;
 			if (!text) {

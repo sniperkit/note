@@ -9,12 +9,14 @@
 					</el-select>
 				</el-form-item>
 				<el-form-item label="文件名">
-					<el-input v-model="newFileForm.filename" placeholder="请输入文件名"></el-input>
+					<el-input v-model="newFileForm.filename" 
+						placeholder="请输入文件名" 
+						@keyup.native.enter="clickSubmitNewFileBtn"></el-input>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer" v-loading="newFileForm.isLoading">
 		        <el-button @click="isShowNewFile = false">取 消</el-button>
-				<el-button type="primary" @click="clickSubmitNewFileBtn()">确 定</el-button>
+				<el-button type="primary" @click="clickSubmitNewFileBtn">确 定</el-button>
 			</div>
 		</el-dialog>
 		<el-tree ref="openedTreeComp" :data="openedPageTree" :props="treeprops" node-key="path" :default-expand-all="true" :highlight-current="true" @node-click="clickSelectPage">
@@ -44,11 +46,10 @@
 			<span class="custom-tree-node" slot-scope="{node, data}">
 				<span v-if="data.type == 'tree'" class="custom-tree-node">
 					<span>
-						<i class="iconfont icon-folder"></i>
 						<span>{{data.aliasname || data.name}}</span>
 					</span>
 					<span>
-						<i class="iconfont icon-plus" @click.native.stop="clickNewFileBtn(data, node)"></i> 
+						<i class="iconfont icon-plus" @click.stop="clickNewFileBtn(data, node)"></i> 
 					</span>
 				</span>
 				<span v-if="data.type == 'blob'" class="custom-tree-node">
@@ -257,7 +258,7 @@ export default {
 				const pages = await self.getSitePage(node.data);
 				return resolve(pages);
 			} else {
-				return resolve([]);
+				return resolve(node.data && node.data.nodes || []);
 			}
 		},
 		isRefresh(data) {
@@ -322,7 +323,7 @@ export default {
 				return;
 			}
 			const node = this.newFileForm.data;
-			let path = node.path + '/' + form.filename + (form.type == "tree" ? "/.gitkeep" : ".md");
+			let path = node.path + '/' + form.filename + (form.type == "tree" ? "" : ".md");
 			const page = this.getPageByPath(path);
 			if (page && page.path) {
 				this.$message("文件已存在");

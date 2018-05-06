@@ -11,7 +11,7 @@ import {
   //Submenu,
   //MenuItem,
   //MenuItemGroup,
-  //Input,
+  Input,
   //InputNumber,
   //Radio,
   //RadioGroup,
@@ -23,7 +23,7 @@ import {
   //Select,
   //Option,
   //OptionGroup,
-  //Button,
+  Button,
   //ButtonGroup,
   //Table,
   //TableColumn,
@@ -80,7 +80,7 @@ import {
 //Vue.use(Submenu);
 //Vue.use(MenuItem);
 //Vue.use(MenuItemGroup);
-//Vue.use(Input);
+Vue.use(Input);
 //Vue.use(InputNumber);
 //Vue.use(Radio);
 //Vue.use(RadioGroup);
@@ -92,7 +92,7 @@ import {
 //Vue.use(Select);
 //Vue.use(Option);
 //Vue.use(OptionGroup);
-//Vue.use(Button);
+Vue.use(Button);
 //Vue.use(ButtonGroup);
 //Vue.use(Table);
 //Vue.use(TableColumn);

@@ -9,6 +9,10 @@ export const mdFactory = function(options) {
 		md:markdown(options),
 		template:{
 			blocklist:[],
+			isMod: true,
+			cmdName: "template/default",
+			modName: "template",
+			styleName: "default",
 		}
 	}
 
@@ -152,7 +156,7 @@ export const mdFactory = function(options) {
 			md.template.token = undefined;
 			md.template.modName = "template";
 			md.template.styleName = "default";
-			md.template.cmdName = undefined;
+			md.template.cmdName = "template/default";
 			md.template.modParams = undefined;
 		}
 		if (templateText != md.template.text) {

@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<Pages :text="content"></Pages>
+		<userpage :text="content"></userpage>
 	</div>
 </template>
 
@@ -11,11 +11,9 @@ import {
 
 import config from "@/config.js";
 import api from "@@/common/api/note.js";
-import Pages from "@/components/bases/page.vue";
 
 export default {
 	components: {
-		Pages,
 	},
 
 	data: function() {

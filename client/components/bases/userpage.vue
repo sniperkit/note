@@ -5,14 +5,13 @@
 <script>
 import 'github-markdown-css/github-markdown.css';
 
-import {mapActions, mapGetters} from "vuex";
 import tag from "@/components/common/tag.js";
 import {tags} from "@/lib/tags";
 import md from "@/lib/markdown";
-import "@/components/mods";
-
 
 export default {	
+	name:"userpage",
+
 	components:{
 		tag,
 	},
@@ -29,13 +28,13 @@ export default {
 		text: {
 			type:String,
 		},
+		template: {
+			type: Boolean,
+			default: false,
+		}
 	},
 
 	computed: {
-		...mapGetters({
-			getTagMod: "mods/tagMod",
-			tagMods: "mods/tagMods",
-		}),
 	},
 
 	watch: {
@@ -49,33 +48,15 @@ export default {
 
 	methods: {
 		getTagByBlock(block) {
-			var tag = undefined;
+			const tag = tags.getTag(block.cmdName || "html");
 			if (block.isMod) {
-				var mod = this.getTagMod(block.modName);
-				if (!mod || !mod.styles || !mod.styles[block.styleName]){
-					return tags.getTag(block.cmdName);
-				}
-				var modStyle = mod.styles[block.styleName];
-				var tag = modStyle.tag;
-				tag = tags.getTagByTag(tag);
-				tag && tag.setVarsByKey(block.modParams);
+				tag.setVarsByKey(block.modParams);
 			} else {
-				tag = tags.getTag("html", md.render(block.text));
+				//console.log(block.cmdName, tag, block);
+				tag.vars.text = md.render(block.text);
 			}
 
-			return tag || tags.getTag();
-		},
-		getTemplateTag(template) {
-			template = template || {};
-			const modName = "template";
-			const styleName = template.styleName || "default";
-			const mod = this.getTagMod(modName);
-			if (!mod || !mod.styles || !mod.styles[styleName]){
-				return tags.getTag(template.cmdName);;
-			}
-			const modStyle = mod.styles[styleName];
-			//console.log(mod, styleName, modStyle.tag);
-			return tags.getTagByTag(modStyle.tag);
+			return tag;
 		},
 		getMainTag() {
 			return this.rootTag.getTagByKey("__main__") || this.rootTag;
@@ -84,9 +65,9 @@ export default {
 			const self = this;
 			var subtag = undefined, tmpTag = undefined;
 			var blocklist = md.parse(text);
-			if (md.template.isChange) {
-				self.rootTag = self.getTemplateTag(md.template);
-				console.log(self.rootTag);
+			if (this.template && md.template.isChange) {
+				self.rootTag = self.getTagByBlock(md.template);
+				//console.log(self.rootTag);
 			}
 			var tag = self.getMainTag();
 			if (this.mainTagId != tag.tagId) {
