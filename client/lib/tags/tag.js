@@ -60,8 +60,7 @@ Tag.prototype.getAttrsHtml = function(tagName){
 		str += ' ' + attrNamePrefix + attrName + '="tag.vars.' + key + ($data.key || '') + defaultValue + '"';
 	}
 
-	console.log(str);
-	//str += " v-on:blur.native=blur";
+	//console.log(str);
 
 	for (var key in attrs) {
 		var value = attrs[key];

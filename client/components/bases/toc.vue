@@ -65,7 +65,7 @@ export default {
 
 			const tokens = md.md.parse(text);
 			const headers = tokens.filter(token => /^[hH][1-6]$/.test(token.tag));
-			console.log(tokens, headers);;
+			//console.log(tokens, headers);;
 			const navlist = [];
 			_.each(headers, header => {
 				navlist.push({
@@ -73,7 +73,7 @@ export default {
 					text: header.content,
 				});
 			})
-			console.log(navlist);
+			//console.log(navlist);
 			return navlist;
 		}
 	},
