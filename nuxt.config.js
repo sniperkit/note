@@ -95,6 +95,7 @@ module.exports = {
 			],
 		},
   	  	extend (config, ctx) {
+			config.resolve.alias["vue$"] = "vue/dist/vue.esm.js";
 			if (config.name == "server") {
 				return;
 			}
@@ -107,7 +108,6 @@ module.exports = {
 				minChunks: Infinity,
 			});
 
-			config.resolve.alias["vue$"] = "vue/dist/vue.esm.js";
 			//config.resolve.alias["gitlabapi$"] = "~/lib/gitlab-api/index.js";
 			//console.log(config.resolve.alias);
 			config.node = {
