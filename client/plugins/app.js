@@ -1,5 +1,6 @@
 import vue from "vue";
 import _ from "lodash";
+import yaml from "js-yaml";
 import config from "@/config.js";
 import consts from "@/lib/consts.js";
 import storage from "@/lib/storage.js";
@@ -11,6 +12,7 @@ config.baseURL = window.location.origin + config.apiUrlPrefix;
 noteEndpoint.options.baseURL = config.baseURL;
 
 const app = {
+	yaml,
 	vue: new vue(),
 	config: config,
 	consts: consts,

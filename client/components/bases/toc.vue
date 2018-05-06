@@ -10,6 +10,8 @@
 <script>
 import _ from "lodash";
 
+import {mapActions, mapGetters} from "vuex";
+
 import md from "@/lib/markdown";
 
 export default {
@@ -17,7 +19,6 @@ export default {
 		return {
 			index:null,
 			vars: {
-				text:"",
 				navlist:[
 				{
 					text:"标题",
@@ -28,29 +29,43 @@ export default {
 					level:3,
 				},
 				],
-				startLevel:1,
-				endLevel:6,
-				useMainContent:false,
 			}
 		}
 	},
 
 	props: {
-		options: {
-			type:Object,
-			default: () => {},
+		useMainContent: {
+			type: Boolean,
+			default: true,
+		},
+		startLevel: {
+			type: Number,
+			default: 1,
+		},
+		endLevel: {
+			type: Number,
+			default: 6,
+		},
+		text: {
+			type: String,
+			default: "",
 		},
 	},
 
 	computed: {
+		...mapGetters({
+			pageContent: 'editor/getPageContent',
+		}),
+
 		headers() {
-			const text = this.vars.useMainContent ? this.pageContent : this.vars.text;
+			const text = this.useMainContent ? this.pageContent : this.vars.text;
 			if (!text) {
 				return this.vars.navlist;
 			}
 
 			const tokens = md.md.parse(text);
 			const headers = tokens.filter(token => /^[hH][1-6]$/.test(token.tag));
+			console.log(tokens, headers);;
 			const navlist = [];
 			_.each(headers, header => {
 				navlist.push({
@@ -58,6 +73,7 @@ export default {
 					text: header.content,
 				});
 			})
+			console.log(navlist);
 			return navlist;
 		}
 	},
@@ -65,7 +81,7 @@ export default {
 	methods: {
 		isShow(header) {
 			const level = header.level;
-			if (this.vars.startLevel <= level && level <= this.vars.endLevel) {
+			if (this.startLevel <= level && level <= this.endLevel) {
 				return true;
 			}
 			return false;
@@ -79,7 +95,6 @@ export default {
 	},
 
 	created() {
-		_.merge(this.vars, this.options);
 	},
 }
 

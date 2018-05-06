@@ -53,6 +53,7 @@ export const mdFactory = function(options) {
 			catch (e) {
 				modParams = content;
 			}
+			console.log(modParams);
 
 			block.modName = modName;
 			block.cmdName = cmdName;

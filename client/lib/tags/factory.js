@@ -433,40 +433,6 @@ export const markdownTag = function(text) {
 	return tag;
 }
 
-export const tocTag = function() {
-	var tag = tagFactory("toc");
-	tag.vars = {
-		navlist:[
-			{
-				text:"标题1",
-				level:2,
-			},
-			{
-				text:"子标题11",
-				level:3,
-			},
-			{
-				text:"子标题12",
-				level:3,
-			},
-			{
-				text:"标题2",
-				level:2,
-			},
-			{
-				text:"子标题21",
-				level:3,
-			},
-			{
-				text:"子标题22",
-				level:3,
-			},
-		],
-	}
-
-	return tag;
-}
-
 export default {
 	div: divTag,
 	rowDiv: rowDivTag,
@@ -490,6 +456,5 @@ export default {
 	elButton: elButtonTag,
 	html: htmlTag,
 	markdown: markdownTag,
-	toc: tocTag,
 }
 

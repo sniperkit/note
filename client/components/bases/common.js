@@ -16,10 +16,5 @@ export default {
 		}
 	},
 	created(){
-		if (!this.tag) {
-			return;
-		}
-		var tag = this.tag;
-		tag.vars = _.merge(this.vars || {}, tag.vars || {});
 	}
 }

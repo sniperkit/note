@@ -47,7 +47,8 @@ Tag.prototype.getAttrsHtml = function(tagName){
 		var value = vars[key];
 		var $data = $vars[key];
 		if (!$data || !$data.attrName) {
-			//str += " :" + key + '="tag.vars.' + key + '"';
+			if (!attrs[":" + key])
+				str += " :" + key + '="tag.vars.' + key + '"';
 			continue;
 		}
 		var attrName = $data.attrName;
@@ -59,6 +60,7 @@ Tag.prototype.getAttrsHtml = function(tagName){
 		str += ' ' + attrNamePrefix + attrName + '="tag.vars.' + key + ($data.key || '') + defaultValue + '"';
 	}
 
+	console.log(str);
 	//str += " v-on:blur.native=blur";
 
 	for (var key in attrs) {
@@ -340,6 +342,8 @@ Tag.prototype.setVarsByKey = function(data) {
 	}
 
 	_setVarsByKey(this);
+
+	this.vars = _.merge(this.vars, data);
 }
 
 Tag.prototype.getVarsByKey = function(keys) {
