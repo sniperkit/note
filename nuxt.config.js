@@ -76,6 +76,7 @@ module.exports = {
   	build: {
 		//analyze: true,
 		vendor: [
+			"js-yaml",
 			"lodash",
 			"axios",
 			"vuex-persistedstate",

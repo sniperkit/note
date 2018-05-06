@@ -101,7 +101,7 @@ export default {
 
 	computed: {
 		...mapGetters({
-			theme:"theme/theme",
+			//theme:"theme/theme",
 			tagId: "editor/getTagId",
 			getTagMod: "mods/tagMod",
 			tagMods: "mods/tagMods",

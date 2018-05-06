@@ -1,8 +1,8 @@
 import _ from "lodash";
 import vue from "vue";
 import {mapActions, mapGetters} from "vuex";
-import {create} from "jss";
-import preset from 'jss-preset-default'
+//import {create} from "jss";
+//import preset from 'jss-preset-default'
 
 import {tags} from "@/lib/tags";
 import consts from "@/lib/consts.js";
@@ -11,27 +11,6 @@ let compiler = null;
 if (process.server) {
 	compiler = require('vue-template-compiler');
 }
-
-//import mods from "../index.js";
-
-const jss = create({
-	...preset(),
-	createGenerateClassName: () => {
-		return (rule, sheet) => {
-			return rule.key;
-		};
-	},
-});
-
-const classStyle = {
-	tagHover:{
-		//border:"4px dashed red",
-	},
-	tagActived:{
-		border:"4px solid green",
-	},
-};
-jss.createStyleSheet(classStyle).attach();
 
 export default {
 	name: "tag",

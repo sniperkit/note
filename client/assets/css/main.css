@@ -48,3 +48,10 @@ a, a:hover, a:focus, a:visited
 #__nuxt, #__layout {
 	height: 100%;
 }
+
+.tagHover {
+	border:4px dashed red;
+}
+.tagActived {
+	border:4px solid green;
+}

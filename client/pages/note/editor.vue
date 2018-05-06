@@ -60,7 +60,6 @@ export default {
 	},
 	computed: {
 		...mapGetters({
-			theme: 'theme/theme',
 			pageContent: 'editor/getPageContent',
 			pagePath: "editor/getPagePath",
 		}),
