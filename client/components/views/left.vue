@@ -47,4 +47,8 @@ export default {
 .left-el-tabs .el-tabs__header.is-left {
 	margin-right:0px;
 }
+.left-el-tabs .el-tab-pane {
+	padding-bottom:30px;
+	overflow-y:auto;
+}
 </style>

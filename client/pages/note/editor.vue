@@ -12,7 +12,7 @@
 				<code-editor ref="codemirror"></code-editor>
 			</el-aside>
 			<div class="split-strip kp_forbit_copy" @mousedown="splitStripMousedown('splitStrip2')"></div>
-			<el-main ref="splitStrip2R">
+			<el-main ref="splitStrip2R" class="preview-container">
 				<userpage :text="renderContent" :template="true"></userpage>
 			</el-main>
 		</el-container>
@@ -195,6 +195,12 @@ html,body, .el-container, .el-aside {
 }
 html, body {
 	margin: 0px;
+}
+.preview-container {
+	
+}
+.preview-container::-webkit-scrollbar {
+	display: none;
 }
 .vue-codemirror {
 	height:100%;
