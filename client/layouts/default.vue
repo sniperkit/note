@@ -26,7 +26,7 @@ import {
 	Main,
 	Footer,
 } from "element-ui";
-import _Header from "../components/views/header.vue";
+import _Header from "@/components/mods/common/header.vue";
 export default {
 	components: {
 		[Container.name]:Container,
