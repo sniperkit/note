@@ -30,7 +30,7 @@
 				<span v-if="data.type == 'blob'" class="custom-tree-node">
 					<span class="tree-node-text">
 						<i v-show="data.isConflict" @click.stop="clickFixedConflict(data)" class="fa fa-warning" aria-hidden="true" data-toggle="tooltip" title="冲突"></i>
-						<i v-show="!data.isConflict" :class='isRefresh(data) ? "iconfont icon-refresh" : isModify(data) ? "iconfont icon-edit" : "iconfont icon-file"'></i>
+						<i v-show="!data.isConflict" :class='isRefresh(data) ? "el-icon-loading" : isModify(data) ? "iconfont icon-edit" : "iconfont icon-file"'></i>
 						<span>{{data.aliasname || data.name}}</span>
 					</span>
 					<span class="tree-node-btn-group">
@@ -55,7 +55,7 @@
 				<span v-if="data.type == 'blob'" class="custom-tree-node">
 					<span class="tree-node-text">
 						<i v-show="data.isConflict" @click="clickFixedConflict(data)" class="fa fa-warning" aria-hidden="true" data-toggle="tooltip" title="冲突"></i>
-						<i v-show="!data.isConflict" :class='isRefresh(data) ? "iconfont icon-refresh" : isModify(data) ? "iconfont icon-edit" : "iconfont icon-file"'></i>
+						<i v-show="!data.isConflict" :class='isRefresh(data) ? "el-icon-loading" : isModify(data) ? "iconfont icon-edit" : "iconfont icon-file"'></i>
 						<span>{{data.aliasname || data.name}}</span>
 					</span>
 					<span class="tree-node-btn-group">
