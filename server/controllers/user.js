@@ -37,17 +37,17 @@ User.prototype.setBaseInfo = async function(ctx) {
 	});
 
 	if (!data) {
-		return ERR.setMessage("更新失败");
+		return ERR().setMessage("更新失败");
 	}
 
-	return ERR_OK;
+	return ERR_OK();
 }
 
 User.prototype.register = async function(ctx) {
 	const params = ctx.request.body;
 	const usernameReg = /^[\w\d]+$/;
 	if (!usernameReg.test(params.username)) {
-		return ERR_PARAMS;
+		return ERR_PARAMS();
 	}
 	let user = await this.model.findOne({
 		where: {
@@ -55,14 +55,14 @@ User.prototype.register = async function(ctx) {
 		},
 	});
 	
-	if (user) 	return ERR.setMessage("用户已存在");
+	if (user) 	return ERR().setMessage("用户已存在");
 
 	user = await this.model.create({
 		username: params.username,
 		password: params.password,
 	});
 
-	if (!user) return ERR;
+	if (!user) return ERR();
 	user = user.get({plain:true});
 
 	const token = jwt.encode({
@@ -72,7 +72,7 @@ User.prototype.register = async function(ctx) {
 
 	user.token = token;
 
-	return ERR_OK.setData(user);
+	return ERR_OK().setData(user);
 }
 
 User.prototype.login = async function(ctx) {
@@ -97,7 +97,7 @@ User.prototype.login = async function(ctx) {
 
 	user.token = token;
 
-	return ERR_OK.setData(user);
+	return ERR_OK().setData(user);
 }
 
 User.prototype.modifyPassword = async function(ctx) {
@@ -113,10 +113,10 @@ User.prototype.modifyPassword = async function(ctx) {
 		}
 	});
 
-	if (!result) return ERR;
-	if (result[0] == 0) return ERR.setMessage("密码错误");
+	if (!result) return ERR();
+	if (result[0] == 0) return ERR().setMessage("密码错误");
 
-	return ERR_OK;
+	return ERR_OK();
 }
 
 User.prototype.isLogin = async function(ctx) {

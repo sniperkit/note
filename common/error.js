@@ -1,3 +1,4 @@
+import _ from "lodash";
 
 export const Err = function(code, message, data) {
 	this.code = code || 0;
@@ -39,11 +40,15 @@ Err.prototype.getMessage = function() {
 Err.prototype.getCode = function() {
 	return this.code;
 }
-export const ERR = new Err(-1, "unknown error");
-export const ERR_OK = new Err();
-export const ERR_PARAMS = new Err(1, "参数错误");
-export const ERR_UNATUH = new Err(2, "未认证");
-export const ERR_NOT_FOUND = new Err(3, "未找到记录");
+
+Err.prototype.clone = function(err) {
+	return _.cloneDeep(err || this);
+}
+export const ERR = (data) => new Err(-1, "unknown error", data);
+export const ERR_OK = (data) => new Err(null, null, data);
+export const ERR_PARAMS = (data) => new Err(1, "参数错误", data);
+export const ERR_UNATUH = (data) => new Err(2, "未认证", data);
+export const ERR_NOT_FOUND = (data) => new Err(3, "未找到记录", data);
 
 export default {
 	ERR,

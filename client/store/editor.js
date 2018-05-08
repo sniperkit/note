@@ -131,18 +131,21 @@ export const actions = {
 			const result = await api.files.getFile({key:path});
 			if (result.isErr()) {
 				Message(result.getMessage());
+				commit(SET_PAGE, {path:path, isRefresh:false});
+				return;
 			}
 			const file = result.getData();
-			//gitlab.getFile(page.path);
-			page.sha = file.sha;
 			page.hash = file.hash;
+			if (typeof(file.content) != "string") {
+				commit(SET_PAGE, {path:path, isRefresh:false});
+				return;
+			}
 			page.content = typeof(file.content) == "string" ? file.content : JSON.stringify(file.content);
 			page.isRefresh = false;
 			commit(SET_PAGE, page);
 			if (state.pagePath == path) {
 				commit(SET_SWITCH_PAGE, true);
 			}
-			//dispatch("indexDB_savePage", page);
 		}
 		let _loadPageFromDB = function(page) {
 			if (state.pagePath == path) {

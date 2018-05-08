@@ -50,7 +50,7 @@ DataSource.prototype.getDefaultDataSource = async function(ctx) {
 	const authUsername = ctx.state.user.username;
 	const username = params.username || authUsername;
 
-	if (!username) return ERR.ERR_PARAMS;
+	if (!username) return ERR.ERR_PARAMS();
 	
 	let dataSource = await this.model.findOne({
 		where: {
@@ -68,19 +68,19 @@ DataSource.prototype.getDefaultDataSource = async function(ctx) {
 		dataSource.externalPassword = undefined;
 	}
 
-	return ERR.ERR_OK.setData(dataSource);
+	return ERR.ERR_OK(dataSource);
 }
 
 DataSource.prototype.delete = async function(ctx) {
 	const params = ctx.request.query;
 
 	if (!params.id) {
-		return ERR.ERR_PARAMS;
+		return ERR.ERR_PARAMS();
 	}
 
 	const ret = await this.model.destroy({where: {id:params.id}});
 
-	return ERR.ERR_OK;
+	return ERR.ERR_OK();
 }
 
 DataSource.prototype.upsert = async function(ctx) {
@@ -88,7 +88,7 @@ DataSource.prototype.upsert = async function(ctx) {
 	const username = ctx.state.user.username;
 
 	if (!params || !params.name || !params.type || !params.token || !params.baseUrl) {
-		return ERR.ERR_PARAMS;
+		return ERR.ERR_PARAMS();
 	}
 
 	params.username = username;
@@ -120,7 +120,7 @@ DataSource.prototype.upsert = async function(ctx) {
 	//console.log(project);
 	await this.model.upsert(params);
 
-	return ERR.ERR_OK;
+	return ERR.ERR_OK();
 }
 
 DataSource.prototype.getByUsername = async function(ctx) {
@@ -128,7 +128,7 @@ DataSource.prototype.getByUsername = async function(ctx) {
 	const authUsername = ctx.state.user.username;
 	const username = params.username || authUsername;
 
-	if (!username) return ERR.ERR_PARAMS;
+	if (!username) return ERR.ERR_PARAMS();
 
 	let exclude = [];
 	if (username != authUsername) {
@@ -140,7 +140,7 @@ DataSource.prototype.getByUsername = async function(ctx) {
 		attributes: {exclude},
 	});
 
-	if (!list) return ERR.ERR_NOT_FOUND;
+	if (!list) return ERR.ERR_NOT_FOUND();
 
 	return list;
 }

@@ -20,21 +20,21 @@ Site.prototype.create = async function(ctx) {
 		}
 	});
 	
-	if (data) return ERR.ERR.setMessage("站点已存在");
+	if (data) return ERR.ERR().setMessage("站点已存在");
 
 	data = await this.model.create(params);	
-	if (!data) return ERR.ERR;
+	if (!data) return ERR.ERR();
 
 	data = data.get({plain:true});
 
-	return ERR.ERR_OK.setData(data);
+	return ERR.ERR_OK().setData(data);
 }
 
 Site.prototype.getByUsername = async function(ctx) {
 	const params = ctx.state.params;
 	const username = params.username || ctx.state.user.username;
 
-	if (!username) return ERR.ERR_PARAMS;
+	if (!username) return ERR.ERR_PARAMS();
 
 	let data = await this.model.findAll({
 		where: {
@@ -42,9 +42,9 @@ Site.prototype.getByUsername = async function(ctx) {
 		},
 	});
 
-	if (!data) return ERR.ERR;
+	if (!data) return ERR.ERR();
 
-	return ERR.ERR_OK.setData(data);
+	return ERR.ERR_OK().setData(data);
 }
 
 Site.prototype.update = async function(ctx) {
@@ -52,7 +52,7 @@ Site.prototype.update = async function(ctx) {
 	const username = ctx.state.user.username;
 
 	if (username != params.username) {
-		return ERR.ERR_PARAMS;
+		return ERR.ERR_PARAMS();
 	}
 
 	const result = await this.model.update(params, {
@@ -63,10 +63,10 @@ Site.prototype.update = async function(ctx) {
 	});
 
 	if (!result || result[0] == 0) {
-		return ERR.ERR_NOT_FOUND;
+		return ERR.ERR_NOT_FOUND();
 	}
 
-	return ERR.ERR_OK;
+	return ERR.ERR_OK();
 }
 
 Site.prototype.delete = async function(ctx) {
@@ -82,10 +82,10 @@ Site.prototype.delete = async function(ctx) {
 	})
 
 	if (!result || result[0] == 0){
-		return ERR.ERR_NOT_FOUND;
+		return ERR.ERR_NOT_FOUND();
 	}
 
-	return ERR.ERR_OK;
+	return ERR.ERR_OK();
 }
 
 Site.prototype.getRoutes = function() {

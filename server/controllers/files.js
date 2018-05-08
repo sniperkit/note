@@ -44,12 +44,12 @@ Files.prototype.getFile = async function(ctx) {
 			key: params.key,
 		},
 	});
-	if (!record) return ERR.ERR_NOT_FOUND;
+	if (!record) return ERR.ERR_NOT_FOUND();
 	record = record.get({plain:true});
 
 	record.content = result.getData();
 
-	return ERR.ERR_OK.setData(record);
+	return ERR.ERR_OK(record);
 }
 
 Files.prototype.uploadFile = async function(ctx) {
@@ -66,7 +66,7 @@ Files.prototype.uploadFile = async function(ctx) {
 	// 往git写一份
 	writeGitFile(params);
 
-	return ERR.ERR_OK.setData({hash:params.hash});
+	return ERR.ERR_OK({hash:params.hash});
 }
 
 Files.prototype.deleteFile = async function(ctx) {
@@ -80,7 +80,7 @@ Files.prototype.deleteFile = async function(ctx) {
 		key: params.key,
 	}});
 
-	return ERR.ERR_OK;
+	return ERR.ERR_OK();
 }
 
 Files.prototype.list = async function(ctx) {
@@ -95,7 +95,7 @@ Files.prototype.list = async function(ctx) {
 
 	const data = result.getData();
 
-	return ERR.ERR_OK.setData(data);
+	return ERR.ERR_OK(data);
 }
 
 Files.prototype.getByUsername = async function(ctx) {
@@ -114,7 +114,7 @@ Files.prototype.getByUsername = async function(ctx) {
 		//}
 	//}});
 
-	return ERR.ERR_OK.setData(data);
+	return ERR.ERR_OK(data);
 }
 
 Files.prototype.getRoutes = function() {
