@@ -3,7 +3,7 @@
     <div class="container">
       <ul>
         <li>
-          <a href="#">关于我们</a>
+          <a href="http://wxaxiaoyao.cn/xiaoyao/note/about">关于我们</a>
         </li>
         <li>
           <a href="#">加入我们</a>
