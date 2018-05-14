@@ -2,7 +2,7 @@ import yaml from "js-yaml";
 import markdown from "./markdown.js";
 
 // md 构造函数
-export const mdFactory = function(options) {
+export const markdownEx = function(options) {
 	options = options || {};
 
 	var md = {
@@ -172,4 +172,4 @@ export const mdFactory = function(options) {
 	return md;
 }
 
-export default mdFactory();
+export default markdownEx();

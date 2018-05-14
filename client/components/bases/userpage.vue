@@ -7,7 +7,7 @@ import 'github-markdown-css/github-markdown.css';
 
 import tag from "@/components/common/tag.js";
 import {tags} from "@/lib/tags";
-import md from "@/lib/markdown";
+import {markdownEx} from "@/lib/markdown";
 
 export default {	
 	name:"userpage",
@@ -21,6 +21,7 @@ export default {
 		roottag.classes["container"] = true;
 		return {
 			rootTag: roottag,
+			md: markdownEx(),
 		};
 	},
 
@@ -48,6 +49,7 @@ export default {
 
 	methods: {
 		getTagByBlock(block) {
+			const md = this.md;
 			const tag = tags.getTag(block.cmdName || "html");
 			if (block.isMod) {
 				tag.setVarsByKey(block.modParams);
@@ -63,8 +65,10 @@ export default {
 		},
 		parseText(text) {
 			const self = this;
+			const md = self.md;
 			var subtag = undefined, tmpTag = undefined;
 			var blocklist = md.parse(text);
+			//console.log(md.template, text);
 			if (this.template && md.template.isChange) {
 				self.rootTag = self.getTagByBlock(md.template);
 				//console.log(self.rootTag);
@@ -98,7 +102,7 @@ export default {
 					}
 				} else {
 					tag.children[i].vars = tag.children[i].vars || {};
-					tag.children[i].vars.text = md.render(block.text);
+					tag.children[i].vars.text = self.md.render(block.text);
 				}
 			}
 			var size = this.blocklist.length;
