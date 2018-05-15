@@ -23,7 +23,7 @@
 			<span class="custom-tree-node" slot-scope="{node, data}">
 				<span v-if="data.type == 'tree'" class="custom-tree-node">
 					<span>
-						<i class="iconfont icon-folder"></i>
+						<!--<i class="iconfont icon-folder"></i>-->
 						<span>{{data.aliasname || data.name}}</span>
 					</span>
 				</span>
@@ -46,6 +46,7 @@
 			<span class="custom-tree-node" slot-scope="{node, data}">
 				<span v-if="data.type == 'tree'" class="custom-tree-node">
 					<span>
+						<!--<i class="iconfont icon-folder"></i>-->
 						<span>{{data.aliasname || data.name}}</span>
 					</span>
 					<span>
