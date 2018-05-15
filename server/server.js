@@ -23,6 +23,7 @@ registerControllerRouter(apiRouter);
 
 export default (app, views) => {
 	const viewRouter = new Router({});
+
 	//viewRouter.get("/www/*", views);
 
 	app

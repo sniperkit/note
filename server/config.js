@@ -9,6 +9,7 @@ const defaultConfig = {
 	baseURL: "http://127.0.0.1:3000/api/v0/",
 	host: "127.0.0.1",
 	port: 3000,
+	//port: 8900,
 
 	database: {
 		//port:3306,
