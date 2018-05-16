@@ -2,6 +2,7 @@
 	<div>
 		<i class="iconfont icon-home"></i>
 		<i class="iconfont icon-minus"></i>
+		<iframe id="iframeId" src="https://www.baidu.com/" style="height:200px"></iframe>
 	</div>
 </template>
 
@@ -27,7 +28,10 @@ export default {
 	},
 
 	async mounted() {
-		g_app.pathToRegexp = pathToRegexp;
+		setTimeout(function() {
+			var el = document.getElementById("iframeId");
+			el.style.height = "400px"
+		}, 2000);
 	}
 }
 </script>

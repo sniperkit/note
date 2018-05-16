@@ -27,5 +27,39 @@ indexedDB.open().then(function(){
 
 app.getRouteName = (name) => config.urlPrefix + "-" + name;
 
+
+window.addEventListener("message", function(e) {
+	const FAIL = {cmd: "fail"};
+	const SUCCESS = {cmd: "success"};
+
+	function postMessage(data, origin) {
+		origin = origin || "*";
+		data = data || SUCCESS;
+		e.source.postMessage(data, origin);
+	}
+
+	const data = e.data || {}
+	console.log(data);
+
+	if (data.cmd == "element_style") {
+		const selector = data.selector;
+		const style = data.style || {};
+		const el = document.getElementById(selector);
+
+		if (!el) {
+			return postMessage(FAIL);
+		}
+
+		console.log(el, style);
+		el.style.height = style.height;
+		el.style.width = style.width;
+	} else {
+		console.log("cmd not found", e);
+		return;
+	}
+
+	postMessage(SUCCESS)
+});
+
 window._ = _;
 window.g_app = app;

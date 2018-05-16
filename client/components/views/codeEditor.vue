@@ -1,6 +1,6 @@
 <template>
 	<div style="height:100%" v-loading="loading" element-loading-text="文件上传中...">
-		<el-dialog title="文件上传" :visible.sync="fileUploadDialogVisible">
+		<el-dialog title="文件上传" :visible.sync="fileUploadDialogVisible" width="500px">
 			<div style="color:red; margin-top:-20px; margin-bottom:10px"><b>本页面存在同名文件会覆盖</b></div>
 			<el-input v-model="uploadFilename" placeholder="请输入文件名"></el-input>
 			<span slot="footer">
