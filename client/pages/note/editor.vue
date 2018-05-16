@@ -77,23 +77,23 @@ export default {
 			//adi.setTheme(theme);
 		},
 		pagePath: async function(path) {
-			if (!path) {
-				this.themeContent = "";
-				return;
-			}
-			const paths = path.split("/");
-			const themePath = [paths[0], paths[1], "theme.md"].join("/");
+			//if (!path) {
+			//	this.themeContent = "";
+			//	return;
+			//}
+			//const paths = path.split("/");
+			//const themePath = [paths[0], paths[1], "theme.md"].join("/");
 
-			if (themePath == path) {
-				this.themeContent = "";
-				return;
-			}
+			//if (themePath == path) {
+			//	this.themeContent = "";
+			//	return;
+			//}
 
-			if (this.themes[themePath] == undefined) {
-				const result = await api.files.getContent({key:themePath});
-				this.themes[themePath] = result && result.isOk() ? result.getData() : "";
-			}
-			this.themeContent = this.themes[themePath];
+			//if (this.themes[themePath] == undefined) {
+			//	const result = await api.files.getContent({key:themePath});
+			//	this.themes[themePath] = result && result.isOk() ? result.getData() : "";
+			//}
+			//this.themeContent = this.themes[themePath];
 		}
 	},
 	methods: {
