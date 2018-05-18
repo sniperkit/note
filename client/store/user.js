@@ -1,4 +1,5 @@
 import vue from "vue";
+import jwt from "jwt-simple";
 
 const SET_USER = 'SET_USER';
 const SET_USER_DATA_SOURCE = "SET_USER_DATA_SOURCE";
@@ -9,7 +10,20 @@ export const state = () => ({
 })
 
 export const getters = {
-	isAuthenticated: (state) => state.user && state.user.token && state.user.username,
+	isAuthenticated: (state) => {
+		if (!state.user || !state.user.token) return false;
+		const payload = jwt.decode(state.user.token, null, true);
+		console.log(payload);
+
+		if (payload.nbf && Date.now() < payload.nbf*1000) {
+			return false;
+		}
+		if (payload.exp && Date.now() > payload.exp*1000) {
+			return false;
+		}
+
+		return true;
+	},
 	user: (state) => (state.user || {}),
 	dataSource: (state) => state.dataSource,
 }

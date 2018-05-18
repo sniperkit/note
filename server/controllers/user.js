@@ -1,7 +1,7 @@
 import _ from "lodash";
 import joi from "joi";
-import jwt from "jwt-simple";
 
+import util from "../../common/util.js";
 import config from "../config.js";
 import {ERR, ERR_OK, ERR_PARAMS} from "../../common/error.js";
 import userModel from "../models/user.js";
@@ -65,7 +65,7 @@ User.prototype.register = async function(ctx) {
 	if (!user) return ERR();
 	user = user.get({plain:true});
 
-	const token = jwt.encode({
+	const token = util.jwt_encode({
 		userId: user.id, 
 		username: user.username
 	}, config.secret);
@@ -90,7 +90,7 @@ User.prototype.login = async function(ctx) {
 
 	user = user.get({plain:true});
 
-	const token = jwt.encode({
+	const token = util.jwt_encode({
 		userId: user.id, 
 		username: user.username
 	}, config.secret);
