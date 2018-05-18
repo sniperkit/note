@@ -5,6 +5,7 @@ import config from "@/config.js";
 import consts from "@/lib/consts.js";
 import storage from "@/lib/storage.js";
 import indexedDB from "@/lib/indexedDB.js";
+import events from "@/lib/events.js";
 import noteEndpoint from "@@/common/api/note.js";
 
 config.baseURL = window.location.origin + config.apiUrlPrefix;
@@ -13,6 +14,7 @@ noteEndpoint.options.baseURL = config.baseURL;
 
 const app = {
 	yaml,
+	events,
 	vue: new vue(),
 	config: config,
 	consts: consts,
@@ -39,7 +41,6 @@ window.addEventListener("message", function(e) {
 	}
 
 	const data = e.data || {}
-	console.log(data);
 
 	if (data.cmd == "element_style") {
 		const selector = data.selector;

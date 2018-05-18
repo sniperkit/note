@@ -4,6 +4,7 @@ import {validate} from "../middlewares/index.js";
 import {ERR_UNATUH, ERR_OK, ERR_PARAMS} from "../../common/error.js";
 
 import code from "./code.js";
+import oauth from "./oauth.js";
 import user from "./user.js";
 import dataSource from "./dataSource.js";
 import gitlab from "./gitlab.js"; 
@@ -13,6 +14,7 @@ import site from "./site.js";
 
 export const controllers = {
 	code,
+	oauth,
 	user,
 	dataSource,
 	gitlab,

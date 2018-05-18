@@ -35,6 +35,7 @@ module.exports = {
 
 	plugins: [
 	{src:"~/plugins/app", ssr: false},
+	{src:"~/plugins/authenticate", ssr: false},
 	{src:"~/plugins/persistedstate", ssr: false},
 	{src:"~/plugins/codemirror", ssr: false},
 	{src:"~/plugins/vueImgInputer", ssr: false},

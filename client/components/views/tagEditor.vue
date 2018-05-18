@@ -56,10 +56,12 @@ import {
 	TabPane,
 	Message,
 } from "element-ui";
+
 import {mapActions, mapGetters} from "vuex";
 import {tags} from "@/lib/tags";
 import "@/components/bases/index.js";
 import "@/components/common/index.js";
+import baseComponent "@/components/base.js";
 import modTree from "@/components/views/modTree.vue";
 import tagNav from "@/components/views/tagNav.vue";
 import tagEdit from "@/components/views/tagEdit.vue";
@@ -86,6 +88,8 @@ export default {
 		tagEdit,
 		tagTree,
 	},
+
+	mixins: [baseComponent],
 
 	data: function() {
 		const tag = tags.getTag();
