@@ -86,12 +86,15 @@ import {
 } from "element-ui";
 import vue from "vue";
 import {mapActions, mapGetters} from "vuex";
+import _ from "lodash";
+import {component} from "@/components/component.js";
 import config from "@/config.js";
 import api from "@@/common/api/note.js";
 
 vue.use(Loading.directive);
 
 export default {
+	mixins: [component],
 	components:{
 		[Button.name]: Button,
 		[Form.name]: Form,
@@ -114,19 +117,14 @@ export default {
 			newFileForm:{ type:"blob", isLoading:false },
 			sites: {},
 			filetree:[],
+			pages: {},
 		};
 	},
 
 	computed: {
 		...mapGetters({
-			user: "user/user",
-			tagId: 'editor/getTagId',
-			pagePath: 'editor/getPagePath',
-			getPageByPath: 'editor/getPageByPath',
-			switchPage: 'editor/switchPage',
-			pages: "editor/getPages",
+			"user": "user/user",
 		}),
-
 		username() {
 			return this.user.username;
 		},
@@ -143,23 +141,18 @@ export default {
 		},
 	},
 
-	watch: {
-		pages: function(val) {
-		},
-		pagePath: function(val) {
-		},
-	},
-	
 	methods: {
 		...mapActions({
 			setPagePath: "editor/setPagePath",
 			setPage: "editor/setPage",
-			setPages: "editor/setPages",
 			savePage: "editor/savePage",
-			loadPage: "editor/loadPage",
 			deletePage: "editor/deletePage",
 			setSwitchPage: "editor/setSwitchPage",
 		}),
+
+		getPageByPath(path) {
+			return this.pages[path];
+		},
 
 		async getSites() {
 			let result = await api.site.getByUsername({username: this.user.username});
@@ -191,7 +184,7 @@ export default {
 
 				pagemap[page.key] = page;
 			});
-			self.setPages(pagemap);
+			_.merge(self.pages, pagemap);
 			return self.generateTreeNodes(pagemap);
 		},
 
@@ -268,30 +261,89 @@ export default {
 		isModify(data) {
 			return this.getPageByPath(data.path).isModify;
 		},
+		loadPage(page, cb, errcb) {
+			const self = this;
+			let _loadPageFromServer = async function() {
+				console.log("服务器最新");
+				const result = await api.files.getFile({key:page.path});
+				if (result.isErr()) {
+					Message(result.getMessage());
+					errcb && errcb();
+					return;
+				}
+				const file = result.getData();
+				page.hash = file.hash;
+				if (typeof(file.content) != "string") {
+					errcb && errcb();
+					return;
+				}
+				page.content = file.content;
+				cb && cb();
+			}
+			g_app.pageDB.getItem(page.path).then(function(data){
+				if (!data) {
+					_loadPageFromServer();
+					return;
+				}
+				if (data.hash == page.hash || page.isModify) {
+					if (data.hash == page.hash) {
+						console.log("本地最新");
+					} else {
+						console.log("冲突");
+					}
+					_.merge(page, data);
+					cb && cb();
+					return;
+				} 
+
+				_loadPageFromServer();
+			}, function() {
+				_loadPageFromServer();
+			})
+		},
 		clickSelectPage(data) {
 			var self = this;
+			// 激活文件树项
 			self.setCurrentItem(data.path);
 			if (data.type == "tree") {
 				return;
 			}
 
-			this.$set(this.openedPages, data.path, data);
-			var page = this.getPageByPath(data.path);
-			if (page.content == undefined) {
-				this.loadPage({path:data.path});
-			} else {
-				this.setSwitchPage(true);
-			}
+			// 添加打开列表
 
 			const path = data.path;
-			window.location.hash = "#" + path.substring(0, path.length - config.pageSuffix.length);
-			this.setPagePath(data.path);
+			const page = this.getPageByPath(path);
+			if (!page) return ;
+
+			const finish = function() {
+				page.isRefresh = false;
+				window.location.hash = "#" + path.substring(0, path.length - config.pageSuffix.length);
+				// 设置当前page
+				self.emit(self.EVENTS.__EVENT__FILETREE__OUT__PAGE__, {
+					namespace: self.namespace,
+					page: page,
+				});
+				self.page = page;
+				self.$set(self.openedPages, page.path, page);
+			}
+
+			if (page.content == undefined) {
+				page.isRefresh = true;
+				this.loadPage(page, function() {
+					finish();
+				}, function(){
+					finish();
+				});
+			} else {
+				finish();
+			}
 		},
 		clickCloseBtn(data) {
-			this.$set(this.openedPages, data.path, undefined);
-			if (data.path == this.pagePath) {
-				this.setPagePath(undefined);
-				this.setSwitchPage(true);
+			this.$delete(this.openedPages, data.path);
+			if (data.path == this.page.path) {
+				this.emit(this.EVENTS.__EVENT__FILETREE__OUT__PAGE__, {
+					namespace: this.namespace,
+				});
 				let curKey = data.path.replace(/\/[^\/]*$/, "");
 				this.setCurrentItem(curKey);
 		   } else {
@@ -341,28 +393,33 @@ export default {
 			}
 			form.isLoading = true;
 			if (form.type != "tree") {
-				await this.savePage(newNode);
+				//await this.savePage(newNode);
 			}
 			self.$refs.filetree.append(newNode, node.path);
 			this.isShowNewFile = false;
 			form.isLoading = false;
 		},
 		async clickDeleteBtn(data, node) {
-			await this.deletePage({path:data.path});
+			const path = data.path;
+			const page = this.getPagePath(path);
+			page.isRefresh = true;
+			const result = await api.files.deleteFile({key:path});
+			if (result.isErr()) {
+				Message(result.getMessage());
+			}
+			g_app.pageDB.deleteItem(path);
+			delete this.openedPages[path];
+			delete this.pages[path];
 			this.$refs.filetree.remove(node);
+			this.$refs.openedTreeComp.remove(node);
+			page.isRefresh = false;
 		},
 	},
 
-	async mounted() {
-		//const hash = this.$route.hash;
-		//const path =  hash.substring(1) + config.pageSuffix;
-		//const data = this.filetreeMap[path];
-		//data && this.clickSelectPage(data);
-
+	mounted() {
 	},
 
 	created() {
-		var self = this;
 	}
 }
 </script>

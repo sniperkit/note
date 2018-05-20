@@ -5,7 +5,9 @@ import {mapActions, mapGetters} from "vuex";
 //import preset from 'jss-preset-default'
 
 import {tags} from "@/lib/tags";
-import consts from "@/lib/consts.js";
+import {component} from "@/components/component.js";
+
+const EDITOR_MODE_EDITOR = "editor";
 
 let compiler = null;
 if (process.server) {
@@ -22,6 +24,7 @@ export default {
 				tagActived:false,
 				tagHover:false,
 			},
+			currentTag:null,
 		};
 	},
 	props:{
@@ -31,6 +34,10 @@ export default {
 				return tags.getTag("div");
 			}
 		},
+		mode: {
+			type: String,
+			default: "normal",
+		},
 		tagName: {
 			type:String,
 			default:"div",
@@ -38,11 +45,6 @@ export default {
 	},
 
 	computed: {
-		...mapGetters({
-			tagId: 'editor/getTagId',
-			mode: "editor/getMode",
-			hoverTagId:"editor/getHoverTagId",
-		}),
 		tagStyle() {
 			return {...this.tag.styles, ...this.styles};
 		},
@@ -50,10 +52,10 @@ export default {
 			return {...this.tag.classes, ...this.classes};
 		},
 		isActive() {
-			if (this.mode != consts.EDITOR_MODE_EDITOR) {
+			if (this.mode != EDITOR_MODE_EDITOR) {
 				return false;
 			}
-			if (this.tagId && this.tag.tagId == this.tagId) {
+			if (this.currentTag && this.tag.tagId == this.currentTag.tagId) {
 				return true;
 			}
 
@@ -66,11 +68,11 @@ export default {
 			var tagName = this.tagName;
 			var attrStr = this.attrStr;
 			var editorModeAttrStr = ' @click.stop.prevent="click" @click.native.stop.prevent="click" @mouseover.stop.prevent="mouseover" @mouseout.stop.prevent="mouseout"';
-			if (this.mode != consts.EDITOR_MODE_EDITOR) {
+			if (this.mode != EDITOR_MODE_EDITOR) {
 				editorModeAttrStr = "";
 			}
 			var attrStr = editorModeAttrStr + attrStr + ' :style="tagStyle" :class="tagClass" v-bind="$attrs" v-on="$listeners"';
-			var template = '<' + tagName + attrStr + '>{{tag.text ||""}}<tag v-for="(x,index) in tag.children" :key="index" :tag="x" :tagName="x.tagName"></tag></' + tagName + '>';
+			var template = '<' + tagName + attrStr + '>{{tag.text ||""}}<tag v-for="(x,index) in tag.children" :key="index" :tag="x" :tagName="x.tagName" :mode="mode"></tag></' + tagName + '>';
 			if (tagName == "img" || tagName == "br" || tagName == "input") {
 				template = '<' + tagName + attrStr + '/>';
 			}	
@@ -86,14 +88,14 @@ export default {
 		isActive: function(val, oldVal) {
 			this.classes.tagActived = val;
 		},
-		hoverTagId: function(tagId, oldTagId) {
-			if (this.tag.tagId == tagId) {
-				this.classes.tagHover = true;
-			} else {
-				this.classes.tagHover = false;
-			}
-			this.oldHoverTagId = oldTagId;
-		},
+		//hoverTagId: function(tagId, oldTagId) {
+			//if (this.tag.tagId == tagId) {
+				//this.classes.tagHover = true;
+			//} else {
+				//this.classes.tagHover = false;
+			//}
+			//this.oldHoverTagId = oldTagId;
+		//},
 	},
 
 	render(arg1, arg2, arg3, arg4) {
@@ -110,20 +112,22 @@ export default {
 	},
 	
 	methods: {
-		...mapActions({
-			setTagId:'editor/setTagId',
-			setHoverTagId: "editor/setHoverTagId",
-		}),
 		click() {
-			this.setTagId(this.tag.tagId);
+			this.emit(this.EVENTS.__EVENT__TAG__CURRENT_TAG__, {tag:this.tag})
 		},
 		mouseover() {
-			this.setHoverTagId(this.tag.tagId);
+			//this.setHoverTagId(this.tag.tagId);
 		},
 		mouseout() {
-			this.setHoverTagId(undefined);
-
+			//this.setHoverTagId(undefined);
 		},
+	},
+
+	mounted() {
+		const self = this;
+		self.on(self.EVENTS.__EVENT__TAG__CURRENT_TAG__, function(data) {
+			self.currentTag = data.tag;
+		});
 	},
 
 	created(){

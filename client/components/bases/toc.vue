@@ -9,34 +9,27 @@
 
 <script>
 import _ from "lodash";
-
-import {mapActions, mapGetters} from "vuex";
-
+import {component} from "@/components/component.js";
 import md from "@/lib/markdown";
 
 export default {
+	mixins: [component],
+
 	data: function() {
 		return {
-			index:null,
+			headers:[],
+			index:null, // 当前激活项
 			vars: {
-				navlist:[
-				{
-					text:"标题",
-					level:2,
-				},
-				{
-					text:"子标题",
-					level:3,
-				},
-				],
-			}
+				text: null,
+				list: null,
+			},
 		}
 	},
 
 	props: {
-		useMainContent: {
-			type: Boolean,
-			default: true,
+		text: {
+			type:String,
+			default: "",
 		},
 		startLevel: {
 			type: Number,
@@ -46,22 +39,30 @@ export default {
 			type: Number,
 			default: 6,
 		},
-		text: {
-			type: String,
-			default: "",
+		list: {
+			type: Array,
+			default: function() {
+				return [
+					{
+						text:"标题",
+						level:2,
+					},
+					{
+						text:"子标题",
+						level:3,
+					},
+				];
+			}
 		},
 	},
 
-	computed: {
-		...mapGetters({
-			pageContent: 'editor/getPageContent',
-		}),
-
-		headers() {
-			const text = this.useMainContent ? this.pageContent : this.vars.text;
+	methods: {
+		headersFunc() {
+			const text = this.vars.text || this.text;
 			if (!text) {
-				return this.vars.navlist;
-			}
+				this.headers = this.vars.list || this.list;
+				return ;
+			} 
 
 			const tokens = md.md.parse(text);
 			const headers = tokens.filter(token => /^[hH][1-6]$/.test(token.tag));
@@ -74,14 +75,15 @@ export default {
 				});
 			})
 			//console.log(navlist);
-			return navlist;
-		}
-	},
+			this.headers = navlist;
+			return ;
+		},
 
-	methods: {
 		isShow(header) {
 			const level = header.level;
-			if (this.startLevel <= level && level <= this.endLevel) {
+			const startLevel = this.vars.startLevel || this.startLevel;
+			const endLevel = this.vars.endLevel || this.endLevel;
+			if (startLevel <= level && level <= endLevel) {
 				return true;
 			}
 			return false;
@@ -92,6 +94,21 @@ export default {
 		clickHeaderBtn(header, index) {
 			this.index = index
 		},
+	},
+
+	mounted() {
+		const self = this;
+		self.headersFunc();
+
+		self.on(self.EVENTS.__EVENT__TOC__IN__, function(data) {
+			_.merge(self.vars, data);
+			self.headersFunc();
+		});
+
+		self.on(self.EVENTS.__EVENT__TOC__IN__TEXT__, function(text) {
+			self.vars.text = text;
+			self.headersFunc();
+		});
 	},
 
 	created() {

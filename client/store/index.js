@@ -1,6 +1,7 @@
 
 export const state = () => ({
 	counter: 0,
+	mode: "normal",
 })
 
 export const getters = {

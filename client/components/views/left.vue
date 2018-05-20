@@ -1,7 +1,7 @@
 <template>
 	<el-tabs class="left-el-tabs" type="border-card">
 		<el-tab-pane label="文件">
-			<fileTree></fileTree>
+			<filetree></filetree>
 		</el-tab-pane>	
 		<el-tab-pane label="模块">
 			<!--<modTree></modTree>-->
@@ -19,14 +19,13 @@ import {
 import tagTree from "./tagTree.vue";
 import tagNav from "./tagNav.vue";
 import tagEdit from "./tagEdit.vue";
-import fileTree from "./fileTree.vue";
+import filetree from "./filetree.vue";
 
 export default {
 	components: {
 		[Tabs.name]: Tabs,
 		[TabPane.name]: TabPane,
-		//modTree,
-		fileTree,
+		filetree,
 		tagTree,
 		tagNav,
 		tagEdit,

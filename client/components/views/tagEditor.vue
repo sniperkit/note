@@ -61,11 +61,11 @@ import {mapActions, mapGetters} from "vuex";
 import {tags} from "@/lib/tags";
 import "@/components/bases/index.js";
 import "@/components/common/index.js";
-import baseComponent "@/components/base.js";
 import modTree from "@/components/views/modTree.vue";
 import tagNav from "@/components/views/tagNav.vue";
 import tagEdit from "@/components/views/tagEdit.vue";
 import tagTree from "@/components/views/tagTree.vue";
+//import component from "@/components/component.js";
 
 import "@/components/mods";
 
@@ -89,7 +89,7 @@ export default {
 		tagTree,
 	},
 
-	mixins: [baseComponent],
+	//mixins: [component],
 
 	data: function() {
 		const tag = tags.getTag();
@@ -99,21 +99,11 @@ export default {
 			tag: tag,
 			mod: {},
 			isSubmitTagMods: false,
+			tagId: null,
 		}
 	},
 
-	computed: {
-		...mapGetters({
-			tagId: "editor/getTagId",
-			getTagMod: "mods/tagMod",
-			tagMods: "mods/tagMods",
-		}),
-	},
-
 	watch: {
-		tagId: function(tagId) {
-			this.tag = this.rootTag.findById(tagId);
-		},
 		tagMods: {
 			handler:function() {
 				if (!this.isSubmitTagMods) {
@@ -157,7 +147,7 @@ export default {
 				subtag = adi.setMod(tag.type).getTag();
 			}
 			containerTag && containerTag.addTag(subtag);
-			this.setTagId(subtag.tagId);
+			this.emit(this.EVENTS.__EVENT__TAG__CURRENT_TAG__, {tag:subtag});
 		},
 		submitMod(mod) {
 			if (!mod.modName || !mod.styleName) {
@@ -176,12 +166,17 @@ export default {
 		},
 	},
 
-	async created() {
-		this.setMode("editor");
-	},
-
 	mounted() {
-		this.setTagId(this.rootTag.tagId);
+		const self = this;
+		self.on(self.EVENTS.__EVENT__TAG__CURRENT_TAG__, function(data){
+			const tag = data.tag;
+			self.tag = tag;
+		});
+		self.on(self.EVENTS.__EVENT__TAG__GET_ROOT_TAG__, function(data){
+			self.emit(self.EVENTS.__EVENT__TAG__SET_ROOT_TAG__, {
+				tag: self.rootTag,
+			});
+		})
 	}
 }
 </script>

@@ -30,11 +30,14 @@ import {
 import vue from "vue";
 import {mapActions, mapGetters} from "vuex";
 import tags from "@/lib/tags";
+import {component} from "@/components/component.js";
 
 export default {
 	components: {
 		[Tree.name]: Tree,
 	},
+
+	mixins: [component],
 
 	data: function() {
 		return {
@@ -58,16 +61,8 @@ export default {
 		rootTag: {
 			type:Object,
 		},
-		tag: {
-			type:Object,	
-		}
 	},
 	computed: {
-		...mapGetters({
-			tagId: 'editor/getTagId',
-			getMode: "editor/getMode",
-			hoverTagId:"editor/getHoverTagId",
-		}),
 		navTagList() {
 			if (!this.tag) {
 				return;
@@ -88,37 +83,16 @@ export default {
 		},
 	},
 	watch:{
-		tagId: function(tagId) {
-			if (!tagId) {
-				return;
-			}
-			var tree = this.$refs.tree;
-			setTimeout(function() {
-				tree.setCurrentKey(tagId);
-			}, 100);
-		},
 	},
 	methods: {
-		...mapActions({
-			setTagId:'editor/setTagId',
-			setHoverTagId:'editor/setHoverTagId',
-			setTagPath:"editor/setTagPath",
-		}),
 		allowDrag(draggingNode) {
 			return true;
 		},
 		allowDrop(draggingNode, dropNode) {
 			return dropNode.data.isContainerTag();
 		},
-		mouseover(tag){
-			if (!this.tag) {
-				return;
-			}
-			this.setHoverTagId(tag.tagId);
-		},
 		clickSelectTag(tag, node) {
-			this.setTagId(tag.tagId);
-			this.setTagPath(tag.getTagPath());
+			this.emit(this.EVENTS.__EVENT__TAG__CURRENT_TAG__, {tag});
 		},
 		isRootNode(tag) {
 			if (!this.rootTag || this.rootTag.tagId == tag.tagId) {
@@ -138,19 +112,28 @@ export default {
 			var index = parentTag.children.findIndex(t => t.tagId === tag.tagId);			
 			parentTag.children.splice(index,1);
 
+			let currentTag = null;
 			if (index == parentTag.children.length) {
-				this.setTagId(parentTag.tagId);
+				currentTag = parentTag;
 			} else {
-				this.setTagId(parentTag.children[index].tagId);
+				currentTag = parentTag.children[index];
 			}
+			this.emit(this.EVENTS.__EVENT__TAG__CURRENT_TAG__, {tag:currentTag});
 		},
   	},
-	created() {
-	},
+
 	mounted() {
-		if (!this.rootTag) {
-			return;
-		}
+		const self = this;
+		self.tag = self.rootTag;
+
+		self.on(self.EVENTS.__EVENT__TAG__CURRENT_TAG__, function(data) {
+			const tag = data.tag;
+			self.tag = tag;
+
+			setTimeout(function() {
+				self.$refs.tree.setCurrentKey(tag.tagId);
+			}, 100);
+		});
 	},
 }
 </script>

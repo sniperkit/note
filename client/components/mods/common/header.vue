@@ -52,14 +52,14 @@ export default {
 
 	computed: {
 		...mapGetters({
-			isLogin: "user/isAuthenticated",
 			user: "user/user",
+			isLogin: "user/isAuthenticated",
 		}),
 	},
 
 	methods: {
 		...mapActions({
-			setUser: "user/setUser",
+			setUser:"user/setUser",
 		}),
 		handleCommand(cmd){
 			if (cmd == "logout") {
@@ -79,7 +79,6 @@ export default {
 	},
 
 	mounted() {
-		//console.log(this.user);
 	}
 }
 </script>

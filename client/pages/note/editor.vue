@@ -13,7 +13,7 @@
 			</el-aside>
 			<div class="split-strip kp_forbit_copy" @mousedown="splitStripMousedown('splitStrip2')"></div>
 			<el-main ref="splitStrip2R" class="preview-container">
-				<userpage :text="renderContent" :template="true"></userpage>
+				<markdownEx :template="true"></markdownEx>
 			</el-main>
 		</el-container>
 	</el-container>
@@ -29,14 +29,18 @@ import {
 import vue from "vue";
 import {mapActions, mapGetters} from "vuex";
 
+import {component, events} from "@/components/component.js";
+
 import api from "@@/common/api/note.js";
 import {tags} from "@/lib/tags";
 import userpage from "@/components/bases/userpage.vue";
+import markdownEx from "@/components/bases/markdownEx.vue";
 import left from "@/components/views/left.vue";
 import codeEditor from "@/components/views/codeEditor.vue";
 //import "@/components";
 
 export default {
+	mixins: [component],
 	components: {
 		[Container.name]:Container,
 		[Header.name]:Header,
@@ -45,6 +49,7 @@ export default {
 		left,
 		codeEditor,
 		userpage,
+		markdownEx
 	},
 	//middleware: "authenticated",
 	data: function() {
@@ -66,6 +71,7 @@ export default {
 		renderContent() {
 			return this.pageContent;
 			const content = this.themeContent ? (this.themeContent + "\n" + this.pageContent) : this.pageContent;
+
 			return content;
 		},
 		codemirror() {
@@ -179,13 +185,15 @@ export default {
 		},
 	},
 	mounted() {
-		//adi.setTheme(this.theme);
-	},
-	beforeMount() {
-	},
-	created(){
-	},
+		const self = this;
 
+		self.on(self.EVENTS.__EVENT__CODEMIRROR__OUT__TEXT__, function(data) {
+			self.emit(self.EVENTS.__EVENT__MARKDOWN_EX__IN__TEXT__, data);
+		});
+		self.on(self.EVENTS.__EVENT__FILETREE__OUT__PAGE__, function(data){
+			self.emit(self.EVENTS.__EVENT__CODEMIRROR__IN__PAGE__, data);
+		})
+	},
 }
 </script>
 

@@ -69,7 +69,7 @@ import {
 import vue from "vue";
 import _ from "lodash";
 import {mapActions, mapGetters} from "vuex";
-import mdconf from "../../lib/markdown/mdconf.js";
+import mdconf from "@/lib/markdown/mdconf.js";
 import queryStyleKey from "./styleKey.js";
 import queryStyleValue from "./styleValue.js"
 
@@ -110,10 +110,6 @@ export default {
 	},
 	props: ["rootTag"],
 	computed: {
-		...mapGetters({
-			tagId: 'editor/getTagId',
-			getMode: "editor/getMode",
-		}),
 		codemirror() {
 			return this.$refs.cm && this.$refs.cm.codemirror;
 		},
@@ -131,16 +127,7 @@ export default {
 			return navTagList;
 		},
 	},
-	watch: {
-		tagId: function(tagId) {
-			var tag = this.rootTag.findById(tagId);
-			this.setTag(tag);
-		},
-	},
 	methods: {
-		...mapActions({
-			setTagId:'editor/setTagId',
-		}),
 		setTag(tag) {
 			if (!tag) {
 				return;
@@ -233,7 +220,7 @@ export default {
 			this.attrValue = "";
 		},
 		clickSelectTag(x) {
-			this.setTagId(x.tagId);
+			self.emit(self.EVENTS.__EVENT__TAG__CURRENT_TAG__, {tag:x});
 		},
 
   	},
@@ -249,6 +236,12 @@ export default {
 				},
 			});
 		});
+
+		self.on(self.EVENTS.__EVENT__TAG__CURRENT_TAG__, function(data) {
+			const tag = data.tag;
+			if (self.tag.tagId == tag.tagId) return;
+			self.setTag(tag);
+		})
 	},
 }
 </script>

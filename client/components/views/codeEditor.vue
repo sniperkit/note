@@ -24,11 +24,14 @@ import {
 	Message,
 } from "element-ui";
 
+import {component} from "@/components/component.js";
 import codemirror from "@/components/bases/codemirror.vue";
 import qiniuUpload from "@@/common/api/qiniu.js";
+import api from "@@/common/api/note.js";
 const tempContentKey = "cmeditor_temp_content";
 
 export default {
+	mixins: [component],
     components:{
 		[Dialog.name]: Dialog,
 		[Input.name]: Input,
@@ -53,59 +56,26 @@ export default {
 	},
 
 	computed: {
-		...mapGetters({
-			pagePath: "editor/getPagePath",
-			getPageContentByPath: "editor/getPageContentByPath",
-			switchPage: "editor/switchPage",
-		}),
 		codemirror() {
 			return this.$refs.cm && this.$refs.cm.codemirror;
 		},
 	},
 
-	watch: {
-		switchPage(isSwitchPage) {
-			if (!isSwitchPage) {
-				return;
-			}
-			// 切换文件 立即写入
-			this.savePageToDB(this.value.filename);
-			
-			// 切换文件
-			this.value = {
-				filename: this.pagePath,
-				text:this.pagePath && this.getPageContentByPath(this.pagePath) ,
-			};
-			
-			// 重置 切换状态
-			this.setSwitchPage(false);
-		}
-	},
-
 	methods: {
-		...mapActions({
-			setPage: "editor/setPage",
-			setPageContent: "editor/setPageContent",
-			savePage: "editor/savePage",
-			setSwitchPage: "editor/setSwitchPage",
-		}),
-
 		savePageToDB(){
 			var value = this.$refs.cm.getValue();
-			var filename = value.filename;
-			var text = value.text;
 			this.change.timer && clearTimeout(this.change.timer);
-			if (filename) {
-				this.setPage({
-					path: filename,
-					content: text,
-				});
+			if (this.page && this.page.path) {
+				g_app.pageDB.setItem(this.page);
 			}
 		},
 
 		textChange(payload) {
-			this.setPageContent(payload.text);
 			var self = this;
+			self.emit(self.EVENTS.__EVENT__CODEMIRROR__OUT__TEXT__, {
+				namespace: self.namespace,
+				text: payload.text,
+			});
 			if (!payload.filename) {
 				this.storage && this.storage.sessionStorageSetItem(tempContentKey, payload.text);
 				return;
@@ -117,6 +87,9 @@ export default {
 				self.savePageToDB();
 				this.change.timer = undefined;
 			} else {
+				const isModify = this.page.content != payload.text;
+				self.$set(self.page, "isModify", isModify);
+
 				if (this.change.timer) {
 					clearTimeout(this.change.timer);
 				} else {
@@ -126,17 +99,23 @@ export default {
 					self.savePageToDB();
 				}, 5000);
 			}
+
+			this.page.content = payload.text;
 		},
 
-		save(payload) {
+		async save(payload) {
 			let {filename, text} = payload;
 			if (!filename) {
 				return;
 			}
-			this.savePage({
-				path: filename,
-				content: text,
-			});
+			this.page.content = text;
+			this.page.isRefresh = true;
+			const result = await api.files.uploadFile(this.page);
+			this.page.isRefresh = false;
+			this.page.isModify = false;
+			if (result.isErr()) {
+				Message(result.getMessage());
+			}
 		},
 
 		fileUploadEvent(file) {
@@ -182,6 +161,18 @@ export default {
 		g_app.vue.$on(g_app.consts.EVENT_ADD_MOD_TO_EDITOR, function(style){
 			self.value = self.$refs.cm.getValue();
 			self.value.text += '\n```@' + style.modName + '/' + style.styleName + '\n' +'```\n';
+		});
+
+		self.on(self.EVENTS.__EVENT__CODEMIRROR__IN__PAGE__, function(data) {
+			if (self.namespace != data.namespace) return;
+			const page = data.page;
+
+			self.page = page;
+			self.value =  {
+				filename: page.path,
+				text: page.content || "",
+			}
+			self.savePageToDB();
 		});
 	},
 
