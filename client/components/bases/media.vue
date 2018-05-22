@@ -14,6 +14,7 @@ export default {
 	props: {
 		src: {
 			type: String,
+			default: "http://git.keepwork.com/gitlab_rls_lixizhi/keepworkdatasource/raw/master/lixizhi_images/img_1520938234618.jpeg",
 		},
 		type: {
 			type: String,

@@ -7,24 +7,22 @@
 				<li>list2</li>
 			</ul>
 		</div>
-		<div class="color-2">
-			hello world
-		</div>
+		<Title text="hello world"></Title>
+		<Markdown text="## header"></Markdown>
+		<MixLayer></MixLayer>
 	</div>
 </template>
 
 <script>
 import {
-	DatePicker,
 } from "element-ui";
-
-import media from "@/components/bases/media.vue";
+import MixLayer from "@/components/complex/mixLayer.vue";
 
 export default {
 	layout: "index",
 
 	components: {
-		media,
-	},
+		//MixLayer,
+	}
 }
 </script>

@@ -3,8 +3,6 @@
 </template>
 
 <script>
-import 'github-markdown-css/github-markdown.css';
-
 import {component} from "@/components/component.js";
 import tag from "@/components/common/tag.js";
 import {tags} from "@/lib/tags";
@@ -126,3 +124,7 @@ export default {
 }
 
 </script>
+
+<style scoped>
+@import 'github-markdown-css/github-markdown.css';
+</style>

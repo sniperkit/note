@@ -3,16 +3,20 @@ import vue from "vue";
 import _ from "lodash";
 
 import common from "./common.js";
-import toc from "./toc.vue";
-//import markdown from "./markdown.vue";
+import Toc from "./toc.vue";
+import Title from "./title.vue";
+import Media from "./media.vue";
+import Markdown from "./markdown.vue";
 //import wikiCarousel from "./wikiCarousel.vue";
-import userpage from "./userpage.vue";
+import Userpage from "./userpage.vue";
 //import adiComponents from "./adi.js";
 
 const components =  {
-	userpage,
-	toc,
-	//markdown,
+	Userpage,
+	Toc,
+	Title,
+	Media,
+	Markdown,
 	//wikiCarousel,
 }
 
@@ -47,7 +51,6 @@ for (var key in components) {
 		//},
 		//inheritAttrs:false,
 	//});
-
 //}
 
 //for (var key in components) {
