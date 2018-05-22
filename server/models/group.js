@@ -8,8 +8,8 @@ const Group = sequelize.define("group", {
 		primaryKey: true,
 	},
 
-	username: {
-		type: Sequelize.STRING(48),
+	userId: {
+		type: Sequelize.BIGINT,
 		allowNull: false,
 	},
 
