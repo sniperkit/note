@@ -30,7 +30,7 @@ const GroupUser = sequelize.define("groupUser", {
 	},
 
 	level: {
-		type: Sequelize.INT,
+		type: Sequelize.INTEGER,
 		defaultValue: USER_ACCESS_LEVEL_NONE,
 	},
 }, {
@@ -42,4 +42,4 @@ const GroupUser = sequelize.define("groupUser", {
   //console.log("create files table successfully");
 //});
 
-export default Group;
+export default GroupUser;

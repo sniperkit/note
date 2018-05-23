@@ -7,9 +7,7 @@
 				<li>list2</li>
 			</ul>
 		</div>
-		<Title text="hello world"></Title>
-		<Markdown text="## header"></Markdown>
-		<MixLayer></MixLayer>
+		<img src="http://localhost:3000/api/v0/files/statics">
 	</div>
 </template>
 

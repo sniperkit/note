@@ -117,6 +117,12 @@ Files.prototype.getByUsername = async function(ctx) {
 	return ERR.ERR_OK(data);
 }
 
+Files.prototype.statics = async function(ctx) {
+	ctx.redirect('http://git.keepwork.com/gitlab_rls_lixizhi/keepworkdatasource/raw/master/lixizhi_images/img_1520938234618.jpeg');
+
+	
+}
+
 Files.prototype.getRoutes = function() {
 	const self = this;
 	const prefix = "files";
@@ -185,6 +191,11 @@ Files.prototype.getRoutes = function() {
 			}
 		},
 		//authentated: true,
+	},
+	{
+		path: prefix + "/statics",
+		method: "get",
+		action: "statics",
 	},
 	];
 

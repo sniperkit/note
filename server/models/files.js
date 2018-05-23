@@ -8,33 +8,25 @@ const Files = sequelize.define("files", {
 		primaryKey: true,
 	},
 	
-	key: {
+	key: {  // 文件名  全路径
 		type: Sequelize.STRING(256),
 		unique: true,
 	},
 
-	username: {
+	username: {  // 文件所属者
 		type: Sequelize.STRING(48),
 		allowNull: false,
 	},
 
-	sitename: {
+	sitename: { // 存在 归于站点  不存在归于 用户
 		type: Sequelize.STRING(64),
 	},
 
-	type: {
+	type: {  // 文件类型
 		type: Sequelize.STRING(12),
 	},
 
-	filename: {
-		type: Sequelize.STRING(128),
-	},
-
-	hash: {
-		type: Sequelize.STRING(64),
-	},
-
-	sha: {
+	hash: {  // 七牛哈希  文件存于谁就用谁的hash   如 git sha
 		type: Sequelize.STRING(64),
 	},
 }, {
