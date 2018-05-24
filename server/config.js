@@ -8,8 +8,11 @@ const defaultConfig = {
 
 	baseURL: "/api/v0/",
 	host: "0.0.0.0",
-	port: 3000,
-	//port: 8900,
+	//port: 3000,
+	port: 8088,
+	protocol: "http",
+	//origin: "http://0.0.0.0:3000",
+	origin: "http://47.52.20.34:8088",
 
 	database: {
 		//port:3306,
@@ -34,6 +37,8 @@ const defaultConfig = {
 		secretKey:"",
 	},
 }
+
+//defaultConfig.baseURL = defaultConfig.baseURL || (defaultConfig.protocol + "://" + defaultConfig.host + ":" + defaultConfig.port + defaultConfig.apiPrefix);
 
 const productionConfig = {
 }

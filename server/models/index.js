@@ -1,21 +1,23 @@
 
-import _Users from "./users.js";
-import _DataSources from "./dataSources.js";
-import _Files from "./files.js";
-import _Sites from "./sites.js";
-import _Groups from "./groups.js";
-import _GroupMembers from "./groupMembers.js";
-import _SiteGroups from "./siteGroups.js";
-import _SiteMembers from "./siteMembers.js";
+import Users from "./users.js";
+import DataSources from "./dataSources.js";
+import Files from "./files.js";
+import Sites from "./sites.js";
+import Groups from "./groups.js";
+import GroupMembers from "./groupMembers.js";
+import SiteGroups from "./siteGroups.js";
+import SiteMembers from "./siteMembers.js";
+import SiteFiles from "./siteFiles.js";
 
-export const Users = _Users;
-export const DataSources = _DataSources;
-export const Files = _Files;
-export const Sites = _Sites;
-export const Groups = _Groups;
-export const GroupMembers = _GroupMembers;
-export const SiteGroups = _SiteGroups;
-export const SiteMembers = _SiteMembers;
+//export const Users = _Users;
+//export const DataSources = _DataSources;
+//export const Files = _Files;
+//export const Sites = _Sites;
+//export const Groups = _Groups;
+//export const GroupMembers = _GroupMembers;
+//export const SiteGroups = _SiteGroups;
+//export const SiteMembers = _SiteMembers;
+//export const SiteFiles = _SiteFiles;
 
 export default {
 	Users,
@@ -26,4 +28,5 @@ export default {
 	GroupMembers,
 	SiteGroups,
 	SiteMembers,
+	SiteFiles
 }

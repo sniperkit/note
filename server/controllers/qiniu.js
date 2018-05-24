@@ -4,6 +4,8 @@ const uuidv1 = require('uuid/v1');
 import config from "../config.js";
 import {ERR, ERR_OK, ERR_PARAMS} from "../../common/error.js";
 
+import filesModel from "../models/files.js";
+
 const accessKey = config.qiniu.accessKey;
 const secretKey = config.qiniu.secretKey;
 const bucketName = config.qiniu.bucketName;
@@ -171,12 +173,17 @@ Qiniu.prototype.getUploadTokenByKey = function(ctx) {
 }
 
 Qiniu.prototype.getUploadToken = function(ctx) {
+	const params = ctx.state.params || {};
+	let scope = bucketName;
+	if (params.key) scope += ":" + params.key;
+	
 	const options = {
-		scope: bucketName,
-		expires: 3600 * 24 * 365,
-		//callbackUrl: config.QiniuService.baseURL + "qiniu/callback",
-		//callbackBody: '{"key":"$(key)","hash":"$(etag)","size":$(fsize),"bucket":"$(bucket)","uid":"$(x:uid)"}',
-		//callbackBodyType: 'application/json',
+		scope: scope,
+		expires: 3600 * 24, // 一天
+		callbackUrl: config.origin + config.baseURL + "qiniu/callback",
+		callbackBody: '{"key":"$(key)","hash":"$(etag)","size":$(fsize),"bucket":"$(bucket)","public":"$(x:public)","filename":"$(x:filename)","path":"$(x:path)"}',
+		callbackBodyType: 'application/json',
+		//returnBody: '{"key":"$(key)","hash":"$(etag)","fsize":$(fsize),"bucket":"$(bucket)"}',
 	}
 
 	const mac = new qiniu.auth.digest.Mac(accessKey, secretKey);
@@ -203,15 +210,32 @@ Qiniu.prototype.getDownloadUrl = function(ctx) {
 	return  ERR_OK().setData(privateDownloadUrl);
 }
 
-Qiniu.prototype.callback = function(ctx) {
+Qiniu.prototype.callback = async function(ctx) {
 	const params = ctx.request.body;
 	const {key} = params;
-	console.log(params);
+	const username = key.split("/")[0].replace(/\_files$/, "");
+	//console.log(params);
 
-	ctx.state.params = params;	
-	const downloadUrl = this.getDownloadUrl(ctx)
+	let data = await filesModel.upsert({
+		username: username,
+		key:params.key,
+		hash: params.hash,
+		size: params.size,
+		type: params.type,
+		path: params.path == "null" ? undefined : params.path,
+		filename: params.filename == "null" ? undefined : params.filename,
+		public: params.public == "null" ? undefined : params.public,
+	}, {
+		where: {
+			key:key,
+		},
+	})
+	
+	// 添加记录失败 应删除文件
+	if (!data) {
+	}
 
-	return ERR_OK().setData({downloadUrl: downloadUrl});
+	return ERR_OK(data);
 }
 
 Qiniu.getRoutes = function() {

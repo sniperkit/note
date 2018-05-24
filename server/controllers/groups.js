@@ -1,3 +1,4 @@
+import joi from "joi";
 
 import groupsModel from "../models/groups.js";
 
@@ -8,10 +9,11 @@ export const Groups = function() {
 }
 
 Groups.prototype.find = function() {
-	
+	console.log(ctx.params);
 }
 
 Groups.prototype.findOne = async function(ctx) {
+	console.log(ctx.params);
 }
 
 Groups.prototype.create = async function(ctx) {
@@ -44,6 +46,11 @@ Groups.getRoutes = function() {
 		path: ":id",
 		method: "GET",
 		action: "findOne",
+		validate: {
+			params: {
+				id: joi.string().required(),
+			},
+		}
 	},
 	{
 		method: "POST",

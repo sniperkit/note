@@ -35,7 +35,10 @@ const getParams = (ctx) => {
 		params = ctx.request.body;
 	}
 
-	return ctx.state.params || params || {};
+	params = ctx.state.params || params || {};
+
+	return params;
+	//return _.merge(params, ctx.params);
 }
 
 export const registerControllerRouter = function(router) {
@@ -47,11 +50,11 @@ export const registerControllerRouter = function(router) {
 				
 				const path = (Ctrl.pathPrefix || "") + "/" + (route.path || "");
 				
-				console.log(path, method);
+				//console.log(path, method);
 				router[method](path, validate(route.validate), async (ctx, next) => {
 					// 认证中间件
 					if (route.authentated && !ctx.state.user) {
-						ctx.body = ERR_UNATUH;
+						ctx.body = ERR_UNATUH();
 						return;
 					}
 

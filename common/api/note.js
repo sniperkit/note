@@ -76,17 +76,19 @@ export function Qiniu(options) {
 
 export function Files(options) {
 	const self = this;
+	const prefix = "files/";
 
 	initHttpOptions(self, options);
 
-	const apiRequest = (method, url) => (data, config) => httpRequest(method || "get", url, data, Object.assign(self.options, config));
+	const apiRequest = (method, url) => (data, config) => httpRequest(method || "get", prefix + (url || ""), data, Object.assign(self.options, config));
 	
-	self.list = apiRequest("get", "files/list");
-	self.getByUsername = apiRequest("get", "files/getByUsername");
-	self.getContent = apiRequest("get", "files/getContent");
-	self.getFile = apiRequest("get", "files/getFile");
-	self.uploadFile = apiRequest("post", "files/uploadFile");
-	self.deleteFile = apiRequest("delete", "files/deleteFile");
+	self.list = apiRequest("get", "list");
+	self.getByUsername = apiRequest("get", "getByUsername");
+	self.getContent = apiRequest("get", "getContent");
+	self.getFile = apiRequest("get", "getFile");
+	self.uploadFile = apiRequest("post", "uploadFile");
+	self.deleteFile = apiRequest("delete", "deleteFile");
+	self.token = apiRequest("get", "token");
 }
 
 export const mod = {

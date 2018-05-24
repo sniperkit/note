@@ -26,7 +26,7 @@ export const validate = (schema = {}) => {
 
     	if (errors.length !== 0) {
       		const msg = errors[0].message.replace(/"/g, '');
-			ctx.body = ERR_PARAMS.setMessage(msg);
+			ctx.body = ERR_PARAMS().setMessage(msg);
 			return;
     	}
 

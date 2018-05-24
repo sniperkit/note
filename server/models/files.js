@@ -8,7 +8,7 @@ const Files = sequelize.define("files", {
 		primaryKey: true,
 	},
 	
-	key: {  // 文件名  全路径
+	key: {  // 存储服务的文件名  推荐使用全路径  可以使用UUID 唯一即可
 		type: Sequelize.STRING(256),
 		unique: true,
 	},
@@ -18,15 +18,28 @@ const Files = sequelize.define("files", {
 		allowNull: false,
 	},
 
-	sitename: { // 存在 归于站点  不存在归于 用户
+	//sitename: { // 存在 归于站点  不存在归于 用户
+		//type: Sequelize.STRING(64),
+	//},
+
+	path: {     // 文件路径  方便用户归类文件
+		type: Sequelize.STRING(128),
+	},
+
+	filename: { // 文件名  方便用户识别文件
 		type: Sequelize.STRING(64),
 	},
 
-	type: {  // 文件类型
+	public: {   // 是否公开
+		type: Sequelize.BOOLEAN,
+		defaultValue: false, 
+	},
+
+	type: {     // 文件类型
 		type: Sequelize.STRING(12),
 	},
 
-	hash: {  // 七牛哈希  文件存于谁就用谁的hash   如 git sha
+	hash: {     // 七牛哈希  文件存于谁就用谁的hash   如 git sha
 		type: Sequelize.STRING(64),
 	},
 }, {
