@@ -266,12 +266,12 @@ export default {
 			let _loadPageFromServer = async function() {
 				console.log("服务器最新");
 				const result = await api.files.getFile({key:page.path});
-				if (result.isErr()) {
+				const file = result.getData();
+				if (!file && result.isErr()) {
 					Message(result.getMessage());
 					errcb && errcb();
 					return;
 				}
-				const file = result.getData();
 				page.hash = file.hash;
 				if (typeof(file.content) != "string") {
 					errcb && errcb();

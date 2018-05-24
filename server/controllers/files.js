@@ -30,7 +30,7 @@ Files.prototype.getContent = async function(ctx) {
 	const params = ctx.state.params;
 	params.username = username;
 
-	return await qiniu.get(ctx);
+	return await storage.get(ctx);
 }
 
 Files.prototype.getFile = async function(ctx) {
@@ -38,7 +38,7 @@ Files.prototype.getFile = async function(ctx) {
 	const params = ctx.state.params;
 	params.username = username;
 
-	let result = await qiniu.get(ctx);
+	let result = await storage.get(ctx);
 	if (result.isErr()) return result;
 	
 	let record = await this.model.findOne({
@@ -46,7 +46,7 @@ Files.prototype.getFile = async function(ctx) {
 			key: params.key,
 		},
 	});
-	if (!record) return ERR.ERR_NOT_FOUND();
+	if (!record) return ERR.ERR_NOT_FOUND({content: result.getData()});
 	record = record.get({plain:true});
 
 	record.content = result.getData();
@@ -59,7 +59,7 @@ Files.prototype.uploadFile = async function(ctx) {
 	const params = ctx.state.params;
 	params.username = username;
 	
-	let result = await qiniu.upload(ctx);
+	let result = await storage.upload(ctx);
 	if (result.isErr()) return result;
 
 	params.hash = result.getData().hash;
@@ -76,7 +76,7 @@ Files.prototype.deleteFile = async function(ctx) {
 	const params = ctx.state.params;
 	params.username = username;
 
-	let result = await qiniu.delete(ctx);
+	let result = await storage.delete(ctx);
 
 	await this.model.destroy({where:{
 		key: params.key,
@@ -92,7 +92,7 @@ Files.prototype.list = async function(ctx) {
 		prefix: params.prefix || "",
 	}
 
-	const result = await qiniu.list(ctx);
+	const result = await storage.list(ctx);
 	if (result.isErr()) return result;
 
 	const data = result.getData();
@@ -106,7 +106,7 @@ Files.prototype.getByUsername = async function(ctx) {
 	ctx.state.params = {
 		prefix: params.username,
 	}
-	const result = await qiniu.list(ctx);
+	const result = await storage.list(ctx);
 	if (result.isErr()) return result;
 
 	const data = result.getData();
@@ -137,7 +137,7 @@ Files.prototype.getToken = async function(ctx) {
 	ctx.state.params = {key:key};
 
 	const result =  storage.getUploadToken(ctx);
-	if (result:isErr()) return result;
+	if (result.isErr()) return result;
 
 	const token = result.data;
 	
@@ -313,28 +313,28 @@ Files.getRoutes = function() {
 			}
 		},
 	},
-	{
-		path: ":id",
-		method: "GET",
-		action: "findOne",
-		authentated: true,
-		validate: {
-			params: {
-				id: joi.string().required(),
-			}
-		},
-	},
-	{
-		path: "",
-		method: "GET",
-		action: "find",
-		authentated: true,
-		validate: {
-			params: {
-				id: joi.string().required(),
-			}
-		},
-	},
+	//{
+		//path: ":id",
+		//method: "GET",
+		//action: "findOne",
+		//authentated: true,
+		//validate: {
+			//params: {
+				//id: joi.string().required(),
+			//}
+		//},
+	//},
+	//{
+		//path: "",
+		//method: "GET",
+		//action: "find",
+		//authentated: true,
+		//validate: {
+			//params: {
+				//id: joi.string().required(),
+			//}
+		//},
+	//},
 	{
 		path: ":id/rename",
 		method: "PUT",
