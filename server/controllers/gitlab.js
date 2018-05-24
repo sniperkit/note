@@ -162,11 +162,11 @@ Gitlab.prototype.gitlab = async (ctx) => {
 	git.upsertFile();
 }
 
-Gitlab.prototype.getRoutes = function() {
-	const prefix = "gitlab";
+Gitlab.getRoutes = function() {
+	this.pathPrefix = "gitlab";
 	const routes = [
 	{
-		path: prefix + "/webhook",
+		path: "webhook",
 		method: "post",
 		action: "webhook",
 	},
@@ -175,4 +175,4 @@ Gitlab.prototype.getRoutes = function() {
 	return routes;
 }
 
-export default new Gitlab();
+export default Gitlab;

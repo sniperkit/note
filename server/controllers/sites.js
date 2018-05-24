@@ -2,13 +2,13 @@ import joi from "joi";
 
 import ERR from "../../common/error.js";
 
-import siteModel from "../models/site.js";
+import siteModel from "../models/sites.js";
 
-export const Site = function() {
+export const Sites = function() {
 	this.model = siteModel;
 }
 
-Site.prototype.create = async function(ctx) {
+Sites.prototype.create = async function(ctx) {
 	const params = ctx.state.params;
 	const username = ctx.state.user.username;
 	params.username = username;
@@ -30,7 +30,7 @@ Site.prototype.create = async function(ctx) {
 	return ERR.ERR_OK().setData(data);
 }
 
-Site.prototype.getByUsername = async function(ctx) {
+Sites.prototype.getByUsername = async function(ctx) {
 	const params = ctx.state.params;
 	const username = params.username || ctx.state.user.username;
 
@@ -47,7 +47,7 @@ Site.prototype.getByUsername = async function(ctx) {
 	return ERR.ERR_OK().setData(data);
 }
 
-Site.prototype.update = async function(ctx) {
+Sites.prototype.update = async function(ctx) {
 	const params = ctx.state.params;
 	const username = ctx.state.user.username;
 
@@ -69,7 +69,7 @@ Site.prototype.update = async function(ctx) {
 	return ERR.ERR_OK();
 }
 
-Site.prototype.delete = async function(ctx) {
+Sites.prototype.delete = async function(ctx) {
 	const params = ctx.state.params;
 	const username = ctx.state.user.username;
 	params.username = username;
@@ -88,16 +88,16 @@ Site.prototype.delete = async function(ctx) {
 	return ERR.ERR_OK();
 }
 
-Site.prototype.getRoutes = function() {
-	const prefix = "site";
+Sites.getRoutes = function() {
+	this.pathPrefix = "sites";
 	const routes = [
 	{
-		path: prefix + "/getByUsername",
+		path: "getByUsername",
 		method: "get",
 		action: "getByUsername",
 	},
 	{
-		path: prefix + "/delete",
+		path: "delete",
 		method: "delete",
 		action: "delete",
 		authenticated: true,
@@ -109,13 +109,13 @@ Site.prototype.getRoutes = function() {
 		},
 	},
 	{
-		path: prefix + "/update",
+		path: "update",
 		method: "put",
 		action: "update",
 		authenticated: true,
 	},
 	{
-		path: prefix + "/create",
+		path: "create",
 		method: "post",
 		action: "create",
 		authenticated: true,
@@ -130,5 +130,5 @@ Site.prototype.getRoutes = function() {
 	return routes;
 }
 
-export default new Site();
+export default Sites;
 

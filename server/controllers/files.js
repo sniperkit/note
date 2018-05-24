@@ -123,77 +123,72 @@ Files.prototype.statics = async function(ctx) {
 	
 }
 
-Files.prototype.getRoutes = function() {
+Files.getRoutes = function() {
 	const self = this;
-	const prefix = "files";
+	self.pathPrefix = "files";
 	const routes = [
 	{
-		path: prefix + "/list",
+		path: "list",
 		method: "get",
 		action: "list",
 	},
 	{
-		path: prefix + "/getByUsername",
+		path: "getByUsername",
 		method: "get",
 		action: "getByUsername",
 		validate: {
 			query: {
 				username: joi.string().required(),
-				//content: 
 			}
 		},
-		//authentated: true,
+		authentated: true,
 	},
 	{
-		path: prefix + "/getContent",
+		path: "getContent",
 		method: "get",
 		action: "getContent",
 		validate: {
 			query: {
 				key: joi.string().required(),
-				//content: 
 			}
 		},
-		//authentated: true,
+		authentated: true,
 	},
 	{
-		path: prefix + "/getFile",
+		path: "getFile",
 		method: "get",
 		action: "getFile",
 		validate: {
 			query: {
 				key: joi.string().required(),
-				//content: 
 			}
 		},
-		//authentated: true,
+		authentated: true,
 	},
 	{
-		path: prefix + "/uploadFile",
+		path: "uploadFile",
 		method: "post",
 		action: "uploadFile",
 		validate: {
 			body: {
 				key: joi.string().required(),
-				//content: 
 			}
 		},
-		//authentated: true,
+		authentated: true,
 	},
 	{
-		path: prefix + "/deleteFile",
+		path: "deleteFile",
 		method: "delete",
 		action: "deleteFile",
 		validate: {
 			query: {
 				key: joi.string().required(),
-				//content: 
 			}
 		},
-		//authentated: true,
+		authentated: true,
 	},
 	{
-		path: prefix + "/statics",
+		path: "statics",
 		method: "get",
 		action: "statics",
 	},
@@ -202,4 +197,4 @@ Files.prototype.getRoutes = function() {
 	return routes;
 }
 
-export default new Files();
+export default Files;

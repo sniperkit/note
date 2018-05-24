@@ -4,29 +4,29 @@ import joi from "joi";
 import util from "../../common/util.js";
 import config from "../config.js";
 import {ERR, ERR_OK, ERR_PARAMS} from "../../common/error.js";
-import userModel from "../models/user.js";
+import userModel from "../models/users.js";
 
-export const User = function() {
+export const Users = function() {
 	this.model = userModel;
 }
 
-User.prototype.create = function() {
+Users.prototype.create = function() {
 
 } 
 
-User.prototype.update = function() {
+Users.prototype.update = function() {
 
 }
 
-User.prototype.delete = function() {
+Users.prototype.delete = function() {
 
 }
 
-User.prototype.find = function() {
+Users.prototype.find = function() {
 
 }
 
-User.prototype.setBaseInfo = async function(ctx) {
+Users.prototype.setBaseInfo = async function(ctx) {
 	const params = ctx.state.params;
 
 	const data = this.model.update(params, {
@@ -43,7 +43,7 @@ User.prototype.setBaseInfo = async function(ctx) {
 	return ERR_OK();
 }
 
-User.prototype.register = async function(ctx) {
+Users.prototype.register = async function(ctx) {
 	const params = ctx.request.body;
 	const usernameReg = /^[\w\d]+$/;
 	if (!usernameReg.test(params.username)) {
@@ -75,7 +75,7 @@ User.prototype.register = async function(ctx) {
 	return ERR_OK().setData(user);
 }
 
-User.prototype.login = async function(ctx) {
+Users.prototype.login = async function(ctx) {
 	const params = ctx.state.params;
 	let user = await this.model.findOne({
 		where: {
@@ -100,7 +100,7 @@ User.prototype.login = async function(ctx) {
 	return ERR_OK().setData(user);
 }
 
-User.prototype.modifyPassword = async function(ctx) {
+Users.prototype.modifyPassword = async function(ctx) {
 	const params = ctx.state.params;
 	const username = ctx.state.user.username;
 
@@ -119,29 +119,29 @@ User.prototype.modifyPassword = async function(ctx) {
 	return ERR_OK();
 }
 
-User.prototype.isLogin = async function(ctx) {
+Users.prototype.isLogin = async function(ctx) {
 	this.model.findById(1);
 	return "hello world";
 }
 
-User.prototype.getRoutes = function() {
+Users.getRoutes = function() {
 	const self = this;
-	const prefix = "user";
+	self.pathPrefix = "users";
 	const routes = [
 	{
-		path: prefix + "/modifyPassword",
+		path: "modifyPassword",
 		method: "put",
 		action: "modifyPassword",
 		authenticated: true,
 	},
 	{
-		path: prefix + "/setBaseInfo",
+		path: "setBaseInfo",
 		method: "put",
 		action: "setBaseInfo",
 		authenticated: true,
 	},
 	{
-		path: prefix + "/register",
+		path: "register",
 		method: "post",
 		action: "register",
 		validate: {
@@ -153,7 +153,7 @@ User.prototype.getRoutes = function() {
 	},
 
 	{
-		path: prefix + "/login",
+		path: "login",
 		method: "post",
 		action: "login",
 		validate: {
@@ -165,7 +165,7 @@ User.prototype.getRoutes = function() {
 	},
 
 	{
-		path: prefix + "/isLogin",
+		path: "isLogin",
 		method: "get",
 		action: "isLogin",
 	},
@@ -174,4 +174,4 @@ User.prototype.getRoutes = function() {
 	return routes;
 }
 
-export default new User();
+export default Users;

@@ -7,7 +7,7 @@ const USER_ACCESS_LEVEL_NONE = consts.USER_ACCESS_LEVEL.USER_ACCESS_LEVEL_NONE;
 const USER_ACCESS_LEVEL_READ = consts.USER_ACCESS_LEVEL.USER_ACCESS_LEVEL_READ;
 const USER_ACCESS_LEVEL_WRITE = consts.USER_ACCESS_LEVEL.USER_ACCESS_LEVEL_WRITE;
 
-const SiteGroup = sequelize.define("siteGroup", {
+const SiteGroups = sequelize.define("siteGroups", {
 	id: {
 		type: Sequelize.BIGINT,
 		autoIncrement: true,
@@ -38,8 +38,8 @@ const SiteGroup = sequelize.define("siteGroup", {
 	collate: 'utf8mb4_bin',
 });
 
-//SiteGroup.sync({force:true}).then(() => {
+//SiteGroups.sync({force:true}).then(() => {
   //console.log("create files table successfully");
 //});
 
-export default SiteGroup;
+export default SiteGroups;

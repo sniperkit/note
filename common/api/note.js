@@ -39,11 +39,11 @@ export function User(options) {
 	const apiRequest = (method, url) => (data, config) => httpRequest(method || "get", url, data, Object.assign(self.options, config));
 
 
-	self.login = apiRequest("post", "user/login");
-	self.register = apiRequest("post", "user/register");
-	self.setBaseInfo = apiRequest("put", "user/setBaseInfo");
-	self.modifyPassword = apiRequest("put", "user/modifyPassword");
-	self.isLogin = apiRequest("get", "user/isLogin");
+	self.login = apiRequest("post", "users/login");
+	self.register = apiRequest("post", "users/register");
+	self.setBaseInfo = apiRequest("put", "users/setBaseInfo");
+	self.modifyPassword = apiRequest("put", "users/modifyPassword");
+	self.isLogin = apiRequest("get", "users/isLogin");
 }
 
 export function DataSource(options) {
@@ -100,10 +100,10 @@ export function Site(options) {
 
 	const apiRequest = (method, url) => (data, config) => httpRequest(method || "get", url, data, Object.assign(self.options, config));
 
-	self.create = apiRequest("post", "site/create");
-	self.update = apiRequest("put", "site/update");
-	self.delete = apiRequest("delete", "site/delete");
-	self.getByUsername = apiRequest("get", "site/getByUsername");
+	self.create = apiRequest("post", "sites/create");
+	self.update = apiRequest("put", "sites/update");
+	self.delete = apiRequest("delete", "sites/delete");
+	self.getByUsername = apiRequest("get", "sites/getByUsername");
 }
 
 export function Note(options){

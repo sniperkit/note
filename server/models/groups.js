@@ -1,26 +1,21 @@
 import Sequelize from 'sequelize';
 import sequelize from "./database.js";
 
-const Site = sequelize.define('site', {
+const Groups = sequelize.define("groups", {
 	id: {
 		type: Sequelize.BIGINT,
 		autoIncrement: true,
 		primaryKey: true,
 	},
-	
-	username: {
-		type: Sequelize.STRING(48),
+
+	userId: {
+		type: Sequelize.BIGINT,
 		allowNull: false,
 	},
 
-	sitename: {
+	groupname: {
 		type: Sequelize.STRING(48),
 		allowNull: false,
-	},
-
-	"private": {
-		type: Sequelize.BOOLEAN,
-		defaultValue: false,
 	},
 
 	description: {
@@ -31,9 +26,8 @@ const Site = sequelize.define('site', {
 	collate: 'utf8mb4_bin',
 });
 
-//Site.sync({force:true}).then(() => {
-	//console.log("create site table successfully");
+//Groups.sync({force:true}).then(() => {
+  //console.log("create files table successfully");
 //});
 
-
-export default Site;
+export default Groups;

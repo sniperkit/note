@@ -214,46 +214,46 @@ Qiniu.prototype.callback = function(ctx) {
 	return ERR_OK().setData({downloadUrl: downloadUrl});
 }
 
-Qiniu.prototype.getRoutes = function() {
-	const prefix = "qiniu";
+Qiniu.getRoutes = function() {
+	this.pathPrefix = "qiniu";
 	const routes = [
 	{
-		path: prefix + "/get",
+		path: "get",
 		method: "get",
 		action: "get",
 	},
 	{
-		path: prefix + "/list",
+		path: "list",
 		method: "get",
 		action: "list",
 	},
 	{
-		path: prefix + "/upload",
+		path: "upload",
 		method: "post",
 		action: "upload",
 	},
 	{
-		path: prefix + "/getUid",
+		path: "getUid",
 		method: "get",
 		action: "getUid",
 	},
 	{
-		path: prefix + "/getUploadTokenByKey",
+		path: "getUploadTokenByKey",
 		method: "get",
 		action: "getUploadTokenByKey",
 	},
 	{
-		path: prefix + "/getUploadToken",
+		path: "getUploadToken",
 		method: "get",
 		action: "getUploadToken",
 	},
 	{
-		path: prefix + "/callback",
+		path: "callback",
 		method: "post",
 		action: "callback",
 	},
 	{
-		path: prefix + "/getDownloadUrl",
+		path: "getDownloadUrl",
 		method: "get",
 		action: "getDownloadUrl",
 	},
@@ -263,4 +263,4 @@ Qiniu.prototype.getRoutes = function() {
 }
 
 
-export default new Qiniu();
+export default Qiniu;

@@ -1,7 +1,7 @@
 import Sequelize from 'sequelize';
 import sequelize from "./database.js";
 
-const DataSource = sequelize.define("dataSource", {
+const DataSources = sequelize.define("dataSources", {
 	id: {
 		type: Sequelize.BIGINT,
 		autoIncrement: true,
@@ -51,8 +51,8 @@ const DataSource = sequelize.define("dataSource", {
 	collate: 'utf8mb4_bin',
 });
 
-//DataSource.sync({force:true}).then(() => {
+//DataSources.sync({force:true}).then(() => {
 	//console.log("create dataSource table successfully");
 //});
 
-export default DataSource;
+export default DataSources;

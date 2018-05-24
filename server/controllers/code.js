@@ -15,10 +15,10 @@ Code.prototype.pushCode = function() {
 
 Code.prototype.getRoutes = function() {
 	const self = this;
-	const prefix = "code";
+	self.pathPrefix = "code";
 	const routes = [
 	{
-		path: prefix + "/push_code",
+		path: "push_code",
 		method: "all",
 		action: "pushCode",
 	},

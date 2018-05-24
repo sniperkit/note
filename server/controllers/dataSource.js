@@ -5,7 +5,7 @@ import jwt from "jwt-simple";
 import {Gitlab} from "../../common/api/gitlab.js";
 import config from "../config.js";
 import ERR from "../../common/error.js";
-import DataSourceModel from "../models/dataSource.js";
+import DataSourceModel from "../models/dataSources.js";
 
 const defaultProjectName = "notedatasource";
 
@@ -145,27 +145,27 @@ DataSource.prototype.getByUsername = async function(ctx) {
 	return list;
 }
 
-DataSource.prototype.getRoutes = function() {
-	const prefix = "dataSource";
+DataSource.getRoutes = function() {
+	this.pathPrefix = "dataSource";
 	const routes = [
 	{
-		path: prefix + "/getDefaultDataSource",
+		path: "getDefaultDataSource",
 		method: "get",
 		action: "getDefaultDataSource",
 	},
 	{
-		path: prefix + "/getByUsername",
+		path: "getByUsername",
 		method: "get",
 		action: "getByUsername",
 	},
 	{
-		path: prefix + "/upsert",
+		path: "upsert",
 		method: "post",
 		action: "upsert",
 		requireAuth: true,
 	},
 	{
-		path: prefix + "/delete",
+		path: "delete",
 		method: "delete",
 		action: "delete",
 		requireAuth: true,
@@ -175,4 +175,4 @@ DataSource.prototype.getRoutes = function() {
 	return routes;
 }
 
-export default new DataSource();
+export default DataSource;

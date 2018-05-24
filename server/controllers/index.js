@@ -5,22 +5,24 @@ import {ERR_UNATUH, ERR_OK, ERR_PARAMS} from "../../common/error.js";
 
 import code from "./code.js";
 import oauth from "./oauth.js";
-import user from "./user.js";
+import users from "./users.js";
 import dataSource from "./dataSource.js";
 import gitlab from "./gitlab.js"; 
 import qiniu from "./qiniu.js";
 import files from "./files.js";
-import site from "./site.js";
+import sites from "./sites.js";
+import Groups from "./groups.js";
 
 export const controllers = {
 	code,
 	oauth,
-	user,
+	users,
 	dataSource,
 	gitlab,
 	qiniu,
 	files,
-	site,
+	sites,
+	Groups,
 }
 
 const getParams = (ctx) => {
@@ -37,13 +39,16 @@ const getParams = (ctx) => {
 }
 
 export const registerControllerRouter = function(router) {
-	_.each(controllers, ctrl => {
-		_.each(ctrl.getRoutes(), (route) => {
+	_.each(controllers, Ctrl => {
+		_.each(Ctrl.getRoutes(), (route) => {
 			const methods = _.isArray(route.method) ? route.method : [route.method || "get"];
 			_.each(methods, method => {
 				method = _.lowerCase(method);
-				//console.log(method, route.path);
-				router[method](route.path, validate(route.validate), async (ctx, next) => {
+				
+				const path = (Ctrl.pathPrefix || "") + "/" + (route.path || "");
+				
+				console.log(path, method);
+				router[method](path, validate(route.validate), async (ctx, next) => {
 					// 认证中间件
 					if (route.authentated && !ctx.state.user) {
 						ctx.body = ERR_UNATUH;
@@ -53,6 +58,7 @@ export const registerControllerRouter = function(router) {
 					ctx.state.user = ctx.state.user || {};
 					ctx.state.params = getParams(ctx);
 					try {
+						const ctrl = new Ctrl();
 						const body = await ctrl[route.action](ctx);	
 						ctx.body = body || ctx.body;
 					} catch(e) {

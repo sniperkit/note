@@ -52,17 +52,17 @@ Oauth.prototype.facebook = async function(ctx) {
 	//console.log(userinfo);
 }
 
-Oauth.prototype.getRoutes = function() {
+Oauth.getRoutes = function() {
 	const self = this;
-	const prefix = "oauth/";
+	self.pathPrefix = "oauth";
 	const routes = [
 	{
-		path: prefix + "github",
+		path: "github",
 		method: "get",
 		action: "github",
 	},
 	{
-		path: prefix + "github",
+		path: "github",
 		method: "all",
 		action: "github",
 	},
@@ -71,4 +71,4 @@ Oauth.prototype.getRoutes = function() {
 	return routes;
 }
 
-export default new Oauth();
+export default Oauth;

@@ -1,7 +1,7 @@
 import Sequelize from 'sequelize';
 import sequelize from "./database.js";
 
-const User = sequelize.define('user', {
+const Users = sequelize.define('users', {
 	id: {
 		type: Sequelize.BIGINT,
 		autoIncrement: true,
@@ -57,4 +57,4 @@ const User = sequelize.define('user', {
 //});
 
 
-export default User;
+export default Users;

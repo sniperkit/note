@@ -6,7 +6,7 @@ import config from "./.config.js";
 const defaultConfig = {
 	secret: "keepwork",
 
-	baseURL: "http://127.0.0.1:3000/api/v0/",
+	baseURL: "/api/v0/",
 	host: "0.0.0.0",
 	port: 3000,
 	//port: 8900,

@@ -1,29 +1,29 @@
 
-import _User from "./user.js";
-import _DataSource from "./dataSource.js";
+import _Users from "./users.js";
+import _DataSources from "./dataSources.js";
 import _Files from "./files.js";
-import _Site from "./site.js";
-import _Group from "./group.js";
-import _GroupUser from "./groupUser.js";
-import _SiteGroup from "./siteGroup.js";
-import _SiteUser from "./siteUser.js";
+import _Sites from "./sites.js";
+import _Groups from "./groups.js";
+import _GroupMembers from "./groupMembers.js";
+import _SiteGroups from "./siteGroups.js";
+import _SiteMembers from "./siteMembers.js";
 
-export const User = _User;
-export const DataSource = _DataSource;
+export const Users = _Users;
+export const DataSources = _DataSources;
 export const Files = _Files;
-export const Site = _Site;
-export const Group = _Group;
-export const GroupUser = _GroupUser;
-export const SiteGroup = _SiteGroup;
-export const SiteUser = _SiteUser;
+export const Sites = _Sites;
+export const Groups = _Groups;
+export const GroupMembers = _GroupMembers;
+export const SiteGroups = _SiteGroups;
+export const SiteMembers = _SiteMembers;
 
 export default {
-	User,
-	DataSource,
+	Users,
+	DataSources,
 	Files,
-	Site,
-	Group,
-	GroupUser,
-	SiteGroup,
-	SiteUser,
+	Sites,
+	Groups,
+	GroupMembers,
+	SiteGroups,
+	SiteMembers,
 }
