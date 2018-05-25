@@ -45,10 +45,11 @@ Err.prototype.clone = function(err) {
 	return _.cloneDeep(err || this);
 }
 export const ERR = (data) => new Err(-1, "unknown error", data);
-export const ERR_OK = (data) => new Err(null, null, data);
+export const ERR_OK = (data) => new Err(0, null, data);
 export const ERR_PARAMS = (data) => new Err(1, "参数错误", data);
 export const ERR_UNATUH = (data) => new Err(2, "未认证", data);
 export const ERR_NOT_FOUND = (data) => new Err(3, "未找到记录", data);
+export const ERR_NO_PERMISSION = (data) => new Err(4, "没有权限", data);
 
 export default {
 	ERR,

@@ -89,6 +89,7 @@ export function Files(options) {
 	self.list = apiRequest("get", "");
 	self.token = apiRequest("get", "token");
 	self.getContent = (data, config) => (apiRequest("get", encodeURIComponent(data.id || data.key) + "/content"))(data,config);
+	self.upsertContent = (data, config) => (apiRequest("POST", encodeURIComponent(data.id || data.key) + "/content"))(data,config);
 }
 
 export const mod = {

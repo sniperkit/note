@@ -18,9 +18,9 @@ const Files = sequelize.define("files", {
 		allowNull: false,
 	},
 
-	//sitename: { // 存在 归于站点  不存在归于 用户
-		//type: Sequelize.STRING(64),
-	//},
+	sitename: { // 存在 归于站点  不存在归于 用户  用于多人编辑引用站点资源
+		type: Sequelize.STRING(64),
+	},
 
 	path: {     // 文件路径  方便用户归类文件
 		type: Sequelize.STRING(128),

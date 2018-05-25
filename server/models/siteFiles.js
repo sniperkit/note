@@ -26,7 +26,16 @@ const SiteFiles = sequelize.define("siteFiles", {
 	filename: {
 		type: Sequelize.STRING(64),
 		allowNull: false,
-	}
+	},
+
+	filepath: {
+		type: Sequelize.STRING(128),
+	},
+
+	pagepath: {  // 所应用的页面路径  文本解析 引用文件记录删除
+		type: Sequelize.STRING(128),
+		allowNull: false,
+	},
 }, {
 	charset: "utf8mb4",
 	collate: 'utf8mb4_bin',

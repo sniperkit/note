@@ -72,7 +72,7 @@ Qiniu.prototype.move = async function(ctx) {
 
 // 删除文件
 Qiniu.prototype.delete = async function(ctx) {
-	const params = ctx.request.query || {};
+	const params = ctx.state.params;
 	if (!params.key) {
 		return ERR_PARAMS();
 	}
@@ -120,7 +120,7 @@ Qiniu.prototype.list = async function(ctx) {
 
 // 上传 MD IMG 小文件
 Qiniu.prototype.upload = async function(ctx) {
-	const params = ctx.request.body;
+	const params = ctx.state.params;
 
 	const config = new qiniu.conf.Config();
 	config.zone = qiniu.zone.Zone_z2; // 华南

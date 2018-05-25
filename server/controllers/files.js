@@ -165,13 +165,11 @@ Files.prototype.update = async function(ctx) {
 	const username = ctx.state.user.username;
 	params.username = username;
 	// 禁止相关字段修改
-	//params.key = undefined; // 不允许修改key
-	//params.hash = undefined;
 	let data = await this.model.update(params, {
 		where: {
 			id: params.id,
 		},
-		fields: ["filename", "hash", "size", "type", "public"],
+		fields: ["hash", "size", "type", "public"],
 	});
 
 	return ERR.ERR_OK(data);
@@ -181,7 +179,21 @@ Files.prototype.delete = async function(ctx) {
 	const params = ctx.state.params;
 	const username = ctx.state.user.username;
 
-	let data = await this.model.delete({
+	let data = await this.model.findOne({
+		where: {
+			id: params.id,
+			username: username,
+		}
+	});
+	
+	if (!data) return ERR.ERR_PARAMS();
+
+	data = data.get({plain: true});
+	ctx.state.params = {key: data.key};
+	data = await storage.delete(ctx);
+	if (!data.isErr()) return data;
+
+	data = await this.model.delete({
 		where: {
 			id: params.id,
 			username: username,
@@ -276,7 +288,6 @@ Files.prototype.getContent = async function(ctx) {
 		where.key = key;
 	}
 
-
 	let data = await this.model.findOne({where:where});
 
 	if (!data) {
@@ -292,6 +303,23 @@ Files.prototype.getContent = async function(ctx) {
 	data.content = result.getData();
 
 	return ERR.ERR_OK(data);
+}
+
+Files.prototype.upsertContent = async function(ctx) {
+	const username = ctx.state.user.username;
+	const params = ctx.state.params;
+	params.username = username;
+	
+	let result = await storage.upload(ctx);
+	if (result.isErr()) return result;
+
+	params.hash = result.getData().hash;
+	await this.model.upsert(params);
+
+	// 往git写一份
+	writeGitFile(params);
+
+	return ERR.ERR_OK({hash:params.hash});
 }
 
 Files.prototype.callback = async function(ctx) {
@@ -378,6 +406,17 @@ Files.getRoutes = function() {
 		}
 	},
 	{
+		path: ":id/content",
+		method: ["POST", "PUT"],
+		action: "upsertContent",
+		authentated: true,
+		validate: {
+			params: {
+				id: joi.string().required(),
+			}
+		}
+	},
+	{
 		path: ":id/rename",
 		method: "PUT",
 		action: "update",
@@ -398,17 +437,6 @@ Files.getRoutes = function() {
 		validate: {
 			query: {
 				username: joi.string().required(),
-			}
-		},
-		authentated: true,
-	},
-	{
-		path: "getContent",
-		method: "get",
-		action: "getContent",
-		validate: {
-			query: {
-				key: joi.string().required(),
 			}
 		},
 		authentated: true,

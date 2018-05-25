@@ -110,7 +110,7 @@ export default {
 			}
 			this.page.content = text;
 			this.page.isRefresh = true;
-			const result = await api.files.uploadFile(this.page);
+			const result = await api.files.upsertContent(this.page);
 			this.page.isRefresh = false;
 			this.page.isModify = false;
 			if (result.isErr()) {
