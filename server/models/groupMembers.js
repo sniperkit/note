@@ -14,11 +14,6 @@ const GroupMembers = sequelize.define("groupMembers", {
 		primaryKey: true,
 	},
 
-	userId: {
-		type: Sequelize.BIGINT,
-		allowNull: false,
-	},
-
 	groupId: {
 		type: Sequelize.BIGINT,
 		allowNull: false,

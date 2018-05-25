@@ -25,13 +25,13 @@ function writeGitFile(params) {
 	gitlab.upsertFile(params.key, {content:params.content});
 }
 
-Files.prototype.getContent = async function(ctx) {
-	const username = ctx.state.user.username;
-	const params = ctx.state.params;
-	params.username = username;
+//Files.prototype.getContent = async function(ctx) {
+	//const username = ctx.state.user.username;
+	//const params = ctx.state.params;
+	//params.username = username;
 
-	return await storage.get(ctx);
-}
+	//return await storage.get(ctx);
+//}
 
 Files.prototype.getFile = async function(ctx) {
 	const username = ctx.state.user.username;
@@ -195,6 +195,10 @@ Files.prototype.find = async function(ctx) {
 	const params = ctx.state.params;
 	const username = ctx.state.user.username;
 
+	if (params.raw) {
+		return this.list(ctx);
+	}
+
 	const isPublic = username ? undefined : true;
 	params.username = username || params.username;
 
@@ -258,6 +262,38 @@ Files.prototype.rename = async function(ctx) {
 	return ERR.ERR_OK(data);
 }
 
+Files.prototype.getContent = async function(ctx) {
+	const username = ctx.state.user.username;
+	let id = ctx.params.id;
+	let key = decodeURIComponent(id);
+	let where = {username: username};
+
+	if (/^\d+$/.test(id)) {
+		key = undefined;
+		where.id = id;
+	} else {
+		id = undefined;
+		where.key = key;
+	}
+
+
+	let data = await this.model.findOne({where:where});
+
+	if (!data) {
+		if (!key) return ERR.ERR_PARAMS();
+		data = {key:key};
+	} else {
+		data = data.get({plain: true});
+	}
+
+	ctx.state.params = {key: data.key};
+
+	let result = await storage.get(ctx);
+	data.content = result.getData();
+
+	return ERR.ERR_OK(data);
+}
+
 Files.prototype.callback = async function(ctx) {
 	
 }
@@ -298,7 +334,7 @@ Files.getRoutes = function() {
 				key: joi.string().required(),
 			},
 			params: {
-				id: joi.string().required(),
+				id: joi.number().required(),
 			}
 		},
 	},
@@ -309,32 +345,38 @@ Files.getRoutes = function() {
 		authentated: true,
 		validate: {
 			params: {
+				id: joi.number().required(),
+			}
+		},
+	},
+	{
+		path: ":id",
+		method: "GET",
+		action: "findOne",
+		authentated: true,
+		validate: {
+			params: {
 				id: joi.string().required(),
 			}
 		},
 	},
-	//{
-		//path: ":id",
-		//method: "GET",
-		//action: "findOne",
-		//authentated: true,
-		//validate: {
-			//params: {
-				//id: joi.string().required(),
-			//}
-		//},
-	//},
-	//{
-		//path: "",
-		//method: "GET",
-		//action: "find",
-		//authentated: true,
-		//validate: {
-			//params: {
-				//id: joi.string().required(),
-			//}
-		//},
-	//},
+	{
+		path: "",
+		method: "GET",
+		action: "find",
+		authentated: true,
+	},
+	{
+		path: ":id/content",
+		method: "GET",
+		action: "getContent",
+		authentated: true,
+		validate: {
+			params: {
+				id: joi.string().required(),
+			}
+		}
+	},
 	{
 		path: ":id/rename",
 		method: "PUT",
@@ -345,14 +387,9 @@ Files.getRoutes = function() {
 				filename: joi.string().required(),
 			},
 			params: {
-				id: joi.string().required(),
+				id: joi.number().required(),
 			}
 		},
-	},
-	{
-		path: "list",
-		method: "get",
-		action: "list",
 	},
 	{
 		path: "getByUsername",

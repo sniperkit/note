@@ -168,7 +168,10 @@ export default {
 
 		async getSitePage(site) {
 			const self = this;
-			const result = await api.files.list({prefix: [site.username, site.sitename].join("/")});
+			const result = await api.files.list({
+				prefix: [site.username, site.sitename].join("/"),
+				raw: true,
+			});
 			if (result.isErr()) return;
 			const pages = result.getData().items  || [];
 			const pagemap = {};
@@ -265,7 +268,7 @@ export default {
 			const self = this;
 			let _loadPageFromServer = async function() {
 				console.log("服务器最新");
-				const result = await api.files.getFile({key:page.path});
+				const result = await api.files.getContent({key:page.path});
 				const file = result.getData();
 				if (!file && result.isErr()) {
 					Message(result.getMessage());

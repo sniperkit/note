@@ -194,7 +194,7 @@ Qiniu.prototype.getUploadToken = function(ctx) {
 }
 
 Qiniu.prototype.getDownloadUrl = function(ctx) {
-	const params = ctx.state.params || ctx.request.query || {};
+	const params = ctx.state.params;
 	const key = params.key;
 	if (!key) {
 		return ERR_PARAMS();
