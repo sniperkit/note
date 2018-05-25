@@ -13,7 +13,17 @@ Groups.prototype.find = function() {
 }
 
 Groups.prototype.findOne = async function(ctx) {
-	console.log(ctx.params);
+	const id = ctx.params.id;
+	const username = ctx.state.user.username;
+
+	let data = this.model.findOne({
+		where: {
+			id: id,
+			username: username,
+		}
+	});
+
+	return ERR.ERR_OK(data);
 }
 
 Groups.prototype.create = async function(ctx) {
@@ -27,11 +37,32 @@ Groups.prototype.create = async function(ctx) {
 }
 
 Groups.prototype.update = function() {
+	const params = ctx.state.params;
+	const id = ctx.params.id;
+	const username = ctx.state.user.username;
 
+	let data = this.model.update(params, {
+		where: {
+			id: id,
+			username: username,
+		}
+	})
+
+	return ERR.ERR_OK(data);
 }
 
 Groups.prototype.delete = function() {
+	const id = ctx.params.id;
+	const username = ctx.state.user.username;
 
+	let data = this.model.destroy({
+		where: {
+			id: id,
+			username: username,
+		}
+	})
+
+	return ERR.ERR_OK(data);
 }
 
 Groups.getRoutes = function() {
