@@ -41,7 +41,9 @@ function getBucketManager() {
 
 // 获取文件内容
 Qiniu.prototype.get = async function(ctx) {
-	const downloadUrl = this.getDownloadUrl(ctx).getData();
+	const params = ctx.state.params;
+	const key = params.key;
+	const downloadUrl = this.getDownloadUrl(key);
 
 	const content = await axios.get(downloadUrl).then(res => res.data);
 
@@ -193,7 +195,18 @@ Qiniu.prototype.getUploadToken = function(ctx) {
 	return ERR_OK().setData(token);
 }
 
-Qiniu.prototype.getDownloadUrl = function(ctx) {
+Qiniu.prototype.getDownloadUrl = function(key, expires = 3600 * 24) {
+	const mac = new qiniu.auth.digest.Mac(accessKey, secretKey);
+	const config = new qiniu.conf.Config();
+	const bucketManager = new qiniu.rs.BucketManager(mac, config);
+	const privateBucketDomain = bucketDomian;
+	const deadline = parseInt(Date.now() / 1000) + expires; 
+	const privateDownloadUrl = bucketManager.privateDownloadUrl(privateBucketDomain, key, deadline);
+
+	return privateDownloadUrl;
+}
+
+Qiniu.prototype.api_getDownloadUrl = function(ctx) {
 	const params = ctx.state.params;
 	const key = params.key;
 	if (!key) {

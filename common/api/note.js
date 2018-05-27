@@ -91,6 +91,7 @@ export function Files(options) {
 	initHttpOptions(self, options, "files", "key");
 
 	self.get = self.restRequest("get");
+	self.create = self.apiRequest("post");
 	self.delete = self.restRequest("delete") 
 	self.token = self.restRequest("get", "token");
 	self.getContent = self.restRequest("get", "content");

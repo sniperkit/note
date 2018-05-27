@@ -1,7 +1,6 @@
 <template>
 	<div>
 		<el-upload 
-			style="width:100%;"
 			drag 
 		    action="#" 
 			:http-request="fileUpload"
@@ -9,11 +8,13 @@
 			multiple>
 				<i class="el-icon-upload"></i>
 				<div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-				<div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
+				<!--<div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>-->
 		</el-upload>
-		<div v-for="(x, index) in filelist" :key="index">
-			<div>{{x.filename}}</div>
-			<el-progress :stroke-width="18"	:percentage="x.percent" :status="x.status"></el-progress>
+		<div class="upload-list-container">
+			<div v-for="(x, index) in filelist" :key="index" class="upload-list-item">
+				<span style="flex:3; text-align:center">{{x.filename}}</span>
+				<el-progress style="flex:7" :stroke-width="18"	:percentage="x.percent" :status="x.status"></el-progress>
+			</div>
 		</div>
 	</div>
 </template>
@@ -83,3 +84,19 @@ export default {
 
 }
 </script>
+
+<style>
+.upload-list-container {
+	margin: 20px;
+}
+.upload-list-item {
+	margin: 10px 0px;
+	display: flex;
+}
+.el-upload-dragger {
+	width: 100%;
+}
+.el-upload {
+	width: 100%;
+}
+</style>

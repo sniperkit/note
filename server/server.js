@@ -8,12 +8,16 @@ import wurl from "wurl";
 import _ from "lodash";
 import axios from "axios";
 
+import Files from "./controllers/files.js";
 import registerControllerRouter from "./controllers/index.js";
+
 
 //import log from "./log.js";
 import config from "./config.js";
 import models from "./models/index.js";
 import api from "../common/api/note.js";
+
+const files = new Files();
 
 api.options.baseURL = config.baseURL;
 
@@ -33,5 +37,27 @@ export default (app, views) => {
 	.use(apiRouter.routes())
 	.use(apiRouter.allowedMethods())
 	.use(viewRouter.routes());
+
+	app.use(async (ctx, next) => {
+		const path = ctx.request.path;
+		const excludeList = [
+			"/_",
+			"/favicon.ico",
+			"/_nuxt/",
+			"/note"
+		]
+		if (path.split("/") < 3) {
+			return await next();
+		}
+		for (let i = 0; i < excludeList.length; i++) {
+			if (path.indexOf(excludeList[i]) == 0) {
+				return await next();
+			}
+		}
+
+		console.log(path);
+		ctx.state.params = {filename:path.substring(1)};
+		files.raw(ctx);
+	});
 }
 

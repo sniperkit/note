@@ -18,6 +18,11 @@
 					<el-menu-item :index='index("dataSource")'>列表</el-menu-item>
 					<el-menu-item :index='index("dataSource/upsert")'>更新</el-menu-item>
 				</el-submenu>
+				<el-submenu :index='index("files/list")'>
+					<template slot="title" style="background-color: blue">文件</template>
+					<el-menu-item :index='index("files/list")'>列表</el-menu-item>
+					<el-menu-item :index='index("files/new")'>上传</el-menu-item>
+				</el-submenu>
 			</el-menu>
 		</div>
 		<div style="flex:10; margin:20px">

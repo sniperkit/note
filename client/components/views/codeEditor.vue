@@ -28,6 +28,7 @@ import {component} from "@/components/component.js";
 import codemirror from "@/components/bases/codemirror.vue";
 import qiniuUpload from "@@/common/api/qiniu.js";
 import api from "@@/common/api/note.js";
+import util from "@@/common/util.js";
 const tempContentKey = "cmeditor_temp_content";
 
 export default {
@@ -56,6 +57,10 @@ export default {
 	},
 
 	computed: {
+		...mapGetters({
+			user: "user/user",
+			isLogin: "user/isAuthenticated",
+		}),
 		codemirror() {
 			return this.$refs.cm && this.$refs.cm.codemirror;
 		},
@@ -63,6 +68,7 @@ export default {
 
 	methods: {
 		savePageToDB(){
+			if (!this.$refs.cm) 	return;
 			var value = this.$refs.cm.getValue();
 			this.change.timer && clearTimeout(this.change.timer);
 			if (this.page && this.page.path) {
@@ -110,7 +116,8 @@ export default {
 			}
 			this.page.content = text;
 			this.page.isRefresh = true;
-			const result = await api.files.upsertContent(this.page);
+			const type = util.getTypeByPath(filename);
+			const result = await api.files.upsertContent({...this.page, type});
 			this.page.isRefresh = false;
 			this.page.isModify = false;
 			if (result.isErr()) {
@@ -130,23 +137,31 @@ export default {
 				Message("文件名为空, 取消文件上传");
 				return;
 			};
-			if (!this.page.path) {
-				console.log("请选择页面");
-				return;
-			}
-
-			this.loading = true;
-			
-			const pagePath = this.page.path;;
+			console.log(this.path);
 			const file = this.file;
-			const isImage = file.type.indexOf("image") == 0;
-			const paths = pagePath.split("/");
-			const username = paths[0];
-			const sitename = paths[1];
 			const filename = this.uploadFilename;
-			const filetype = username + (isImage ? "_images" : "files");
-			const path = [filetype, sitename, filename].join("/");
-			const url = await qiniuUpload(path, file);
+			const isImage = file.type.indexOf("image") == 0;
+			const filetype = util.getTypeByPath(filename);
+			let username = this.user.username;
+			let sitename = undefined;
+			let path = undefined;
+			if (this.page && this.page.path) {
+				const paths = this.page.path.split("/");
+				username = paths[0];
+				sitename = paths[1];
+				path = [username, sitename, filename].join("/");	
+			} else {
+				path = [username, filename].join("/");	
+			}
+			const key = util.getKeyByPath(path);
+			this.loading = true;
+			const url = await qiniuUpload(key, file, null, {
+				username,
+				sitename,
+				filename,
+				type: filetype,
+			});
+
 			const cmComp = this.$refs.cm;
 			let content = '['+ this.uploadFilename +'](' + url+')'; 
 			if (isImage){

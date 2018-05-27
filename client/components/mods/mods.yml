@@ -52,7 +52,7 @@ title:
                         varsPrefix: tag.vars
                         vars:
                           source:
-                            src: /adi/logo.png
+                            src: 
                             link: 'http://keepwork.com'
                           options: {}
                         $vars: {}

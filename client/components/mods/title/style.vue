@@ -1,7 +1,7 @@
 <template>
 	<div style="display:flex">
 		<div>
-			<img src="/adi/logo.png" style="width:80px; height:80px">
+			<img src="#" style="width:80px; height:80px">
 		</div>
 		<div style="display:flex; flex-direction: column;">
 			<div style="font-size:24px; color:blue;">

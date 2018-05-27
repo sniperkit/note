@@ -5,10 +5,10 @@
 </template>
 
 <script>
+
 import {
 	Upload,
 } from "element-ui";
-
 import {mapActions, mapGetters} from "vuex";
 import fileManager from "../components/views/fileManager.vue";
 import api from "@@/common/api/note.js";

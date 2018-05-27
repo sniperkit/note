@@ -262,7 +262,7 @@ export default {
 			return (this.getPageByPath(data.path) || {}).isRefresh;
 		},
 		isModify(data) {
-			return this.getPageByPath(data.path).isModify;
+			return (this.getPageByPath(data.path) || {}).isModify;
 		},
 		loadPage(page, cb, errcb) {
 			const self = this;
@@ -389,6 +389,7 @@ export default {
 			}
 			let newNode = {
 				path:path,
+				key:path,
 			    name:form.filename,
 			    type:form.type,
 				leaf: form.type == "blob",
@@ -396,6 +397,7 @@ export default {
 			    url:path.replace(/\.md$/, ""),
 			    username:node.username,
 			}
+			self.pages[newNode.key] = newNode;
 			form.isLoading = true;
 			if (form.type != "tree") {
 				//await this.savePage(newNode);

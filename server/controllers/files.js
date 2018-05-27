@@ -3,6 +3,7 @@ import Sequelize from "sequelize";
 
 import ERR from "../../common/error.js";
 import gitlab from "../../common/api/gitlab.js";
+import util from "../../common/util.js";
 
 import Qiniu from "./qiniu.js";
 import filesModel from "../models/files.js";
@@ -119,8 +120,15 @@ Files.prototype.getByUsername = async function(ctx) {
 	return ERR.ERR_OK(data);
 }
 
-Files.prototype.statics = async function(ctx) {
-	ctx.redirect('http://git.keepwork.com/gitlab_rls_lixizhi/keepworkdatasource/raw/master/lixizhi_images/img_1520938234618.jpeg');
+Files.prototype.raw = async function(ctx) {
+	const params = ctx.state.params;
+	const filename = params.filename;
+	const key = util.getKeyByPath(filename);
+
+	const url = storage.getDownloadUrl(key);
+	console.log(url);
+
+	ctx.redirect(url || 'http://git.keepwork.com/gitlab_rls_lixizhi/keepworkdatasource/raw/master/lixizhi_images/img_1520938234618.jpeg');
 }
 
 Files.prototype.getToken = async function(ctx) {
@@ -163,11 +171,11 @@ Files.prototype.create = async function(ctx) {
 	const key = params.key;
 	params.username = username;
 
-	if (key.indexOf(username + "_files/") != 0) {
-		return ERR.ERR_PARAMS();
-	} 
+	//if (key.indexOf(username + "_files/") != 0) {
+		//return ERR.ERR_PARAMS();
+	//} 
 	
-	let data = await this.model.create(params);
+	let data = await this.model.upsert(params);
 
 	return ERR.ERR_OK(data);
 }
@@ -224,14 +232,24 @@ Files.prototype.find = async function(ctx) {
 		return this.list(ctx);
 	}
 
-	const isPublic = username ? undefined : true;
-	params.username = username || params.username;
+	
+	const where = {};
+	if (username) {
+		where.username = username;
+	} else {
+		where.public = true;
+	}
 
-	let data = await this.findAndCount({
-		where: {
-			public: isPublic,
-			username: username,
-		},
+	if (params.type) {
+		where.type = params.type;
+	} else {
+		where.type = {[ne]:"pages"};
+	}
+
+	where.username = username || params.username;
+
+	let data = await this.model.findAll({
+		where: where,
 		limit: params.limit,
 		offset: params.offset,
 	})
@@ -343,6 +361,11 @@ Files.getRoutes = function() {
 	const self = this;
 	self.pathPrefix = "files";
 	const routes = [
+	{
+		path: "raw",
+		method: "get",
+		action: "raw",
+	},
 	{
 		path: ":id/url",
 		method: "GET",
@@ -497,11 +520,6 @@ Files.getRoutes = function() {
 			}
 		},
 		authentated: true,
-	},
-	{
-		path: "statics",
-		method: "get",
-		action: "statics",
 	},
 	];
 
