@@ -4,9 +4,14 @@
 		<el-table-column fixed prop="key" label="KEY"></el-table-column>
 		<el-table-column fixed prop="sitename" label="站点"></el-table-column>
 		<el-table-column fixed prop="type" label="类型"></el-table-column>
-		<el-table-column fixed prop="public" label="公开"></el-table-column>
+		<el-table-column fixed prop="public" label="公开">
+			<template slot-scope="{row, $index}">
+				<span>{{row.public ? "公开" : "私有"}}</span>
+			</template>
+		</el-table-column>
 		<el-table-column fixed="right" label="操作">
 			<template slot-scope="{row, $index}">
+				<el-button type="text" @click="clickCopyBtn(row, $index)">连接</el-button>
 				<el-button type="text" @click="clickDeleteBtn(row, $index)">删除</el-button>
 			</template>
 		</el-table-column>
@@ -20,8 +25,14 @@ import {
 	TableColumn,
 	Message,
 } from "element-ui";
+import vue from "vue";
+import vueClipboard from 'vue-clipboard2';
 import {mapActions, mapGetters} from "vuex";
+import util from "@@/common/util.js";
 import api from "@@/common/api/note.js";
+import config from "@/config.js";
+
+vue.use(vueClipboard);
 
 export default {
 	components: {
@@ -33,6 +44,18 @@ export default {
 	data: function() {
 		return {
 			files:[],
+		}
+	},
+
+	methods: {
+		clickCopyBtn(raw) {
+			const path = raw.path || util.getPathByKey(raw.key);
+			const url = config.origin + "/" + path;
+			this.$copyText(url).then(function(e) {
+				Message("连接复制到剪切板成功");
+			}, function(e){
+				Message("连接复制到剪切板失败");
+			});
 		}
 	},
 

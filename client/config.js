@@ -8,6 +8,7 @@ const defaultConfig = {
 }
 
 const productionConfig = {
+	origin: "http://wxaxiaoyao.cn",
 }
 
 const developmentConfig = {
@@ -22,6 +23,7 @@ const developmentConfig = {
 
 const localConfig = {
 	baseURL: "http://localhost:3000/api/v0/",
+	origin: "http://localhost:3000",
 }
 
 

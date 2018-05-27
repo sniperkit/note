@@ -52,6 +52,7 @@ const qiniuUpload = async (key, file, token, params = {}, observer = {}) => {
 	let result = await api.files.create({
 		...params,
 		key:key,
+		type: util.getTypeByPath(key),
 	});
 
 	if (result.isErr()) {
