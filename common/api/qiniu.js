@@ -3,14 +3,16 @@ import ERR from "../error.js";
 import api from "./note.js";
 
 
-const qiniuUpload = async (key, file, token, params) => {
+const qiniuUpload = async (key, file, token, params = {}) => {
 	let data = null;
 	if (!token) {
-		data = await api.qiniu.getUploadTokenByKey({key:key});
+		data = await api.files.token({
+			key:key,
+		});
 		if (data.isErr()) {
 			return ;
 		}
-		token = data.getData();
+		token = data.getData().token;
 	}
 
 	const opts =  {
@@ -43,6 +45,7 @@ const qiniuUpload = async (key, file, token, params) => {
 	})
 
 	if (!ok) return;
+
 
 	data = await api.qiniu.getDownloadUrl({key:key});
 	if (data.isErr()) return;

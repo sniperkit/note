@@ -168,7 +168,7 @@ export default {
 
 		async getSitePage(site) {
 			const self = this;
-			const result = await api.files.list({
+			const result = await api.files.get({
 				prefix: [site.username, site.sitename].join("/"),
 				raw: true,
 			});
@@ -342,10 +342,12 @@ export default {
 			}
 		},
 		clickCloseBtn(data) {
+			const self = this;
 			this.$delete(this.openedPages, data.path);
 			if (data.path == this.page.path) {
 				this.emit(this.EVENTS.__EVENT__FILETREE__OUT__PAGE__, {
-					namespace: this.namespace,
+					namespace: self.namespace,
+					page: {},
 				});
 				let curKey = data.path.replace(/\/[^\/]*$/, "");
 				this.setCurrentItem(curKey);

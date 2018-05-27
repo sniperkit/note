@@ -19,8 +19,16 @@ export const httpPost = (url, data, config) => httpRequest("post", url, data, co
 export const httpPut = (url, data, config) => httpRequest("put", url, data, config);
 export const httpDelete = (url, data, config) => httpRequest("delete", url, data, config);
 
+const getUrl = function(prefix, url, isRest, data, key = "id") {
+	prefix = prefix || "";
+	url = url ? ("/" + url) : "";
 
-function initHttpOptions(self, options) {
+	if (isRest && data && data[key]) url = "/" + encodeURIComponent(data[key]) + url;
+
+	return prefix + url;
+}
+
+function initHttpOptions(self, options = {}, prefix, key) {
 	options = options || {};
 	options.headers = options.headers || {};
 	
@@ -29,6 +37,8 @@ function initHttpOptions(self, options) {
 	self.httpPost = httpPost;
 	self.httpPut = httpPut;
 	self.httpDelete = httpDelete;
+	self.apiRequest = (method = "get", url) => (data, config) => httpRequest(method, getUrl(prefix, url, false), data, Object.assign(self.options, config));
+	self.restRequest = (method = "get", url) => (data, config) => httpRequest(method, getUrl(prefix, url, true, data, key), data, Object.assign(self.options,config));
 }
 
 export function User(options) {
@@ -78,18 +88,13 @@ export function Files(options) {
 	const self = this;
 	const prefix = "files";
 
-	initHttpOptions(self, options);
+	initHttpOptions(self, options, "files", "key");
 
-	const apiRequest = (method, url) => (data, config) => httpRequest(method || "get", prefix + (url ? ("/" + url) : ""), data, Object.assign(self.options, config));
-	
-	self.getByUsername = apiRequest("get", "getByUsername");
-	self.getFile = apiRequest("get", "getFile");
-	self.uploadFile = apiRequest("post", "uploadFile");
-	self.deleteFile = apiRequest("delete", "deleteFile");
-	self.list = apiRequest("get", "");
-	self.token = apiRequest("get", "token");
-	self.getContent = (data, config) => (apiRequest("get", encodeURIComponent(data.id || data.key) + "/content"))(data,config);
-	self.upsertContent = (data, config) => (apiRequest("POST", encodeURIComponent(data.id || data.key) + "/content"))(data,config);
+	self.get = self.restRequest("get");
+	self.delete = self.restRequest("delete") 
+	self.token = self.restRequest("get", "token");
+	self.getContent = self.restRequest("get", "content");
+	self.upsertContent = self.restRequest("post", "content");
 }
 
 export const mod = {

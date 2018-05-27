@@ -130,16 +130,26 @@ export default {
 				Message("文件名为空, 取消文件上传");
 				return;
 			};
+			if (!this.page.path) {
+				console.log("请选择页面");
+				return;
+			}
+
 			this.loading = true;
 			
+			const pagePath = this.page.path;;
 			const file = this.file;
-			const paths = this.pagePath.split("/");
-			paths[paths.length-1] = this.uploadFilename;
-			const path = paths.join("/");
+			const isImage = file.type.indexOf("image") == 0;
+			const paths = pagePath.split("/");
+			const username = paths[0];
+			const sitename = paths[1];
+			const filename = this.uploadFilename;
+			const filetype = username + (isImage ? "_images" : "files");
+			const path = [filetype, sitename, filename].join("/");
 			const url = await qiniuUpload(path, file);
 			const cmComp = this.$refs.cm;
 			let content = '['+ this.uploadFilename +'](' + url+')'; 
-			if (file.type.indexOf("image") == 0){
+			if (isImage){
 				content = "!" + content;	
 			}
 			cmComp.insertContent(content);

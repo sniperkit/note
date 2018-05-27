@@ -8,11 +8,9 @@ const defaultConfig = {
 
 	baseURL: "/api/v0/",
 	host: "0.0.0.0",
-	//port: 3000,
-	port: 8088,
+	port: 3000,
 	protocol: "http",
-	//origin: "http://0.0.0.0:3000",
-	origin: "http://47.52.20.34:8088",
+	origin: "http://0.0.0.0:3000",
 
 	database: {
 		//port:3306,

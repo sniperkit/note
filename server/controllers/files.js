@@ -124,16 +124,19 @@ Files.prototype.statics = async function(ctx) {
 }
 
 Files.prototype.getToken = async function(ctx) {
-	const params = ctx.state.params;
+	const key = decodeURIComponent(ctx.params.id);
 	const username = ctx.state.user.username;
-	const filename = params.filename;
-	const filetype = params.filetype;
 
-	if (filetype != "pages" || filetype != "files" || filetype != "images" || filetype == "datas") {
+	const keys = key.split("/");
+	
+	if (keys.length < 2 || key.indexOf(username) != 0) return ERR.ERR_PARAMS();
+	const filetype = keys[0].replace(username+ "_", "");
+
+	//console.log(keys, key, filetype);
+	if (filetype != "pages" && filetype != "files" && filetype != "images" && filetype == "datas") {
 		return ERR.ERR_PARAMS();
 	}
 
-	const key = username + "_" + filetype;
 	ctx.state.params = {key:key};
 
 	const result =  storage.getUploadToken(ctx);
@@ -141,7 +144,17 @@ Files.prototype.getToken = async function(ctx) {
 
 	const token = result.data;
 	
-	return ERR.ERR_OK({key, token});
+	return ERR.ERR_OK({token});
+}
+
+Files.prototype.getUrl = async function(ctx) {
+	const key = decodeURIComponent(ctx.params.id);
+	const username = ctx.state.user.username;
+	const params = ctx.state.params;
+
+
+	return 
+
 }
 
 Files.prototype.create = async function(ctx) {
@@ -331,14 +344,25 @@ Files.getRoutes = function() {
 	self.pathPrefix = "files";
 	const routes = [
 	{
-		path: "token",
+		path: ":id/url",
+		method: "GET",
+		action: "getUrl",
+		authentated: true,
+		validate: {
+			params: {
+				id: joi.string().required(),
+			}
+		}
+	},
+	{
+		path: ":id/token",
 		method: "GET",
 		action: "getToken",
 		authentated: true,
 		validate: {
-			query: {
-				key: joi.string().required(),
-			},
+			params: {
+				id: joi.string().required(),
+			}
 		}
 	},
 	{

@@ -37,6 +37,12 @@ export default {
 		}
 	},
 
+	watch: {
+		text: function(val) {
+			this.parseText(val);
+		},
+	},
+
 	methods: {
 		getTagByBlock(block) {
 			const md = this.md;

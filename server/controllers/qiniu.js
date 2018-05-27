@@ -180,9 +180,9 @@ Qiniu.prototype.getUploadToken = function(ctx) {
 	const options = {
 		scope: scope,
 		expires: 3600 * 24, // 一天
-		callbackUrl: config.origin + config.baseURL + "qiniu/callback",
-		callbackBody: '{"key":"$(key)","hash":"$(etag)","size":$(fsize),"bucket":"$(bucket)","public":"$(x:public)","filename":"$(x:filename)","path":"$(x:path)"}',
-		callbackBodyType: 'application/json',
+		//callbackUrl: config.origin + config.baseURL + "qiniu/callback",
+		//callbackBody: '{"key":"$(key)","hash":"$(etag)","size":$(fsize),"bucket":"$(bucket)","public":"$(x:public)","filename":"$(x:filename)","path":"$(x:path)"}',
+		//callbackBodyType: 'application/json',
 		//returnBody: '{"key":"$(key)","hash":"$(etag)","fsize":$(fsize),"bucket":"$(bucket)"}',
 	}
 
