@@ -84,7 +84,7 @@ export default {
 			const user = result.getData();
 			const token = user.token;
 			api.options.headers['Authorization'] = token;
-			Cookies.set("token", token);
+			//Cookies.set("token", token);
 			self.setUser(user);
 			self.$router.push({name:g_app.getRouteName("home")});
 		}

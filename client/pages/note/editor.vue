@@ -51,7 +51,7 @@ export default {
 		userpage,
 		markdownEx
 	},
-	//middleware: "authenticated",
+	middleware: "authenticated",
 	data: function() {
 		return {
 			splitStrip1_width:"18%",
