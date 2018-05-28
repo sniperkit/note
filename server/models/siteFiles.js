@@ -8,8 +8,8 @@ const SiteFiles = sequelize.define("siteFiles", {
 		primaryKey: true,
 	},
 	
-	fileId: {  // 文件ID
-		type: Sequelize.BIGINT,
+	key: {       // 文件ID
+		type: Sequelize.STRING(256),
 		allowNull: false,
 	},
 
@@ -18,27 +18,21 @@ const SiteFiles = sequelize.define("siteFiles", {
 		allowNull: false,
 	},
 
-	sitename: { // 文件使用位置的站点名
+	sitename: {  // 文件使用位置的站点名
 		type: Sequelize.STRING(64),
 		allowNull: false,
 	},
 
-	filename: {
-		type: Sequelize.STRING(64),
-		allowNull: false,
-	},
-
-	filepath: {
-		type: Sequelize.STRING(128),
-	},
-
-	pagepath: {  // 所应用的页面路径  文本解析 引用文件记录删除
-		type: Sequelize.STRING(128),
-		allowNull: false,
-	},
 }, {
 	charset: "utf8mb4",
 	collate: 'utf8mb4_bin',
+
+	indexes: [
+	{
+		unique: true,
+		fields: ["key", "username", "sitename"],
+	},
+	],
 });
 
 //SiteFiles.sync({force:true}).then(() => {

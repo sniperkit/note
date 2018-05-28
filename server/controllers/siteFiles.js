@@ -2,59 +2,66 @@ import joi from "joi";
 
 import ERR from "../../common/error.js";
 
-import FilesModel from "../models/files.js";
+import qiniu from "../models/qiniu.js";
 import SiteFilesModel from "../models/siteFiles.js";
+
+const storage = qiniu;
 
 export const SiteFiles = function() {
 	this.model = SiteFilesModel;
 }
 
-SiteFiles.prototype.create = async function(ctx) {
+SiteFiles.prototype.url = async function(ctx) {
 	const params = ctx.state.params;
+	const key = params.key;
 	const username = ctx.state.user.username;
 
-	if (params.pagepath.indexOf(params.username) != 0) {
-		return ERR.ERR_PARAMS();
-	}
-
-	let file = await FilesModel.findOne({
-		where: {
-			id: params.fileId,
-			username: username,
-		}
-	});
-
-	if (!file) return ERR.ERR_PARAMS();
-
-	file = file.get(plain: true);
-
-	if (!file.public && username != params.username) {
+	if (key.indexOf(key, username + "_") != 0 && key.indexOf(key, username + "/") != 0) {
 		return ERR.ERR_NO_PERMISSION();
 	}
 
-	let data = await this.model.create(params);
+	if (username != params.username) {
+		// 验证访问权限
+	}
+	
+	const where = {
+		username: params.username,
+		sitename: params.sitename,
+		key: params.key,
+	};
 
-	return ERR.ERR_OK(data);
+	let data = await this.model.findOne({where});
+
+	if (!data) data = await this.model.create(where);
+
+	data = data.get({plain: true});
+
+	const url = "/api/v0/siteFiles/" + data.id + "/raw";
+
+	return ERR.ERR_OK(url);
 }
 
-SiteFiles.prototype.update = function(ctx) {
+SiteFiles.prototype.raw = async function(ctx) {
+	const id = ctx.params.id;
+	const username = ctx.state.user.username;
 
-}
+	let data = await this.model.findOne({where: {id:id}});
 
-SiteFiles.prototype.delete = function(ctx) {
+	if (!data) {
+		ctx.status(404);
+		ctx.body = "Not Found";
+		return;
+	}
+	
+	data = data.get({plain:true});
 
-}
+	if (username != data.username) {
+		// 权限判断
+	}
 
-SiteFiles.prototype.findOne = function(ctx) {
+	const url = storage.getDownloadUrl(data.key).getData();
 
-}
-
-SiteFiles.prototype.find = function(ctx) {
-	const params = ctx.state.params;
-
-	let data = await this.model.findAll(params);
-
-	return ERR.ERR_OK(data);
+	ctx.redirect(url);
 }
 
 SiteFiles.getRoutes = function() {
@@ -64,59 +71,27 @@ SiteFiles.getRoutes = function() {
 
 	const routes = [
 	{
-		path: "",
-		method: "POST",
-		action: "create",
+		path: "url",
+		method: "GET",
+		action: "url",
 		authentated: true,
 		validate: {
-			body: {
-				fileId: joi.number().required(),
-				path: joi.string().required(),
-				username: joi.string().required(),
-			},
-		},
-	},
-	{
-		path: ":id",
-		method: "PUT",
-		action: "update",
-		authentated: true,
-		validate: {
-			body: {
+			query: {
 				key: joi.string().required(),
+				username: joi.string().required(),
+				sitename: joi.string().required(),
 			},
-			params: {
-				id: joi.number().required(),
-			}
 		},
 	},
 	{
-		path: ":id",
-		method: "DELETE",
-		action: "delete",
-		authentated: true,
+		path: ":id/raw",
+		method: "GET",
+		action: "raw",
 		validate: {
 			params: {
 				id: joi.number().required(),
 			}
 		},
-	},
-	{
-		path: ":id",
-		method: "GET",
-		action: "findOne",
-		authentated: true,
-		validate: {
-			params: {
-				id: joi.string().required(),
-			}
-		},
-	},
-	{
-		path: "",
-		method: "GET",
-		action: "find",
-		authentated: true,
 	},
 	];
 

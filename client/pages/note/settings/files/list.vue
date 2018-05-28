@@ -48,6 +48,14 @@ export default {
 	},
 
 	methods: {
+		async getFileList() {
+			let result = await api.files.get();
+			if (result.isErr()) {
+				console.log(result);
+				return;
+			}
+			this.files = result.getData();
+		},
 		clickCopyBtn(raw) {
 			const path = raw.path || util.getPathByKey(raw.key);
 			const url = config.origin + "/" + path;
@@ -56,17 +64,21 @@ export default {
 			}, function(e){
 				Message("连接复制到剪切板失败");
 			});
+		},
+
+		async clickDeleteBtn(raw, index) {
+			let result = await api.files.delete(raw);
+			if (result.isErr()) {
+				Message(result.getMessage());
+				return;
+			}
+
+			this.files.splice(index, 1);
 		}
 	},
 
 	async mounted() {
-		let result = await api.files.get();
-		if (result.isErr()) {
-			console.log(result);
-			return;
-		}
-
-		this.files = result.getData();
+		await this.getFileList();
 	}
 
 }

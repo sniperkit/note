@@ -268,7 +268,7 @@ export default {
 			const self = this;
 			let _loadPageFromServer = async function() {
 				console.log("服务器最新");
-				const result = await api.files.getContent({key:page.path});
+				const result = await api.files.get({key:page.path});
 				const file = result.getData();
 				if (!file && result.isErr()) {
 					Message(result.getMessage());
@@ -410,7 +410,7 @@ export default {
 			const path = data.path;
 			const page = this.getPagePath(path);
 			page.isRefresh = true;
-			const result = await api.files.deleteFile({key:path});
+			const result = await api.files.delete({key:path});
 			if (result.isErr()) {
 				Message(result.getMessage());
 			}

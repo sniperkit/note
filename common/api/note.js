@@ -91,11 +91,9 @@ export function Files(options) {
 	initHttpOptions(self, options, "files", "key");
 
 	self.get = self.restRequest("get");
-	self.create = self.apiRequest("post");
+	self.upsert = self.restRequest("post");
 	self.delete = self.restRequest("delete") 
 	self.token = self.restRequest("get", "token");
-	self.getContent = self.restRequest("get", "content");
-	self.upsertContent = self.restRequest("post", "content");
 }
 
 export const mod = {

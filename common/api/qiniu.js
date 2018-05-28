@@ -26,6 +26,9 @@ const qiniuUpload = async (key, file, token, params = {}, observer = {}) => {
 			useCdnDomain: true,
 		},
 	}
+
+	//console.log(file);
+
 	const observable = qiniu.upload(file, key, opts.token, opts.putExtra, opts.config);
 
 	const ok = await new Promise((resolve, reject) => {
@@ -49,9 +52,11 @@ const qiniuUpload = async (key, file, token, params = {}, observer = {}) => {
 	})
 
 	if (!ok) return;
-	let result = await api.files.create({
+	let result = await api.files.upsert({
 		...params,
+		size: file.size,
 		key:key,
+		path: util.getPathByKey(key),
 		type: util.getTypeByPath(key),
 	});
 

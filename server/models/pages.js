@@ -1,7 +1,7 @@
 import Sequelize from "sequelize";
 import sequelize from "./database.js";
 
-const Files = sequelize.define("files", {
+const Pages = sequelize.define("pages", {
 	id: {
 		type: Sequelize.BIGINT,
 		autoIncrement: true,
@@ -22,6 +22,10 @@ const Files = sequelize.define("files", {
 		type: Sequelize.STRING(64),
 	},
 
+	path: {     // 文件路径  方便用户归类文件
+		type: Sequelize.STRING(128),
+	},
+
 	filename: { // 文件名  方便用户识别文件
 		type: Sequelize.STRING(64),
 	},
@@ -31,13 +35,8 @@ const Files = sequelize.define("files", {
 		defaultValue: false, 
 	},
 
-	type: {     // 文件类型
-		type: Sequelize.STRING(12),
-	},
-
-	size: {
-		type: Sequelize.INTEGER,
-		defaultValue: 0,
+	content: {
+		type: Sequelize.TEXT("long"),
 	},
 
 	hash: {     // 七牛哈希  文件存于谁就用谁的hash   如 git sha
@@ -48,8 +47,8 @@ const Files = sequelize.define("files", {
 	collate: 'utf8mb4_bin',
 });
 
-//Files.sync({force:true}).then(() => {
+//Pages.sync({force:true}).then(() => {
 	//console.log("create files table successfully");
 //});
 
-export default Files;
+export default Pages;

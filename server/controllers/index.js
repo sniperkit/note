@@ -10,6 +10,7 @@ import dataSource from "./dataSource.js";
 import gitlab from "./gitlab.js"; 
 import qiniu from "./qiniu.js";
 import files from "./files.js";
+import siteFiles from "./siteFiles.js";
 import sites from "./sites.js";
 import Groups from "./groups.js";
 
@@ -21,6 +22,7 @@ export const controllers = {
 	gitlab,
 	qiniu,
 	files,
+	siteFiles,
 	sites,
 	Groups,
 }

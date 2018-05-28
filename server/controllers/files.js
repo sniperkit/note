@@ -1,14 +1,16 @@
+import _ from "lodash";
 import joi from "joi";
 import Sequelize from "sequelize";
+import sequelize from "../models/database.js";
 
 import ERR from "../../common/error.js";
 import gitlab from "../../common/api/gitlab.js";
 import util from "../../common/util.js";
 
-import Qiniu from "./qiniu.js";
+import qiniu from "../models/qiniu.js";
 import filesModel from "../models/files.js";
 
-const storage = new Qiniu();
+const storage = qiniu;
 
 const {like, gt, lte, ne, in: opIn} = Sequelize.Op;
 
@@ -26,112 +28,36 @@ function writeGitFile(params) {
 	gitlab.upsertFile(params.key, {content:params.content});
 }
 
-//Files.prototype.getContent = async function(ctx) {
+//Files.prototype.uploadFile = async function(ctx) {
 	//const username = ctx.state.user.username;
 	//const params = ctx.state.params;
 	//params.username = username;
+	
+	//let result = await storage.upload(ctx);
+	//if (result.isErr()) return result;
 
-	//return await storage.get(ctx);
+	//params.hash = result.getData().hash;
+	//await this.model.upsert(params);
+
+	//// 往git写一份
+	//writeGitFile(params);
+
+	//return ERR.ERR_OK({hash:params.hash});
 //}
 
-Files.prototype.getFile = async function(ctx) {
-	const username = ctx.state.user.username;
-	const params = ctx.state.params;
-	params.username = username;
-
-	let result = await storage.get(ctx);
-	if (result.isErr()) return result;
-	
-	let record = await this.model.findOne({
-		where : {
-			key: params.key,
-		},
-	});
-	if (!record) return ERR.ERR_NOT_FOUND({content: result.getData()});
-	record = record.get({plain:true});
-
-	record.content = result.getData();
-
-	return ERR.ERR_OK(record);
-}
-
-Files.prototype.uploadFile = async function(ctx) {
-	const username = ctx.state.user.username;
-	const params = ctx.state.params;
-	params.username = username;
-	
-	let result = await storage.upload(ctx);
-	if (result.isErr()) return result;
-
-	params.hash = result.getData().hash;
-	await this.model.upsert(params);
-
-	// 往git写一份
-	writeGitFile(params);
-
-	return ERR.ERR_OK({hash:params.hash});
-}
-
-Files.prototype.deleteFile = async function(ctx) {
-	const username = ctx.state.user.username;
-	const params = ctx.state.params;
-	params.username = username;
-
-	let result = await storage.delete(ctx);
-
-	await this.model.destroy({where:{
-		key: params.key,
-	}});
-
-	return ERR.ERR_OK();
-}
-
-Files.prototype.list = async function(ctx) {
-	const params = ctx.state.params;
-
-	ctx.state.params = {
-		prefix: params.prefix || "",
-	}
-
-	const result = await storage.list(ctx);
-	if (result.isErr()) return result;
-
-	const data = result.getData();
-
-	return ERR.ERR_OK(data);
-}
-
-Files.prototype.getByUsername = async function(ctx) {
-	const params = ctx.state.params;
-
-	ctx.state.params = {
-		prefix: params.username,
-	}
-	const result = await storage.list(ctx);
-	if (result.isErr()) return result;
-
-	const data = result.getData();
-	//const list = await this.model.findAll({where: {
-		//key: {
-			//[like]: params.username + "/%",
-		//}
-	//}});
-
-	return ERR.ERR_OK(data);
-}
 
 Files.prototype.raw = async function(ctx) {
 	const params = ctx.state.params;
 	const filename = params.filename;
 	const key = util.getKeyByPath(filename);
 
-	const url = storage.getDownloadUrl(key);
+	const url = storage.getDownloadUrl(key).getData();
 	console.log(url);
 
 	ctx.redirect(url || 'http://git.keepwork.com/gitlab_rls_lixizhi/keepworkdatasource/raw/master/lixizhi_images/img_1520938234618.jpeg');
 }
 
-Files.prototype.getToken = async function(ctx) {
+Files.prototype.token = async function(ctx) {
 	const key = decodeURIComponent(ctx.params.id);
 	const username = ctx.state.user.username;
 
@@ -145,78 +71,71 @@ Files.prototype.getToken = async function(ctx) {
 		return ERR.ERR_PARAMS();
 	}
 
-	ctx.state.params = {key:key};
-
-	const result =  storage.getUploadToken(ctx);
+	const result =  storage.getUploadToken(key);
 	if (result.isErr()) return result;
 
-	const token = result.data;
+	const token = result.getData();
 	
 	return ERR.ERR_OK({token});
 }
 
-Files.prototype.getUrl = async function(ctx) {
+Files.prototype.statistics = async function(ctx) {
+	let result = await sequelize.query("SELECT SUM(size) AS `sum`, COUNT(*) as `count` from `files`",  {type: sequelize.QueryTypes.SELECT });
+	let data = result[0] || {};
+	
+	data.total = 2 * 1024 * 1024 * 1024;
+	//console.log(result);
+
+	return ERR.ERR_OK(data);
+}
+
+Files.prototype.url = async function(ctx) {
 	const key = decodeURIComponent(ctx.params.id);
 	const username = ctx.state.user.username;
 	const params = ctx.state.params;
 
-
 	return 
-
 }
 
-Files.prototype.create = async function(ctx) {
+Files.prototype.upsert = async function(ctx) {
 	const params = ctx.state.params;
+	const key = decodeURIComponent(ctx.params.id);
 	const username = ctx.state.user.username;
-	const key = params.key;
 	params.username = username;
+	params.key = key;
 
-	//if (key.indexOf(username + "_files/") != 0) {
-		//return ERR.ERR_PARAMS();
-	//} 
+	if (key.indexOf(username + "/") != 0 && key.indexOf(username + "_") != 0) {
+		return ERR.ERR_PARAMS();
+	}
 	
+	const content = params.content;
+	params.content = undefined;
+	// 内容存在，则写文件
+	if (content) {
+		let result = await storage.upload(key, content);
+		if (result.isErr()) return result;
+
+		params.hash = result.getData().hash;
+
+		// 往git写一份
+		writeGitFile({key, content});
+	}
+
 	let data = await this.model.upsert(params);
 
 	return ERR.ERR_OK(data);
 }
 
-// 修改接口 主要用来修改文件名
-Files.prototype.update = async function(ctx) {
-	const params = ctx.state.params;
-	const username = ctx.state.user.username;
-	params.username = username;
-	// 禁止相关字段修改
-	let data = await this.model.update(params, {
-		where: {
-			id: params.id,
-		},
-		fields: ["hash", "size", "type", "public"],
-	});
-
-	return ERR.ERR_OK(data);
-}
-
 Files.prototype.delete = async function(ctx) {
-	const params = ctx.state.params;
+	const key = decodeURIComponent(ctx.params.id);
 	const username = ctx.state.user.username;
 
-	let data = await this.model.findOne({
-		where: {
-			id: params.id,
-			username: username,
-		}
-	});
-	
-	if (!data) return ERR.ERR_PARAMS();
+	let data = await storage.delete(key);
+	if (data.isErr()) return data;
 
-	data = data.get({plain: true});
-	ctx.state.params = {key: data.key};
-	data = await storage.delete(ctx);
-	if (!data.isErr()) return data;
-
-	data = await this.model.delete({
+	data = await this.model.destroy({
 		where: {
-			id: params.id,
+			key: key,
 			username: username,
 		}
 	});
@@ -229,7 +148,7 @@ Files.prototype.find = async function(ctx) {
 	const username = ctx.state.user.username;
 
 	if (params.raw) {
-		return this.list(ctx);
+		return storage.list(params.prefix || username);
 	}
 
 	
@@ -258,15 +177,31 @@ Files.prototype.find = async function(ctx) {
 }
 
 Files.prototype.findOne = async function(ctx) {
-	const id = ctx.params.id;
+	const key = decodeURIComponent(ctx.params.id);
 	const username = ctx.state.user.username;
+
+	let content = undefined;
+	let isPage = false;
+	if (_.endsWith(key, ".md")) {
+		content = await storage.get(key).then(ret => ret.getData());
+		isPage = true;
+	}
 
 	let data = await this.model.findOne({
 		where: {
-			id: id,
+			key: key,
 			username: username,
 		}
 	})
+
+	if (!data) {
+		if (isPage) return ERR.ERR_OK({key, content});
+
+		return ERR.ERR_NOT_FOUND();
+	}
+
+	data = data.get({plain: true});
+	data.content = content;
 
 	return ERR.ERR_OK(data);
 }
@@ -291,7 +226,7 @@ Files.prototype.rename = async function(ctx) {
 	// 七牛改名
 	const srcKey = username + "_files/" + data.filename;
 	const dstKey = username + "_files/" + filename;
-	data = await storage.move({srcKey, dstKey});
+	data = await storage.move(srcKey, dstKey);
 	if (data.isErr()) return data;
 	
 	data = await this.model.update({
@@ -305,62 +240,45 @@ Files.prototype.rename = async function(ctx) {
 	return ERR.ERR_OK(data);
 }
 
-Files.prototype.getContent = async function(ctx) {
-	const username = ctx.state.user.username;
-	let id = ctx.params.id;
-	let key = decodeURIComponent(id);
-	let where = {username: username};
+Files.prototype.qiniu = async function(ctx) {
+	const params = ctx.request.body;
+	const {key} = params;
+	const username = key.split("/")[0].split("_")[0];
+	//console.log(params);
 
-	if (/^\d+$/.test(id)) {
-		key = undefined;
-		where.id = id;
-	} else {
-		id = undefined;
-		where.key = key;
-	}
-
-	let data = await this.model.findOne({where:where});
-
+	let data = await this.model.upsert({
+		username: username,
+		key:params.key,
+		hash: params.hash,
+		size: params.size,
+		type: params.type,
+		path: params.path == "null" ? undefined : params.path,
+		filename: params.filename == "null" ? undefined : params.filename,
+		public: params.public == "null" ? undefined : params.public,
+	})
+	
+	// 添加记录失败 应删除文件
 	if (!data) {
-		if (!key) return ERR.ERR_PARAMS();
-		data = {key:key};
-	} else {
-		data = data.get({plain: true});
 	}
 
-	ctx.state.params = {key: data.key};
-
-	let result = await storage.get(ctx);
-	data.content = result.getData();
-
-	return ERR.ERR_OK(data);
-}
-
-Files.prototype.upsertContent = async function(ctx) {
-	const username = ctx.state.user.username;
-	const params = ctx.state.params;
-	params.username = username;
-	
-	let result = await storage.upload(ctx);
-	if (result.isErr()) return result;
-
-	params.hash = result.getData().hash;
-	await this.model.upsert(params);
-
-	// 往git写一份
-	writeGitFile(params);
-
-	return ERR.ERR_OK({hash:params.hash});
-}
-
-Files.prototype.callback = async function(ctx) {
-	
+	return ERR_OK(data);
 }
 
 Files.getRoutes = function() {
 	const self = this;
 	self.pathPrefix = "files";
 	const routes = [
+	{
+		path: "qiniu",
+		method: "post",
+		action: "qiniu",
+	},
+	{
+		path: "statistics",
+		method: "get",
+		action: "statistics",
+		authentated: true,
+	},
 	{
 		path: "raw",
 		method: "get",
@@ -369,7 +287,7 @@ Files.getRoutes = function() {
 	{
 		path: ":id/url",
 		method: "GET",
-		action: "getUrl",
+		action: "url",
 		authentated: true,
 		validate: {
 			params: {
@@ -380,7 +298,7 @@ Files.getRoutes = function() {
 	{
 		path: ":id/token",
 		method: "GET",
-		action: "getToken",
+		action: "token",
 		authentated: true,
 		validate: {
 			params: {
@@ -389,28 +307,14 @@ Files.getRoutes = function() {
 		}
 	},
 	{
-		path: "",
-		method: "POST",
-		action: "create",
-		authentated: true,
-		validate: {
-			body: {
-				key: joi.string().required(),
-			},
-		},
-	},
-	{
 		path: ":id",
-		method: "PUT",
-		action: "update",
+		method: "POST",
+		action: "upsert",
 		authentated: true,
 		validate: {
 			body: {
 				key: joi.string().required(),
 			},
-			params: {
-				id: joi.number().required(),
-			}
 		},
 	},
 	{
@@ -419,6 +323,20 @@ Files.getRoutes = function() {
 		action: "delete",
 		authentated: true,
 		validate: {
+			params: {
+				id: joi.string().required(),
+			}
+		},
+	},
+	{
+		path: ":id/rename",
+		method: "PUT",
+		action: "update",
+		authentated: true,
+		validate: {
+			body: {
+				filename: joi.string().required(),
+			},
 			params: {
 				id: joi.number().required(),
 			}
@@ -441,86 +359,17 @@ Files.getRoutes = function() {
 		action: "find",
 		authentated: true,
 	},
-	{
-		path: ":id/content",
-		method: "GET",
-		action: "getContent",
-		authentated: true,
-		validate: {
-			params: {
-				id: joi.string().required(),
-			}
-		}
-	},
-	{
-		path: ":id/content",
-		method: ["POST", "PUT"],
-		action: "upsertContent",
-		authentated: true,
-		validate: {
-			params: {
-				id: joi.string().required(),
-			}
-		}
-	},
-	{
-		path: ":id/rename",
-		method: "PUT",
-		action: "update",
-		authentated: true,
-		validate: {
-			body: {
-				filename: joi.string().required(),
-			},
-			params: {
-				id: joi.number().required(),
-			}
-		},
-	},
-	{
-		path: "getByUsername",
-		method: "get",
-		action: "getByUsername",
-		validate: {
-			query: {
-				username: joi.string().required(),
-			}
-		},
-		authentated: true,
-	},
-	{
-		path: "getFile",
-		method: "get",
-		action: "getFile",
-		validate: {
-			query: {
-				key: joi.string().required(),
-			}
-		},
-		authentated: true,
-	},
-	{
-		path: "uploadFile",
-		method: "post",
-		action: "uploadFile",
-		validate: {
-			body: {
-				key: joi.string().required(),
-			}
-		},
-		authentated: true,
-	},
-	{
-		path: "deleteFile",
-		method: "delete",
-		action: "deleteFile",
-		validate: {
-			query: {
-				key: joi.string().required(),
-			}
-		},
-		authentated: true,
-	},
+	//{
+		//path: "uploadFile",
+		//method: "post",
+		//action: "uploadFile",
+		//validate: {
+			//body: {
+				//key: joi.string().required(),
+			//}
+		//},
+		//authentated: true,
+	//},
 	];
 
 	return routes;

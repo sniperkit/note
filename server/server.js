@@ -46,7 +46,7 @@ export default (app, views) => {
 			"/_nuxt/",
 			"/note"
 		]
-		if (path.split("/") < 3) {
+		if (path.split("/").length < 3 || path.substring(path.lastIndexOf("/")).indexOf(".") < 0) {
 			return await next();
 		}
 		for (let i = 0; i < excludeList.length; i++) {

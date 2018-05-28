@@ -150,29 +150,29 @@ Qiniu.prototype.getUid = function(ctx) {
 }
 
 // 获取指定key的上传token
-Qiniu.prototype.getUploadTokenByKey = function(ctx) {
-	const params = ctx.state.params;
-	if (!params.key) {
-		return ERR_PARAMS();
-	}
-	const options = {
-		scope: bucketName + ":" + params.key,
-		//expires: 3600 * 24 * 365, // 默认一个小时
-		//callbackUrl: config.QiniuService.baseURL + "qiniu/callback",
-		//callbackBody: '{"key":"$(key)","hash":"$(etag)","size":$(fsize),"bucket":"$(bucket)","uid":"$(x:uid)"}',
-		//callbackBodyType: 'application/json',
-	}
+//Qiniu.prototype.getUploadTokenByKey = function(ctx) {
+	//const params = ctx.state.params;
+	//if (!params.key) {
+		//return ERR_PARAMS();
+	//}
+	//const options = {
+		//scope: bucketName + ":" + params.key,
+		////expires: 3600 * 24 * 365, // 默认一个小时
+		////callbackUrl: config.QiniuService.baseURL + "qiniu/callback",
+		////callbackBody: '{"key":"$(key)","hash":"$(etag)","size":$(fsize),"bucket":"$(bucket)","uid":"$(x:uid)"}',
+		////callbackBodyType: 'application/json',
+	//}
 
-	if (params.key.indexOf("note/") == 0) {
-		options.callbackUrl = options.callbackBody = options.callbackBodyType = undefined;
-	}
+	//if (params.key.indexOf("note/") == 0) {
+		//options.callbackUrl = options.callbackBody = options.callbackBodyType = undefined;
+	//}
 
-	const mac = new qiniu.auth.digest.Mac(accessKey, secretKey);
-	const putPolicy = new qiniu.rs.PutPolicy(options);
-	const token = putPolicy.uploadToken(mac);
+	//const mac = new qiniu.auth.digest.Mac(accessKey, secretKey);
+	//const putPolicy = new qiniu.rs.PutPolicy(options);
+	//const token = putPolicy.uploadToken(mac);
 
-	return ERR_OK().setData(token);
-}
+	//return ERR_OK().setData(token);
+//}
 
 Qiniu.prototype.getUploadToken = function(ctx) {
 	const params = ctx.state.params || {};

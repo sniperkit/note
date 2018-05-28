@@ -1,7 +1,7 @@
 <template>
 	<div style="height:100%" v-loading="loading" element-loading-text="文件上传中...">
 		<el-dialog title="文件上传" :visible.sync="fileUploadDialogVisible" width="500px">
-			<div style="color:red; margin-top:-20px; margin-bottom:10px"><b>本页面存在同名文件会覆盖</b></div>
+			<div style="color:red; margin-top:-20px; margin-bottom:10px"><b>存在同名文件会覆盖</b></div>
 			<el-input v-model="uploadFilename" placeholder="请输入文件名"></el-input>
 			<span slot="footer">
 				<el-button @click="fileUploadDialogVisible = false">取消</el-button>
@@ -117,7 +117,7 @@ export default {
 			this.page.content = text;
 			this.page.isRefresh = true;
 			const type = util.getTypeByPath(filename);
-			const result = await api.files.upsertContent({...this.page, type});
+			const result = await api.files.upsert({...this.page, type, size: text.length});
 			this.page.isRefresh = false;
 			this.page.isModify = false;
 			if (result.isErr()) {
