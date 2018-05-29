@@ -47,7 +47,7 @@ export default {
 	async mounted() {
 		const path = this.$route.path;
 		const key = path.substring(1) + config.pageSuffix;
-		const result = await api.files.getContent({key:key});
+		const result = await api.files.get({key:key});
 		if (!result || result.isErr()) {
 			//Message(result.getMessage());
 			return;
