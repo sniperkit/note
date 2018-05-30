@@ -29,6 +29,7 @@ import {
 	Message,
 } from "element-ui";
 import Cookies from 'js-cookie';
+import {mapActions, mapGetters} from "vuex";
 import api from "@@/common/api/note.js";
 
 export default {
