@@ -80,7 +80,14 @@ Files.prototype.token = async function(ctx) {
 }
 
 Files.prototype.statistics = async function(ctx) {
-	let result = await sequelize.query("SELECT SUM(size) AS `sum`, COUNT(*) as `count` from `files`",  {type: sequelize.QueryTypes.SELECT });
+	const username = ctx.state.user.username;
+	let result = await sequelize.query("SELECT SUM(size) AS `sum`, COUNT(*) as `count` from `files where `username` = :username`", {
+		type: sequelize.QueryTypes.SELECT,
+		raw: true,
+		replacements:{
+			username: username,
+		},	
+	});
 	let data = result[0] || {};
 	
 	data.total = 2 * 1024 * 1024 * 1024;
@@ -224,12 +231,13 @@ Files.prototype.rename = async function(ctx) {
 	data = data.get({plain:true});
 	
 	// 七牛改名
-	const srcKey = username + "_files/" + data.filename;
-	const dstKey = username + "_files/" + filename;
+	const srcKey = data.key;
+	const dstKey =srcKey.substring(0, srcKey.lastIndexOf("/") + 1) + filename;
 	data = await storage.move(srcKey, dstKey);
 	if (data.isErr()) return data;
 	
 	data = await this.model.update({
+		key: dstKey,
 		filename: filename,
 	}, {
 		where: {
