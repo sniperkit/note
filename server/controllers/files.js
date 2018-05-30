@@ -185,7 +185,7 @@ Files.prototype.find = async function(ctx) {
 
 Files.prototype.findOne = async function(ctx) {
 	const key = decodeURIComponent(ctx.params.id);
-	const username = ctx.state.user.username;
+	//const username = ctx.state.user.username;
 
 	let content = undefined;
 	let isPage = false;
@@ -197,7 +197,7 @@ Files.prototype.findOne = async function(ctx) {
 	let data = await this.model.findOne({
 		where: {
 			key: key,
-			username: username,
+			//username: username,
 		}
 	})
 
@@ -356,7 +356,7 @@ Files.getRoutes = function() {
 		path: ":id",
 		method: "GET",
 		action: "findOne",
-		authentated: true,
+		//authentated: true,
 		validate: {
 			params: {
 				id: joi.string().required(),
