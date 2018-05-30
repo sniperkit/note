@@ -61,22 +61,9 @@ Files.prototype.token = async function(ctx) {
 	const key = decodeURIComponent(ctx.params.id);
 	const username = ctx.state.user.username;
 
-	const keys = key.split("/");
-	
-	if (keys.length < 2 || key.indexOf(username) != 0) return ERR.ERR_PARAMS();
-	const filetype = keys[0].replace(username+ "_", "");
+	if (key.indexOf(username + "/") != 0) return ERR.ERR_PARAMS();
 
-	//console.log(keys, key, filetype);
-	if (filetype != "pages" && filetype != "files" && filetype != "images" && filetype == "datas") {
-		return ERR.ERR_PARAMS();
-	}
-
-	const result =  storage.getUploadToken(key);
-	if (result.isErr()) return result;
-
-	const token = result.getData();
-	
-	return ERR.ERR_OK({token});
+	return storage.getUploadToken(key);
 }
 
 Files.prototype.statistics = async function(ctx) {
@@ -111,7 +98,7 @@ Files.prototype.upsert = async function(ctx) {
 	params.username = username;
 	params.key = key;
 
-	if (key.indexOf(username + "/") != 0 && key.indexOf(username + "_") != 0) {
+	if (key.indexOf(username + "/") != 0) {
 		return ERR.ERR_PARAMS();
 	}
 	
@@ -262,7 +249,6 @@ Files.prototype.qiniu = async function(ctx) {
 		hash: params.hash,
 		size: params.size,
 		type: params.type,
-		path: value(params.path),
 		filename: value(params.filename),
 		public: value(params.public),
 	});
@@ -271,13 +257,44 @@ Files.prototype.qiniu = async function(ctx) {
 	if (!data) {
 	}
 
-	return ERR_OK(data);
+	return ERR.ERR_OK(data);
+}
+
+Files.prototype.transform = async function(ctx) {
+	let list = await storage.list("xiaoyao");
+	list = list.data.items;
+
+	const moves = [];
+
+	for (var i = 0; i < list.length; i++) {
+		let srcKey = list[i].key;
+		let paths = srcKey.split("/");
+		let username = paths[0];
+		let dstKey = srcKey;
+		paths.splice(1, 0, username.split("_")[1] || "pages");
+		paths[0] = "xiaoyao";
+		dstKey = paths.join("/");
+		console.log(srcKey, dstKey);
+		moves.push({
+			srcKey,
+			dstKey,
+		});
+	}
+
+	await storage.batchMove(moves);
+
+	return ERR.ERR_OK(list);
 }
 
 Files.getRoutes = function() {
 	const self = this;
 	self.pathPrefix = "files";
 	const routes = [
+	{
+		path: "transform",
+		method: "get",
+		action: "transform",
+	},
 	{
 		path: "qiniu",
 		method: "post",

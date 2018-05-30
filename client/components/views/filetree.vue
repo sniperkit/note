@@ -90,6 +90,7 @@ import _ from "lodash";
 import {component} from "@/components/component.js";
 import config from "@/config.js";
 import api from "@@/common/api/note.js";
+import util from "@@/common/util.js";
 
 vue.use(Loading.directive);
 
@@ -169,7 +170,7 @@ export default {
 		async getSitePage(site) {
 			const self = this;
 			const result = await api.files.get({
-				prefix: [site.username, site.sitename].join("/"),
+				prefix: [site.username, "pages", site.sitename].join("/"),
 				raw: true,
 			});
 			if (result.isErr()) return;
@@ -178,14 +179,14 @@ export default {
 			pages.forEach(page => {
 				const paths = page.key.split("/");
 				page.name = paths[paths.length-1];
-				page.path = page.key;
+				page.path = util.getPathByKey(page.key);
 				page.type = "blob";
 				page.leaf = true;
 				page.username = paths[0];
 				page.name = page.name.replace(/\..*$/, "");
 				page.url = page.path.replace(/\..*$/, "");
 
-				pagemap[page.key] = page;
+				pagemap[page.path] = page;
 			});
 			_.merge(self.pages, pagemap);
 			return self.generateTreeNodes(pagemap);
@@ -268,7 +269,7 @@ export default {
 			const self = this;
 			let _loadPageFromServer = async function() {
 				console.log("服务器最新");
-				const result = await api.files.get({key:page.path});
+				const result = await api.files.get({key:page.key});
 				const file = result.getData();
 				if (!file && result.isErr()) {
 					Message(result.getMessage());
@@ -389,7 +390,7 @@ export default {
 			}
 			let newNode = {
 				path:path,
-				key:path,
+				key: util.getKeyByPath(path, "pages"),
 			    name:form.filename,
 			    type:form.type,
 				leaf: form.type == "blob",
@@ -397,7 +398,7 @@ export default {
 			    url:path.replace(/\.md$/, ""),
 			    username:node.username,
 			}
-			self.pages[newNode.key] = newNode;
+			self.pages[newNode.page] = newNode;
 			form.isLoading = true;
 			if (form.type != "tree") {
 				//await this.savePage(newNode);
@@ -410,7 +411,7 @@ export default {
 			const path = data.path;
 			const page = this.getPagePath(path);
 			page.isRefresh = true;
-			const result = await api.files.delete({key:path});
+			const result = await api.files.delete({key:page.key});
 			if (result.isErr()) {
 				Message(result.getMessage());
 			}

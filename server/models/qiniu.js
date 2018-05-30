@@ -115,6 +115,29 @@ Qiniu.move = async function(srcKey, dstKey) {
 	return result;
 }
 
+Qiniu.batchMove = async function(list) {
+	const bucketManager = getBucketManager();
+	const moveOperations = [];
+	for (var i = 0; i < list.length; i++) {
+		moveOperations.push(qiniu.rs.moveOp(bucketName, list[i].srcKey, bucketName, list[i].dstKey));
+	}
+
+	const result = await new Promise((resolve, reject) => {
+		bucketManager.batch(moveOperations, function(respErr, respBody, respInfo){
+			if (respErr || respInfo.statusCode != 200) {
+				//console.log(respErr, respInfo.statusCode, respBody);
+				//return resolve(false);
+				return resolve(ERR().setMessage(respErr).setData({statusCode: respInfo.statusCode, body:respBody}));
+			}
+			
+			return resolve(ERR_OK());
+			//return resolve(true);
+		});
+	});
+
+	return result;
+}
+
 Qiniu.get = async function(key) {
 	const url = this.getDownloadUrl(key).getData();
 
