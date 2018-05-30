@@ -10,16 +10,6 @@ import SiteGroups from "./siteGroups.js";
 import SiteMembers from "./siteMembers.js";
 import SiteFiles from "./siteFiles.js";
 
-//export const Users = _Users;
-//export const DataSources = _DataSources;
-//export const Files = _Files;
-//export const Sites = _Sites;
-//export const Groups = _Groups;
-//export const GroupMembers = _GroupMembers;
-//export const SiteGroups = _SiteGroups;
-//export const SiteMembers = _SiteMembers;
-//export const SiteFiles = _SiteFiles;
-
 export default {
 	Users,
 	DataSources,

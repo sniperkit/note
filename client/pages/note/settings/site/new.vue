@@ -58,7 +58,7 @@ export default {
 
 	methods: {
 		async clickSubmitSiteBtn() {
-			const result = await api.site.create(this.site);
+			const result = await api.sites.create(this.site);
 			if (result.isErr()) {
 				return Message(result.getMessage());
 			}

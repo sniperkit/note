@@ -64,7 +64,7 @@ export default {
 
 	methods: {
 		async clickSubmitBaseInfoBtn() {
-			const result = await api.site.update(this.site);
+			const result = await api.sites.update(this.site);
 			if (result.isErr()) {
 				return Message(result.getMessage());
 			}
@@ -74,7 +74,7 @@ export default {
 	},
 
 	async mounted() {
-		let result = await api.site.getByUsername();
+		let result = await api.sites.getByUsername();
 		if (result.isErr()) {
 			Message(result.getMessage());
 			return;

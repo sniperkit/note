@@ -41,21 +41,6 @@ function initHttpOptions(self, options = {}, prefix, key) {
 	self.restRequest = (method = "get", url) => (data, config) => httpRequest(method, getUrl(prefix, url, true, data, key), data, Object.assign(self.options,config));
 }
 
-export function User(options) {
-	const self = this;
-
-	initHttpOptions(self, options);
-
-	const apiRequest = (method, url) => (data, config) => httpRequest(method || "get", url, data, Object.assign(self.options, config));
-
-
-	self.login = apiRequest("post", "users/login");
-	self.register = apiRequest("post", "users/register");
-	self.setBaseInfo = apiRequest("put", "users/setBaseInfo");
-	self.modifyPassword = apiRequest("put", "users/modifyPassword");
-	self.isLogin = apiRequest("get", "users/isLogin");
-}
-
 export function DataSource(options) {
 	const self = this;
 
@@ -84,11 +69,33 @@ export function Qiniu(options) {
 	self.get = apiRequest("get", "qiniu/get");
 }
 
+export function Users(options) {
+	const self = this;
+
+	initHttpOptions(self, options);
+
+	const apiRequest = (method, url) => (data, config) => httpRequest(method || "get", url, data, Object.assign(self.options, config));
+
+
+	self.login = apiRequest("post", "users/login");
+	self.register = apiRequest("post", "users/register");
+	self.setBaseInfo = apiRequest("put", "users/setBaseInfo");
+	self.modifyPassword = apiRequest("put", "users/modifyPassword");
+	self.isLogin = apiRequest("get", "users/isLogin");
+}
+
+
 export function Files(options) {
 	const self = this;
 	const prefix = "files";
 
-	initHttpOptions(self, options, "files", "key");
+	//initHttpOptions(self, options, "files", "key");
+	initHttpOptions(self, {...options, 
+		baseURL:"http://localhost:8088/api/v0/",
+		headers: {
+			Authorization: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsInVzZXJuYW1lIjoieGlhb3lhbyIsImV4cCI6MTUyNzY3NTYxMS4yNjR9.7LHTA1eIs8xc7s0qiNFYAWfQVAKW3geQdDNAq_DRmEc",
+		},
+	}, "files", "key");
 
 	self.get = self.restRequest("get");
 	self.upsert = self.restRequest("post");
@@ -100,28 +107,26 @@ export const mod = {
 
 }
 
-export function Site(options) {
+export function Sites(options) {
 	const self = this;
 
-	initHttpOptions(self, options);
+	initHttpOptions(self, options, "sites", "id");
 
-	const apiRequest = (method, url) => (data, config) => httpRequest(method || "get", url, data, Object.assign(self.options, config));
-
-	self.create = apiRequest("post", "sites/create");
-	self.update = apiRequest("put", "sites/update");
-	self.delete = apiRequest("delete", "sites/delete");
-	self.getByUsername = apiRequest("get", "sites/getByUsername");
+	self.create = self.restRequest("post");
+	self.update = self.restRequest("put");
+	self.delete = self.restRequest("delete");
+	self.get = self.restRequest("get");
 }
 
-export function Note(options){
+export function Notes(options){
 	const self = this;
 	initHttpOptions(self, options);
 
-	self.user = new User(self.options);
 	self.dataSource = new DataSource(self.options);
 	self.qiniu = new Qiniu(self.options);
+	self.users = new Users(self.options);
 	self.files = new Files(self.options);
-	self.site = new Site(self.options);
+	self.sites = new Sites(self.options);
 }
 
-export default new Note();
+export default new Notes();

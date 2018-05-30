@@ -29,6 +29,7 @@
 <script>
 import vue from "vue";
 import {mapActions, mapGetters} from "vuex";
+import Cookies from 'js-cookie';
 
 import {
 	Button, 
@@ -64,6 +65,7 @@ export default {
 		handleCommand(cmd){
 			if (cmd == "logout") {
 				this.setUser({});
+				Cookies.remove("token");
 				this.$router.push({name: g_app.getRouteName("login")});
 				return;
 			}

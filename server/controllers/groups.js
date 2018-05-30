@@ -1,9 +1,10 @@
 import joi from "joi";
 
-import {consts} from "../common.js";
-import groupsModel from "../models/groups.js";
+import groupsModel from "@/models/groups.js";
+import groupMembersModel from "@/models/groupMembers.js";
 
-import ERR from "../../common/error.js";
+import consts from "@@/common/consts.js";
+import ERR from "@@/common/error.js";
 
 const USER_ACCESS_LEVEL_NONE = consts.USER_ACCESS_LEVEL.USER_ACCESS_LEVEL_NONE;
 const USER_ACCESS_LEVEL_READ = consts.USER_ACCESS_LEVEL.USER_ACCESS_LEVEL_READ;
@@ -19,12 +20,12 @@ Groups.prototype.find = function() {
 
 Groups.prototype.findOne = async function(ctx) {
 	const id = ctx.params.id;
-	const username = ctx.state.user.username;
+	const userId = ctx.state.user.userId;
 
 	let data = this.model.findOne({
 		where: {
 			id: id,
-			username: username,
+			userId: userId,
 		}
 	});
 
@@ -33,50 +34,81 @@ Groups.prototype.findOne = async function(ctx) {
 
 Groups.prototype.create = async function(ctx) {
 	const params = ctx.state.params;
+	const userId = ctx.state.user.userId;
+	params.userId = userId;
 	
 	let data = await this.model.create(params);
 
 	//data = data.get({plain:true});
 
-	return ERR.ERR_OK().setData(data);
+	return ERR.ERR_OK(data);
 }
 
-Groups.prototype.update = function() {
+Groups.prototype.update = async function() {
 	const params = ctx.state.params;
 	const id = ctx.params.id;
-	const username = ctx.state.user.username;
+	const userId = ctx.state.user.userId;
 
-	let data = this.model.update(params, {
+	let data = await this.model.update(params, {
 		where: {
 			id: id,
-			username: username,
+			userId: userId,
 		}
 	})
 
 	return ERR.ERR_OK(data);
 }
 
-Groups.prototype.delete = function() {
+Groups.prototype.delete = async function() {
 	const id = ctx.params.id;
-	const username = ctx.state.user.username;
+	const userId = ctx.state.user.userId;
 
-	let data = this.model.destroy({
+	let data = await this.model.destroy({
 		where: {
 			id: id,
-			username: username,
+			userId: userId,
 		}
 	})
 
 	return ERR.ERR_OK(data);
 }
 
-Groups.prototype.addMember = function(ctx) {
+Groups.prototype.addMember = async function(ctx) {
 	const params = ctx.state.params;
 	const id = ctx.params.id;
-	const username = ctx.state.user.username;
+	const userId = ctx.state.user.userId;
 
-	console.log(ctx.params);
-	console.log(ctx.state.params);
+	let data = await this.model.findOne({
+		where: {
+			id: id,
+			userId: userId,
+		}
+	});
+
+	if (!data) return ERR.ERR_PARAMS();
+
+	let result = await groupMembersModel.upsert({
+		userId: userId,
+		groupId: id,
+		memberId: params.memberId,
+		level: params.level,
+	});
+
+	return ERR.ERR_OK(result);
+}
+
+Groups.prototype.removeMember = async function(ctx) {
+	const id = ctx.params.id;
+	const memberId = ctx.params.memberId;
+	const userId = ctx.state.user.userId;
+
+	let result = await groupMembersModel.destroy({
+		userId: userId,
+		groupId: id,
+		memberId: memberId,
+	});
+
+	return ERR.ERR_OK(result);
 }
 
 Groups.getRoutes = function() {
@@ -127,6 +159,18 @@ Groups.getRoutes = function() {
 			body: {
 				memberId: joi.number().required(),
 				level: joi.number().valid([USER_ACCESS_LEVEL_NONE, USER_ACCESS_LEVEL_READ, USER_ACCESS_LEVEL_WRITE]),
+			},
+		}
+	},
+	{
+		path: ":id/members/:memberId",
+		method: "DELETE",
+		action: "removeMember",
+		authentated: true,
+		validate: {
+			params: {
+				id: joi.number().required(),
+				memberId: joi.number().required(),
 			},
 		}
 	}

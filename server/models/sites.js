@@ -18,7 +18,7 @@ const Sites = sequelize.define('sites', {
 		allowNull: false,
 	},
 
-	"private": {
+	public: {
 		type: Sequelize.BOOLEAN,
 		defaultValue: false,
 	},

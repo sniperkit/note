@@ -246,16 +246,18 @@ Files.prototype.qiniu = async function(ctx) {
 	const username = key.split("/")[0].split("_")[0];
 	//console.log(params);
 
+	const value = (val) => val == "null" ? undefined : val;
 	let data = await this.model.upsert({
 		username: username,
+		sitename: value(params.sitename),
 		key:params.key,
 		hash: params.hash,
 		size: params.size,
 		type: params.type,
-		path: params.path == "null" ? undefined : params.path,
-		filename: params.filename == "null" ? undefined : params.filename,
-		public: params.public == "null" ? undefined : params.public,
-	})
+		path: value(params.path),
+		filename: value(params.filename),
+		public: value(params.public),
+	});
 	
 	// 添加记录失败 应删除文件
 	if (!data) {

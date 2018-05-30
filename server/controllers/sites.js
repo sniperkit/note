@@ -2,10 +2,11 @@ import joi from "joi";
 
 import ERR from "../../common/error.js";
 
-import siteModel from "../models/sites.js";
+import sitesModel from "../models/sites.js";
+import siteGroupsModel from "../models/siteGroups.js";
 
 export const Sites = function() {
-	this.model = siteModel;
+	this.model = sitesModel;
 }
 
 Sites.prototype.create = async function(ctx) {
@@ -30,16 +31,21 @@ Sites.prototype.create = async function(ctx) {
 	return ERR.ERR_OK().setData(data);
 }
 
-Sites.prototype.getByUsername = async function(ctx) {
+Sites.prototype.find = async function(ctx) {
 	const params = ctx.state.params;
-	const username = params.username || ctx.state.user.username;
+	const username = ctx.state.user.username;
 
-	if (!username) return ERR.ERR_PARAMS();
+	const where = {public: true};
+
+	if (params.username) where.username = params.username;
+
+	if (params.owned && username) {
+		where.username = username;
+		delete where.public;
+	}
 
 	let data = await this.model.findAll({
-		where: {
-		   username: username,
-		},
+		where: where,
 	});
 
 	if (!data) return ERR.ERR();
@@ -88,16 +94,54 @@ Sites.prototype.delete = async function(ctx) {
 	return ERR.ERR_OK();
 }
 
+Sites.prototype.addGroup = async function(ctx) {
+	const params = ctx.state.params;
+	const id = ctx.params.id;
+	const userId = ctx.state.user.userId;
+
+	let data = await this.model.findOne({
+		where: {
+			id: id,
+			userId: userId,
+		}
+	});
+
+	if (!data) return ERR.ERR_PARAMS();
+
+	let result = await groupMembersModel.upsert({
+		userId: userId,
+		siteId: id,
+		groupId: params.groupId,
+		level: params.level,
+	});
+
+	return ERR.ERR_OK(result);
+	
+}
+
+Sites.prototype.removeGroup = async function(ctx) {
+	const id = ctx.params.id;
+	const groupId = ctx.params.groupId;
+	const userId = ctx.state.user.userId;
+
+	let result = await groupMembersModel.destroy({
+		userId: userId,
+		siteId: id,
+		groupId: groupId,
+	});
+
+	return ERR.ERR_OK(result);
+
+}
+
 Sites.getRoutes = function() {
 	this.pathPrefix = "sites";
 	const routes = [
 	{
-		path: "getByUsername",
 		method: "get",
-		action: "getByUsername",
+		action: "find",
 	},
 	{
-		path: "delete",
 		method: "delete",
 		action: "delete",
 		authenticated: true,
@@ -109,13 +153,11 @@ Sites.getRoutes = function() {
 		},
 	},
 	{
-		path: "update",
 		method: "put",
 		action: "update",
 		authenticated: true,
 	},
 	{
-		path: "create",
 		method: "post",
 		action: "create",
 		authenticated: true,
@@ -124,6 +166,32 @@ Sites.getRoutes = function() {
 				sitename: joi.string().max(48).required(),
 			},
 		}
+	},
+	{
+		path: ":id/groups",
+		method: "post",
+		action: "addGroup",
+		authenticated: true,
+		validate: {
+			params: {
+				id: joi.number().required(),
+			},
+			body: {
+				groupId: joi.number().required(),
+			},
+		}
+	},
+	{
+		path: ":id/groups/:groupId",
+		method: "delete",
+		action: "removeGroup",
+		authenticated: true,
+		validate: {
+			params: {
+				id: joi.number().required(),
+				groupId: joi.number().required(),
+			},
+		},
 	},
 	];
 

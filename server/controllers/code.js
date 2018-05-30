@@ -13,7 +13,7 @@ Code.prototype.pushCode = function() {
 	shell.exec(cmd_str);
 }
 
-Code.prototype.getRoutes = function() {
+Code.getRoutes = function() {
 	const self = this;
 	self.pathPrefix = "code";
 	const routes = [
@@ -28,4 +28,4 @@ Code.prototype.getRoutes = function() {
 	return routes;
 }
 
-export default new Code();
+export default Code;

@@ -65,7 +65,7 @@ export default {
 				return Message("两次新密码不一致");
 			}
 
-			const result = await api.user.modifyPassword(password);			
+			const result = await api.users.modifyPassword(password);			
 			if (result.isErr()) {
 				return Message(result.getMessage());
 			}

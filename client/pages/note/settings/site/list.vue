@@ -38,7 +38,7 @@ export default {
 
 	methods: {
 		async clickDeleteBtn(site, index) {
-			const result = await api.site.delete(site);
+			const result = await api.sites.delete(site);
 			if (result.isErr()) {
 				Message(result.getMessage());
 				return;
@@ -49,7 +49,7 @@ export default {
 	},
 
 	async mounted() {
-		let result = await api.site.getByUsername();
+		let result = await api.sites.get();
 		if (result.isErr()) {
 			Message(result.getMessage());
 			return;

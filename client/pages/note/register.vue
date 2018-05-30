@@ -70,7 +70,7 @@ export default {
 			});
 			if (!ret) return;
 
-			const result = await api.user.register({
+			const result = await api.users.register({
 				username:self.registerForm.username,
 				password:self.registerForm.password,
 			});
@@ -82,8 +82,8 @@ export default {
 
 			const user = result.getData();
 			const token = user.token;
-			api.options.headers['Authorization'] = token;
-			//Cookies.set("token", token);
+			api.options.headers['Authorization'] = "Bearer " + token;
+			Cookies.set("token", token);
 			self.setUser(user);
 			self.$router.push({name:g_app.getRouteName("home")});
 		}

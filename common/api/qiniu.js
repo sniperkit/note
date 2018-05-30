@@ -20,7 +20,12 @@ const qiniuUpload = async (key, file, token, params = {}, observer = {}) => {
 		token: token,
 		putExtra: {
 			mimeType: null,
-			params: params,
+			params: {
+				"x:filename": params.filename,
+				"x:public": params.public || false,
+				"x:sitename": params.sitename || "",
+				"x:type": util.getTypeByPath(key),
+			},
 		},
 		config: {
 			useCdnDomain: true,
@@ -55,8 +60,7 @@ const qiniuUpload = async (key, file, token, params = {}, observer = {}) => {
 	let result = await api.files.upsert({
 		...params,
 		size: file.size,
-		key:key,
-		path: util.getPathByKey(key),
+		key: key,
 		type: util.getTypeByPath(key),
 	});
 

@@ -1,6 +1,6 @@
 
 
-export default function({store, req}) {
+export default function({store, req, redirect}) {
 	if (process.server && !req) return;
 
 	const isAuthenticated = process.server ? req.ctx.state.user : store.getters["user/isAuthenticated"];

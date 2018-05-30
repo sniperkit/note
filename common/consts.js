@@ -8,3 +8,8 @@ export const USER_ACCESS_LEVEL = {
 	USER_ACCESS_LEVEL_READ,
 	USER_ACCESS_LEVEL_WRITE,
 }
+
+
+export default {
+	USER_ACCESS_LEVEL,
+}

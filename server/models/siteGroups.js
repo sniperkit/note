@@ -1,7 +1,7 @@
 import Sequelize from 'sequelize';
 import sequelize from "./database.js";
 
-import {consts} from "../common.js";
+import consts from "@@/common/consts.js";
 
 const USER_ACCESS_LEVEL_NONE = consts.USER_ACCESS_LEVEL.USER_ACCESS_LEVEL_NONE;
 const USER_ACCESS_LEVEL_READ = consts.USER_ACCESS_LEVEL.USER_ACCESS_LEVEL_READ;
@@ -36,6 +36,13 @@ const SiteGroups = sequelize.define("siteGroups", {
 }, {
 	charset: "utf8mb4",
 	collate: 'utf8mb4_bin',
+
+	indexes: [
+	{
+		unique: true,
+		fields: ["siteId", "groupId"],
+	},
+	],
 });
 
 //SiteGroups.sync({force:true}).then(() => {

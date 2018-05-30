@@ -71,7 +71,7 @@ export default {
 			});
 			if (!ret) return;
 
-			const result = await api.user.login({
+			const result = await api.users.login({
 				username:self.loginForm.username,
 				password:self.loginForm.password,
 			});
@@ -83,8 +83,8 @@ export default {
 
 			const user = result.getData();
 			const token = user.token;
-			api.options.headers['Authorization'] = token;
-			//Cookies.set("token", token);
+			api.options.headers['Authorization'] = "Bearer " + token;
+			Cookies.set("token", token);
 			self.setUser(user);
 			self.$router.push({name:g_app.getRouteName("home")});
 		}

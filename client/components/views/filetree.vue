@@ -155,7 +155,7 @@ export default {
 		},
 
 		async getSites() {
-			let result = await api.site.getByUsername({username: this.user.username});
+			let result = await api.sites.get({owned: true});
 			const sites = result.getData() || [];
 			sites.forEach(site => {
 				site.name = site.sitename;
