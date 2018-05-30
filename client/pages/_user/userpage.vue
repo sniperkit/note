@@ -11,6 +11,7 @@ import {
 
 import config from "@/config.js";
 import api from "@@/common/api/note.js";
+import util from "@@/common/util.js";
 
 import markdownEx from "../../components/bases/markdownEx.vue";
 
@@ -45,8 +46,9 @@ export default {
 	},
 
 	async mounted() {
-		const path = this.$route.path;
-		const key = path.substring(1) + config.pageSuffix;
+		const url = this.$route.path;
+		const path = url.substring(1) + config.pageSuffix;
+		const key = util.getKeyByPath(path);
 		const result = await api.files.get({key:key});
 		if (!result || result.isErr()) {
 			//Message(result.getMessage());
