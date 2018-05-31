@@ -10,6 +10,11 @@ import events from "@/lib/events.js";
 import noteEndpoint from "@@/common/api/note.js";
 import {component} from "@/components/component.js";
 
+import 'vue-easytable/libs/themes-base/index.css'
+import {VTable,VPagination} from 'vue-easytable';
+vue.component(VTable.name, VTable);
+vue.component(VPagination.name, VPagination);
+
 vue.use({
 	install(Vue, options) {
 		Vue.mixin(component);
