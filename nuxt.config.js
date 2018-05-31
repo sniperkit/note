@@ -56,9 +56,13 @@ module.exports = {
   	  	  	{ name: 'viewport', content: 'width=device-width, initial-scale=1' },
   	  	  	{ hid: 'description', name: 'description', content: 'Nuxt.js project' }
   	  	],
+		script: [
+			
+		],
   	  	link: [
-			{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
-  	  	]
+			{ rel: "stylesheet", href: "http://at.alicdn.com/t/font_654450_twz7mpxsi5ecow29.css"},
+			{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+  	  	],
   	},
   	/*
   	** Global CSS
@@ -66,7 +70,6 @@ module.exports = {
   	css: [
 		'~assets/css/main.css',
 		'~assets/css/theme.scss',
-		'~assets/iconfont/iconfont.css',
 	],
   	/*
   	** Customize the progress-bar color

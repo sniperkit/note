@@ -74,7 +74,7 @@ export default {
 	},
 
 	async mounted() {
-		let result = await api.sites.getByUsername();
+		let result = await api.sites.get({owned:true});
 		if (result.isErr()) {
 			Message(result.getMessage());
 			return;

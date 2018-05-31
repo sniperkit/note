@@ -11,7 +11,7 @@
 		</el-table-column>
 		<el-table-column fixed="right" label="操作">
 			<template slot-scope="{row, $index}">
-				<el-button type="text" @click="clickCopyBtn(row, $index)">连接</el-button>
+				<el-button type="text" @click="clickCopyBtn(row, $index)">链接</el-button>
 				<el-button type="text" @click="clickDeleteBtn(row, $index)">删除</el-button>
 			</template>
 		</el-table-column>

@@ -398,7 +398,7 @@ export default {
 			    url:path.replace(/\.md$/, ""),
 			    username:node.username,
 			}
-			self.pages[newNode.page] = newNode;
+			self.pages[newNode.path] = newNode;
 			form.isLoading = true;
 			if (form.type != "tree") {
 				//await this.savePage(newNode);
