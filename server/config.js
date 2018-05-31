@@ -1,7 +1,7 @@
 import _ from "lodash";
 
 import commonConfig from "../common/config.js";
-import config from "./.config.js";
+import secretConfig from "./.config.js";
 
 const defaultConfig = {
 	secret: "keepwork",
@@ -44,19 +44,15 @@ const productionConfig = {
 const developmentConfig = {
 }
 
-const localConfig = {
-	//host: "127.0.0.1",
-}
+const testConfig = {
 
+}
 const configs = {
-	"local": _.merge({}, commonConfig, defaultConfig, localConfig, config),
-	"production": _.merge({}, commonConfig, defaultConfig, productionConfig, config),
-	"development": _.merge({}, commonConfig, defaultConfig, developmentConfig, config),
+	"production": _.merge({}, commonConfig, defaultConfig, productionConfig, secretConfig),
+	"development": _.merge({}, commonConfig, defaultConfig, developmentConfig, secretConfig),
+	"test": _.merge({}, defaultConfig, testConfig, secretConfig),
 }
 
-const ENV = process.env.ENV || process.env.NODE_ENV;
-const _config = configs[ENV];
+console.log(process.env.NODE_ENV);
 
-console.log(ENV);
-
-export default _config;
+export default configs[process.env.NODE_ENV];

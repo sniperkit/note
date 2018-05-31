@@ -1,7 +1,6 @@
 import _ from "lodash";
-import api from "@@/common/api/note.js";
 
-import commonConfig from "../common/config.js";
+import commonConfig from "@@/common/config.js";
 
 const defaultConfig = {
 	tagModsPath: "note/note/mods.md",
@@ -21,24 +20,12 @@ const developmentConfig = {
 	},
 }
 
-const localConfig = {
-	baseURL: "http://localhost:3000/api/v0/",
-	origin: "http://localhost:3000",
-}
-
-
 const configs = {
-	"local": _.merge({}, commonConfig, defaultConfig, localConfig),
 	"production": _.merge({}, commonConfig, defaultConfig, productionConfig),
 	"development": _.merge({}, commonConfig, defaultConfig, developmentConfig),
 }
 
-const ENV = process.env.ENV || process.env.NODE_ENV;
-const config = configs[ENV];
+console.log(process.env.NODE_ENV);
 
-api.options.baseURL = config.baseURL;
-
-console.log(ENV);
-
-export default config;
+export default configs[process.env.NODE_ENV];
 
