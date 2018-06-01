@@ -2,10 +2,19 @@ import vue from "vue";
 import jwt from "jwt-simple";
 
 import EVENTS from "@/lib/events.js";
+import config from "@/config.js";
+import api from "@@/common/api/note.js";
 
 import "@/components/bases";
 import "@/components/complex";
 import {registerModTag} from  "@/components/mods";
+
+console.log(process.client);
+let Cookies;
+
+if (process.client) {
+	Cookies = require("js-cookie");
+}
 
 function localStorageSetUser(user = {}) {
 	if (process.server) {
@@ -29,11 +38,18 @@ function localStorageGetUser() {
 
 // 定义事件对象
 const events = new vue();
+export const user = {
+	id: null,
+	username: null,
+	token: null,
+};
+
 export const component = {
 	data: function() {
 		return {
 			EVENTS:EVENTS,
-			user: {},
+			user: user, // 共享用户信息
+			api: api,
 		}
 	},
 
@@ -50,23 +66,45 @@ export const component = {
 		emit(eventName, ...args) {
 			events.$emit(eventName, ...args);
 		},
-		setUser(user) {
-			this.user = user;
-			localStorageSetUser(user);
-		},
-		getUser() {
-			this.user = this.user.id ? this.user : localStorageGetUser();
+		login(user) {
+			if (user) {
+				_.merge(this.user, user);
+				if (process.client) {
+					localStorageSetUser(user);
+					Cookies.set("token", user.token);
+				}
+				return true;
+			}
+	
+			if (this.user.id) return true;
 
-			if (this.isAuthenticated()){
-				return this.user;
+			user = localStorageGetUser();
+			_.merge(this.user, user);
+
+			if (!this.isAuthenticated()){
+				this.logout();
+				return false;
 			}
 
-			return {};
+			this.api.options.baseURL = config.baseURL;
+			this.api.options.headers['Authorization'] = "Bearer " + this.user.token;
+
+			return true;
+		},
+		logout() {
+			this.user.id = null;
+			this.user.username = null;
+			this.user.token = null;
+
+			if (process.client) {
+				localStorageSetUser({});
+				Cookies.remove("token");
+				this.api.options.headers['Authorization'] = undefined;
+			}
 		},
 		isAuthenticated() {
 			if (!this.user || !this.user.token) return false;
 			const payload = jwt.decode(this.user.token, null, true);
-			//console.log(payload);
 
 			if (payload.nbf && Date.now() < payload.nbf*1000) {
 				return false;
@@ -79,15 +117,9 @@ export const component = {
 		}
 	},
 
-	mounted() {
+	beforeMount() {
 		const self = this;
-
-		self.user = self.getUser();
-
-		self.on(self.EVENTS.__EVENT__USERINFO__, function(user){
-			self.user = user;
-		});
-
+		self.login();
 	},
 }
 

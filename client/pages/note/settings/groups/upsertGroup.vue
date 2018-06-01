@@ -55,7 +55,7 @@ export default {
 
 	methods: {
 		async submitDataSource() {
-			const result = await api.groups.create(this.group);
+			const result = await this.api.groups.create(this.group);
 			if (result.code != 0) {
 				return Message(result.message);
 			}
@@ -65,7 +65,7 @@ export default {
 
 	mounted() {
 		Object.assign(this.group, this.data);
-		this.group.userId = g_app.user.getUser().userId;
+		this.group.userId = this.user.id;
 	}
 }
 </script>

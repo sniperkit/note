@@ -53,8 +53,7 @@ export default {
 	methods: {
 		handleCommand(cmd){
 			if (cmd == "logout") {
-				this.setUser({});
-				Cookies.remove("token");
+				this.logout();
 				this.$router.push({name: g_app.getRouteName("login")});
 				return;
 			}

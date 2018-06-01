@@ -28,7 +28,6 @@ import {
 	Button,
 	Message,
 } from "element-ui";
-import Cookies from 'js-cookie';
 import api from "@@/common/api/note.js";
 
 export default {
@@ -78,10 +77,7 @@ export default {
 			}
 
 			const user = result.getData();
-			const token = user.token;
-			api.options.headers['Authorization'] = "Bearer " + token;
-			Cookies.set("token", token);
-			self.setUser(user);
+			self.login(user);
 			self.$router.push({name:g_app.getRouteName("home")});
 		}
 	},

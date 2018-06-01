@@ -29,7 +29,6 @@ const getUrl = function(prefix, url, isRest, data, key = "id") {
 }
 
 function initHttpOptions(self, options = {}, prefix, key = "id") {
-	options = options || {};
 	options.headers = options.headers || {};
 	
 	self.options = options;
@@ -38,7 +37,7 @@ function initHttpOptions(self, options = {}, prefix, key = "id") {
 	self.httpPut = httpPut;
 	self.httpDelete = httpDelete;
 	self.apiRequest = (method = "get", url) => (data, config) => httpRequest(method, getUrl(prefix, url, false), data, Object.assign(self.options, config));
-	self.restRequest = (method = "get", url) => (data, config) => httpRequest(method, getUrl(prefix, url, true, data, key), data, Object.assign(self.options,config));
+	self.restRequest = (method = "get", url) => (data, config) => httpRequest(method, getUrl(prefix, url, true, data, key), data, Object.assign(self.options, config));
 }
 
 export function DataSource(options) {
@@ -129,7 +128,7 @@ export function Groups(options) {
 	self.get = self.restRequest("get");
 	
 }
-export function Notes(options){
+export function Notes(options = {}){
 	const self = this;
 	initHttpOptions(self, options);
 
@@ -140,5 +139,9 @@ export function Notes(options){
 	self.sites = new Sites(self.options);
 	self.groups = new Groups(self.options);
 }
+export const options = {
+	headers: {
 
-export default new Notes();
+	},
+}
+export default new Notes(options);
