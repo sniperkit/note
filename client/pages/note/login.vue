@@ -61,9 +61,6 @@ export default {
 	props:{
 	},
 	methods: {
-		...mapActions({
-			setUser: "user/setUser",
-		}),
 		async submitLoginForm() {
 			const self = this;
 			const ret = await new Promise((resolve, reject) => {

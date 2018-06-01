@@ -30,14 +30,11 @@ import {
 import vue from "vue";
 import {mapActions, mapGetters} from "vuex";
 import tags from "@/lib/tags";
-import {component} from "@/components/component.js";
 
 export default {
 	components: {
 		[Tree.name]: Tree,
 	},
-
-	mixins: [component],
 
 	data: function() {
 		return {

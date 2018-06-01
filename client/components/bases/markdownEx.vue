@@ -3,14 +3,12 @@
 </template>
 
 <script>
-import {component} from "@/components/component.js";
 import tag from "@/components/common/tag.js";
 import {tags} from "@/lib/tags";
 import {markdownEx} from "@/lib/markdown";
 
 export default {	
 	name:"markdownEx",
-	mixins: [component],
 	components:{
 		tag,
 	},

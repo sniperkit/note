@@ -5,7 +5,6 @@ import {mapActions, mapGetters} from "vuex";
 //import preset from 'jss-preset-default'
 
 import {tags} from "@/lib/tags";
-import {component} from "@/components/component.js";
 
 const EDITOR_MODE_EDITOR = "editor";
 

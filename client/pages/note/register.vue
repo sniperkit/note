@@ -29,7 +29,6 @@ import {
 	Message,
 } from "element-ui";
 import Cookies from 'js-cookie';
-import {mapActions, mapGetters} from "vuex";
 import api from "@@/common/api/note.js";
 
 export default {
@@ -61,9 +60,6 @@ export default {
 	props:{
 	},
 	methods: {
-		...mapActions({
-			setUser: "user/setUser",
-		}),
 		async submitRegisterForm() {
 			const self = this;
 			const ret = await new Promise((resolve, reject) => {

@@ -9,11 +9,10 @@
 
 <script>
 import _ from "lodash";
-import {component} from "@/components/component.js";
 import md from "@/lib/markdown";
 
 export default {
-	mixins: [component],
+	//mixins: [component],
 
 	data: function() {
 		return {

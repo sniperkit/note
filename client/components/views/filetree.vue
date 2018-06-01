@@ -85,9 +85,7 @@ import {
 	Message,
 } from "element-ui";
 import vue from "vue";
-import {mapActions, mapGetters} from "vuex";
 import _ from "lodash";
-import {component} from "@/components/component.js";
 import config from "@/config.js";
 import api from "@@/common/api/note.js";
 import util from "@@/common/util.js";
@@ -95,7 +93,6 @@ import util from "@@/common/util.js";
 vue.use(Loading.directive);
 
 export default {
-	mixins: [component],
 	components:{
 		[Button.name]: Button,
 		[Form.name]: Form,
@@ -123,9 +120,6 @@ export default {
 	},
 
 	computed: {
-		...mapGetters({
-			"user": "user/user",
-		}),
 		username() {
 			return this.user.username;
 		},

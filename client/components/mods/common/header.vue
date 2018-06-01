@@ -2,7 +2,7 @@
 	<div class="headerContainer">
 		<div class="container full-height flex-col">
 			<div class="flex-row">
-				<div v-show="isLogin">
+				<div v-show="user.id">
 					<el-dropdown @command="handleCommand" trigger="click">
 						<span class="el-dropdown-link" style="cursor:pointer">
 							{{user.nickname || user.username || "逍遥"}}
@@ -17,7 +17,7 @@
 						</el-dropdown-menu>
 					</el-dropdown>
 				</div>
-				<div v-show="!isLogin">
+				<div v-show="!user.id">
 					<el-button type="text" @click="clickLoginBtn">登陆</el-button>
 					<el-button type="text" @click="clickRegisterBtn">注册</el-button>
 				</div>
@@ -28,7 +28,6 @@
 
 <script>
 import vue from "vue";
-import {mapActions, mapGetters} from "vuex";
 import Cookies from 'js-cookie';
 
 import {
@@ -51,17 +50,7 @@ export default {
 		}
 	},
 
-	computed: {
-		...mapGetters({
-			user: "user/user",
-			isLogin: "user/isAuthenticated",
-		}),
-	},
-
 	methods: {
-		...mapActions({
-			setUser:"user/setUser",
-		}),
 		handleCommand(cmd){
 			if (cmd == "logout") {
 				this.setUser({});

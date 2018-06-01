@@ -24,7 +24,6 @@ import {
 	Message,
 } from "element-ui";
 
-import {component} from "@/components/component.js";
 import codemirror from "@/components/bases/codemirror.vue";
 import qiniuUpload from "@@/common/api/qiniu.js";
 import api from "@@/common/api/note.js";
@@ -32,7 +31,6 @@ import util from "@@/common/util.js";
 const tempContentKey = "cmeditor_temp_content";
 
 export default {
-	mixins: [component],
     components:{
 		[Dialog.name]: Dialog,
 		[Input.name]: Input,

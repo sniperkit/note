@@ -43,13 +43,6 @@ export default {
 		[Progress.name]: Progress,
 	},
 
-	computed: {
-		...mapGetters({
-			user: "user/user",
-			isLogin: "user/isAuthenticated",
-		}),
-	},
-
 	methods: {
 		async fileUpload(e) {
 			const self = this;

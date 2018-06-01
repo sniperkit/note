@@ -28,7 +28,7 @@ const getUrl = function(prefix, url, isRest, data, key = "id") {
 	return prefix + url;
 }
 
-function initHttpOptions(self, options = {}, prefix, key) {
+function initHttpOptions(self, options = {}, prefix, key = "id") {
 	options = options || {};
 	options.headers = options.headers || {};
 	
@@ -118,6 +118,17 @@ export function Sites(options) {
 	self.get = self.restRequest("get");
 }
 
+export function Groups(options) {
+	const self = this;
+
+	initHttpOptions(self, options, "groups", "id");
+
+	self.create = self.restRequest("post");
+	self.update = self.restRequest("put");
+	self.delete = self.restRequest("delete");
+	self.get = self.restRequest("get");
+	
+}
 export function Notes(options){
 	const self = this;
 	initHttpOptions(self, options);
@@ -127,6 +138,7 @@ export function Notes(options){
 	self.users = new Users(self.options);
 	self.files = new Files(self.options);
 	self.sites = new Sites(self.options);
+	self.groups = new Groups(self.options);
 }
 
 export default new Notes();

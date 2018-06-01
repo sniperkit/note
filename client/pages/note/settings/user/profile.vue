@@ -31,7 +31,6 @@ import {
 	Radio,
 	Message,
 } from "element-ui";
-import {mapActions, mapGetters} from "vuex";
 
 import api from "@@/common/api/note.js";
 import qiniuUpload from "@@/common/api/qiniu.js";
@@ -55,15 +54,9 @@ export default {
 	},
 
 	computed: {
-		...mapGetters({
-			userinfo: "user/user",
-		}),
 	},
 
 	methods: {
-		...mapActions({
-			setUser: "user/setUser",
-		}),
 		async clickSubmitBtn() {
 			if (this.portrait) {
 				const key= "note/portrait/" + this.user.username + "-" + this.portrait.name;

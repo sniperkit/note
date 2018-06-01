@@ -1,50 +1,45 @@
 <template>
-	<div v-if="isClient">
-		<v-table is-horizontal-resize style="width:100%" :columns="columns" :table-data="tableData" row-hover-color="#eee" row-click-color="#edf7ff" ></v-table>
-		<v-pagination @page-change="pageChange" :total="500" :page-size="20" :layout="['total', 'prev', 'pager', 'next', 'jumper']"></v-pagination>
+	<div>
+		<el-table :data="groups">
+			<el-table-column fixed prop="groupname" label="组名"></el-table-column>
+			<el-table-column fixed prop="description" label="备注"></el-table-column>
+			<el-table-column fixed="right" label="操作">
+				<template slot-scope="{row, $index}">
+					<el-button type="text" @click="clickCopyBtn(row, $index)">链接</el-button>
+					<el-button type="text" @click="clickDeleteBtn(row, $index)">删除</el-button>
+				</template>
+			</el-table-column>
+		</el-table>
 	</div>
 </template>
 
 <script>
-// 引入样式
+import {
+	Button,
+	Table,
+	TableColumn,
+	Message,
+} from "element-ui";
+
+import api from "@@/common/api/note.js";
 
 export default {
 	components: {
+		[Button.name]: Button,
+		[Table.name]: Table,
+		[TableColumn.name]: TableColumn,
 	},
 
 	data: function() {
 		return {
-			isClient: false,
-			tableData: [
-				{"name":"赵伟","tel":"156*****1987","hobby":"钢琴、书法、唱歌","address":"上海市黄浦区金陵东路569号17楼"},
-				{"name":"李伟","tel":"182*****1538","hobby":"钢琴、书法、唱歌","address":"上海市奉贤区南桥镇立新路12号2楼"},
-				{"name":"孙伟","tel":"161*****0097","hobby":"钢琴、书法、唱歌","address":"上海市崇明县城桥镇八一路739号"},
-				{"name":"周伟","tel":"197*****1123","hobby":"钢琴、书法、唱歌","address":"上海市青浦区青浦镇章浜路24号"},
-				{"name":"吴伟","tel":"183*****6678","hobby":"钢琴、书法、唱歌","address":"上海市松江区乐都西路867-871号"},
-			],
-			columns: [
-				{
-					field: 'custome', title:'序号', width: 50, titleAlign: 'center', columnAlign: 'center',
-					formatter: function (rowData,rowIndex,pagingIndex,field) {
-						return rowIndex < 3 ? '<span style="color:red;font-weight: bold;">' + (rowIndex + 1) + '</span>' : rowIndex + 1
-					}, isFrozen: true,isResize:true
-				},
-				{field: 'name', title:'姓名', width: 80, titleAlign: 'center',columnAlign:'center',isResize:true},
-				{field: 'tel', title: '手机号码', width: 150, titleAlign: 'center',columnAlign:'center',isResize:true},
-				{field: 'hobby', title: '爱好', width: 150, titleAlign: 'center',columnAlign:'center',isResize:true},
-				{field: 'address', title: '地址', width: 230, titleAlign: 'center',columnAlign:'left',isResize:true},
-				//{field: 'custome-adv', title: '操作',width: 200, titleAlign: 'center',columnAlign:'center',componentName:'table-operation',isResize:true}
-			]
+			groups: [],
 		}
 	},
 
 	methods: {
-		pageChange() {
-		}
 	},
 
 	mounted() {
-		this.isClient = true;
 	}
 }
 </script>

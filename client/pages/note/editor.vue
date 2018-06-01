@@ -27,9 +27,6 @@ import {
 	Main,
 } from "element-ui";
 import vue from "vue";
-import {mapActions, mapGetters} from "vuex";
-
-import {component, events} from "@/components/component.js";
 
 import api from "@@/common/api/note.js";
 import {tags} from "@/lib/tags";
@@ -40,7 +37,6 @@ import codeEditor from "@/components/views/codeEditor.vue";
 //import "@/components";
 
 export default {
-	mixins: [component],
 	components: {
 		[Container.name]:Container,
 		[Header.name]:Header,
@@ -64,10 +60,6 @@ export default {
 		}
 	},
 	computed: {
-		...mapGetters({
-			pageContent: 'editor/getPageContent',
-			pagePath: "editor/getPagePath",
-		}),
 		renderContent() {
 			return this.pageContent;
 			const content = this.themeContent ? (this.themeContent + "\n" + this.pageContent) : this.pageContent;
@@ -103,10 +95,6 @@ export default {
 		}
 	},
 	methods: {
-		...mapActions({
-			setTagId:'editor/setTagId',
-			setFile: 'gitlab/setFile',
-		}),
 		splitStripMousedown(typ) {
 			var el = this.$refs[typ].$el;
 			this.splitStrip = {
