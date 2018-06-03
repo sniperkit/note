@@ -4,10 +4,10 @@ import commonConfig from "@@/common/config.js";
 
 const defaultConfig = {
 	tagModsPath: "note/note/mods.md",
+	origin: "http://wxaxiaoyao.cn",
 }
 
 const productionConfig = {
-	origin: "http://wxaxiaoyao.cn",
 }
 
 const developmentConfig = {

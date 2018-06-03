@@ -13,7 +13,7 @@ const qiniuUpload = async (key, file, token, params = {}, observer = {}) => {
 		if (data.isErr()) {
 			return ;
 		}
-		token = data.getData().token;
+		token = data.getData();
 	}
 
 	const opts =  {
@@ -69,7 +69,7 @@ const qiniuUpload = async (key, file, token, params = {}, observer = {}) => {
 		return ;
 	}
 
-	return "http://localhost:3000/" + util.getPathByKey(key); 
+	return config.origin + util.getPathByKey(key); 
 	//data = await api.qiniu.getDownloadUrl({key:key});
 	//if (data.isErr()) return;
 

@@ -23,9 +23,9 @@
 					<el-menu-item :index='index("files/list")'>列表</el-menu-item>
 					<el-menu-item :index='index("files/new")'>上传</el-menu-item>
 				</el-submenu>
-				<el-submenu :index='index("groups/list")'>
+				<el-submenu :index='index("groups/groups")'>
 					<template slot="title" style="background-color: blue">用户组</template>
-					<el-menu-item :index='index("groups/list")'>组列表</el-menu-item>
+					<el-menu-item :index='index("groups/groups")'>组列表</el-menu-item>
 					<el-menu-item :index='index("groups/members")'>组成员</el-menu-item>
 				</el-submenu>
 			</el-menu>

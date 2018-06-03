@@ -26,7 +26,6 @@ import {
 	Progress,
 } from "element-ui";
 import vue from "vue";
-import {mapActions, mapGetters} from "vuex";
 import util from "@@/common/util.js";
 import api from "@@/common/api/note.js";
 import qiniuUpload from "@@/common/api/qiniu.js";
@@ -44,13 +43,6 @@ export default {
 		[Progress.name]: Progress,
 	},
 
-	computed: {
-		...mapGetters({
-			user: "user/user",
-			isLogin: "user/isAuthenticated",
-		}),
-	},
-
 	methods: {
 		async fileUpload(e) {
 			const self = this;
@@ -59,7 +51,6 @@ export default {
 				status: null,
 			};
 			self.filelist.push(file);
-			console.log(e, typeof(e));
 
 			const path = this.user.username + "/" + e.file.name; 
 			file.filename = e.file.name;

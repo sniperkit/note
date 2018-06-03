@@ -1,7 +1,7 @@
 import joi from "joi";
 
 import Controller from "./controller.js";
-import models from "../models";
+import { models , sequelize} from "../models";
 import consts from "@@/common/consts.js";
 import ERR from "@@/common/error.js";
 
@@ -63,14 +63,20 @@ export const Groups = class extends Controller {
 		const id = ctx.params.id;
 		const userId = ctx.state.user.userId;
 		const params = ctx.state.params;
+		const memberId = params.memberId && parseInt(params.memberId);
 
-		let result = await groupMembersModel.find({
-			where: {
-				groupId: id,
+		let sql = 'select gm.id, userId, groupId, memberId, username as memberName, nickname  from keepwork.groupMembers as gm, keepwork.users as u where gm.memberId = u.id and groupId=:groupId and userId=:userId';
+
+		if (memberId) sql += " and memberId=:memberId";
+		let result = await sequelize.query(sql, {
+			type: sequelize.QueryTypes.SELECT,
+			raw: true,
+			replacements:{
 				userId: userId,
-				memberId: params.memberId,
-			}
-		})
+				groupId: id,
+				memberId: memberId,
+			},	
+		});
 
 		return ERR.ERR_OK(result);
 	}
