@@ -1,25 +1,63 @@
 <template>
-	<el-table :data="files">
-		<el-table-column fixed prop="filename" label="名称"></el-table-column>
-		<el-table-column fixed prop="key" label="KEY"></el-table-column>
-		<el-table-column fixed prop="sitename" label="站点"></el-table-column>
-		<el-table-column fixed prop="type" label="类型"></el-table-column>
-		<el-table-column fixed prop="public" label="公开">
-			<template slot-scope="{row, $index}">
-				<span>{{row.public ? "公开" : "私有"}}</span>
-			</template>
-		</el-table-column>
-		<el-table-column fixed="right" label="操作">
-			<template slot-scope="{row, $index}">
-				<el-button type="text" @click="clickCopyBtn(row, $index)">链接</el-button>
-				<el-button type="text" @click="clickDeleteBtn(row, $index)">删除</el-button>
-			</template>
-		</el-table-column>
-	</el-table>
+	<div>
+		<el-dialog :visible.sync="isShowNewFolder" title="新增目录" width="500px">
+			<el-form :model="folder" label-width="80px" label-position="right" style="width:300px;">
+				<el-form-item label="目录名">
+					<el-input v-model="folder.filename" placeholder="请输入目录名"></el-input>
+				</el-form-item>
+			</el-form>
+			<div slot="footer" class="dialog-footer" v-loading="folder.isLoading">
+		        <el-button @click="isShowNewFolder = false">取 消</el-button>
+				<el-button @click="clickSubmitNewFolderBtn">确 定</el-button>
+			</div>
+		</el-dialog>
+
+		<el-row>
+			<el-col :span="4">
+				<el-tree ref="filetree" :data="trees" node-key="key" :highlight-current="true" @node-click="clickSelectNode">
+					<span class="custom-tree-node" slot-scope="{node, data}">
+						<span>
+							<!--<i class="iconfont icon-folder"></i>-->
+							<span>{{data.label}}</span>
+						</span>
+						<span>
+							<i class="iconfont icon-plus" @click.stop="clickNewFolderBtn(data, node)"></i> 
+						</span>
+					</span>
+				</el-tree>
+			</el-col>
+			<el-col :span="20">
+				<el-table :data="files">
+					<el-table-column prop="filename" label="名称"></el-table-column>
+					<el-table-column width="300px" prop="key" label="KEY"></el-table-column>
+					<el-table-column prop="sitename" label="站点"></el-table-column>
+					<el-table-column prop="type" label="类型"></el-table-column>
+					<el-table-column fixed="right" prop="public" label="公开">
+						<template slot-scope="{row, $index}">
+							<span>{{row.public ? "公开" : "私有"}}</span>
+						</template>
+					</el-table-column>
+					<el-table-column fixed="right" label="操作">
+						<template slot-scope="{row, $index}">
+							<i @click="clickCopyBtn(row, $index)" class="iconfont icon-link" aria-hidden="true" data-toggle="tooltip" title="删除"></i>
+							<i @click="clickDeleteBtn(row, $index)" class="iconfont icon-delete" aria-hidden="true" data-toggle="tooltip" title="删除"></i>
+						</template>
+					</el-table-column>
+				</el-table>
+			</el-col>
+		</el-row>
+	</div>
 </template>
 
 <script>
 import {
+	Form,
+	FormItem,
+	Input,
+	Dialog,
+	Row,
+	Col,
+	Tree,
 	Button,
 	Table,
 	TableColumn,
@@ -29,6 +67,7 @@ import vue from "vue";
 import vueClipboard from 'vue-clipboard2';
 import {mapActions, mapGetters} from "vuex";
 import util from "@@/common/util.js";
+import qiniuUpload from "@@/common/api/qiniu.js";
 import api from "@@/common/api/note.js";
 import config from "@/config.js";
 
@@ -36,6 +75,13 @@ vue.use(vueClipboard);
 
 export default {
 	components: {
+		[Form.name]: Form,
+		[FormItem.name]: FormItem,
+		[Input.name]: Input,
+		[Dialog.name]: Dialog,
+		[Row.name]: Row,
+		[Col.name]: Col,
+		[Tree.name]: Tree,
 		[Button.name]: Button,
 		[Table.name]: Table,
 		[TableColumn.name]: TableColumn,
@@ -43,18 +89,75 @@ export default {
 
 	data: function() {
 		return {
+			isShowNewFolder: false,
+			folder: {},
 			files:[],
+			trees: [],
 		}
 	},
 
 	methods: {
-		async getFileList() {
-			let result = await api.files.get();
-			if (result.isErr()) {
-				console.log(result);
+		async clickSubmitNewFolderBtn() {
+			if (!this.folder.filename.trim()) {
+				Message("目录名不能为空");
 				return;
 			}
-			this.files = result.getData();
+
+			const folder = this.folder;
+			const filename = folder.filename.trim();
+			const file=new File(["this is a folder"], filename, {type: "text/plain"}); 
+			console.log(file);
+			folder.key += filename + "/";
+
+			const ok = await qiniuUpload(folder.key, file);
+			this.isShowNewFolder = false;
+
+			if (!ok) {
+				Message("创建目录失败")
+				return;
+			}
+		},
+		clickNewFolderBtn(data) {
+			this.folder.key = data.key;
+			this.isShowNewFolder = true;
+		},
+		clickSelectNode(){
+
+		},
+		async loadTrees(node, resolve) {
+			const self = this;
+			const username = self.user.username;
+			const trees = [
+			{
+				label: self.user.username,
+				key: self.user.username + "/",
+				children: [
+				{
+					label: "images",
+					key: `${username}/images`,
+				},
+				{
+					label: "videos",
+					key: `${username}/videos`,
+				},
+				{
+					label: "files",
+					key: `${username}/files`,
+				},
+				]
+			}
+			];
+
+			self.trees = trees;
+		},
+		async getFileList(prefix) {
+			let result = await this.api.files.get({raw:true, prefix});
+			if (result.isErr()) {
+				console.log(result);
+				return [];
+			}
+			
+			return result.getData();
 		},
 		clickCopyBtn(raw) {
 			const path = raw.path || util.getPathByKey(raw.key);
@@ -78,8 +181,24 @@ export default {
 	},
 
 	async mounted() {
-		await this.getFileList();
+		this.loadTrees();
+		//await this.getFileList();
 	}
 
 }
 </script>
+
+<style scoped>
+.custom-tree-node {
+	flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    padding-right: 8px;
+}
+
+.custom-tree-node i {
+	margin-right:2px;
+}
+</style>

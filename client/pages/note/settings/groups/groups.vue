@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<el-dialog :visible.sync="isShowNewGroup" title="新增文件" width="500px">
+		<el-dialog :visible.sync="isShowNewGroup" title="新增组" width="500px">
 			<el-form :model="group" label-width="80px" label-position="right" style="width:300px;">
 				<el-form-item label="ID" v-if="isModify">
 					<el-input disabled v-model="group.id" placeholder="ID"></el-input>

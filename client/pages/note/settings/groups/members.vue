@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<el-dialog :visible.sync="isShowNewMember" title="新增文件" width="500px">
+		<el-dialog :visible.sync="isShowNewMember" title="新增组成员" width="500px">
 			<el-form :model="member" label-width="80px" label-position="right" style="width:300px;">
 				<el-form-item label="类型">
 					<el-select v-model="member.groupId" filterable placeholder="请选择站点">

@@ -57,6 +57,11 @@ const qiniuUpload = async (key, file, token, params = {}, observer = {}) => {
 	})
 
 	if (!ok) return;
+
+	if (key[key.length-1] == "/") {
+		return true;
+	}
+
 	let result = await api.files.upsert({
 		...params,
 		size: file.size,

@@ -45,6 +45,13 @@ a, a:hover, a:focus, a:visited
 	margin-left: auto;
 }
 
+.el-col {
+	min-height: 1px;
+}
+
+.iconfont {
+	cursor:pointer;
+}
 #__nuxt, #__layout {
 	height: 100%;
 }
