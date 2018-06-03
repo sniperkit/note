@@ -49,4 +49,7 @@ export default {
 .left-el-tabs .el-tab-pane {
 	overflow-y:auto;
 }
+.left-el-tabs .el-tab-pane::-webkit-scrollbar {
+	display: none;
+}
 </style>
