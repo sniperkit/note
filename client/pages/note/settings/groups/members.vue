@@ -9,35 +9,18 @@
 			</el-form-item>
 			
 			<el-form-item>
-				<el-button @click="clickSearchBtn">查询</el-button>
-				<el-button @click="clickNewBtn">新增</el-button>
+				<el-button type="primary" @click="clickSearchBtn">查询</el-button>
+				<el-button type="primary" @click="clickNewBtn">新增</el-button>
 			</el-form-item>
 		</el-form>
 		
-		<el-table ref="groupTableCmp":data="groups" @expand-change="clickExpandRow">
-			<el-table-column fixed type="expand">
+		<el-table :data="groups" @expand-change="clickExpandRow">
+			<el-table-column type="expand">
 				<template slot-scope="{row}">
-					<el-form :inline="true" :model="memberSearch" class="demo-form-inline">
-						<el-form-item label="ID">
-							<el-input clearable v-model="memberSearch.id" placeholder="ID"></el-input>
-						</el-form-item>
-						<el-form-item label="成员ID">
-							<el-input clearable v-model="memberSearch.memberId" placeholder="成员ID"></el-input>
-						</el-form-item>
-						<el-form-item>
-							<el-button @click="clickMemberSearchBtn">查询</el-button>
-							<el-button @click="clickMemberNewBtn">新增</el-button>
-						</el-form-item>
-					</el-form>
 					<el-table :data="members">
 						<el-table-column fixed prop="id" label="ID"></el-table-column>
 						<el-table-column fixed prop="groupId" label="组ID"></el-table-column>
 						<el-table-column fixed prop="memberId" label="成员ID"></el-table-column>
-						<el-table-column fixed="right" label="操作">
-							<template slot-scope="{row, $index}">
-								<el-button type="text" @click="clickDeleteMemberBtn(row, $index)">删除</el-button>
-							</template>
-						</el-table-column>
 					</el-table>
 				</template>
 			</el-table-column>
@@ -79,8 +62,6 @@ export default {
 
 	data: function() {
 		return {
-			expandGroup: null,
-			memberSearch:{},
 			search: {},
 			groups: [],
 			members: [],
@@ -88,59 +69,8 @@ export default {
 	},
 
 	methods: {
-		async clickMemberSearchBtn() {
-			let result = await this.api.groups.getMembers({
-				id: this.expandGroup.id,
-				memberId: this.memberSearch.memberId,
-			})
-			this.members = result.getData() || [];
-		},
-		async clickDeleteMemberBtn(data, index) {
-			let result = await this.api.groups.deleteMember({
-				id: data.groupId,
-				memberId:data.memberId,
-			});
-			if (result.isErr()) {
-				Message("删除成员失败");
-				return;
-			}
-
-			this.members.splice(index, 1);
-		},
-		async clickMemberNewBtn() {
-			const memberId = parseInt(this.memberSearch.memberId);
-			if (!memberId) {
-				Message.warning("成员ID不存在");
-			}
-
-			const group = this.expandGroup;
-			const params = {
-				id: group.id,
-				memberId:memberId,
-			};
-
-			let result = await this.api.groups.createMember(params);
-
-			if (result.isErr()) {
-				Message("添加成员失败");
-				return;
-			}
-
-			Message("添加成功成功");
-			this.getGroupMembers();
-		},
-		async getGroupMembers() {
-			let result = await this.api.groups.getMembers({id:this.expandGroup.id})
-			this.members = result.getData() || [];
-		},
 		async clickExpandRow(row, expandRow) {
-			if (this.expandGroup) {
-				if (this.expandGroup.id == row.id) return;
-				this.$refs.groupTableCmp.toggleRowExpansion(this.expandGroup, false);
-			}
-			this.expandGroup = row;
-
-			await this.getGroupMembers();
+			console.log(row, expandRow);
 		},
 		async clickSearchBtn() {
 			let result = await this.api.groups.get(this.search);

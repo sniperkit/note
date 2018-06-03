@@ -50,7 +50,7 @@ const testConfig = {
 const configs = {
 	"production": _.merge({}, commonConfig, defaultConfig, productionConfig, secretConfig),
 	"development": _.merge({}, commonConfig, defaultConfig, developmentConfig, secretConfig),
-	"test": _.merge({}, defaultConfig, testConfig, secretConfig),
+	"test": _.merge({}, commonConfig, defaultConfig, testConfig, secretConfig),
 }
 
 console.log(process.env.NODE_ENV);

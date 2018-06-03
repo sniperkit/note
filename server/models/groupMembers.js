@@ -1,5 +1,4 @@
-import Sequelize from 'sequelize';
-import sequelize from "./database.js";
+import {Sequelize, sequelize, Model} from "./model.js";
 
 import consts from "@@/common/consts.js";
 
@@ -7,7 +6,7 @@ const USER_ACCESS_LEVEL_NONE = consts.USER_ACCESS_LEVEL.USER_ACCESS_LEVEL_NONE;
 const USER_ACCESS_LEVEL_READ = consts.USER_ACCESS_LEVEL.USER_ACCESS_LEVEL_READ;
 const USER_ACCESS_LEVEL_WRITE = consts.USER_ACCESS_LEVEL.USER_ACCESS_LEVEL_WRITE;
 
-const GroupMembers = sequelize.define("groupMembers", {
+const model = sequelize.define("groupMembers", {
 	id: {
 		type: Sequelize.BIGINT,
 		autoIncrement: true,
@@ -49,4 +48,15 @@ const GroupMembers = sequelize.define("groupMembers", {
   //console.log("create files table successfully");
 //});
 
-export default GroupMembers;
+export const GroupMembers = class extends Model {
+	constructor() {
+		super();
+		this.model = model;
+	}
+}
+
+export const groupMembers = new GroupMembers();
+
+Model.register("groupMembers", GroupMembers, groupMembers, model);
+
+export default groupMembers;

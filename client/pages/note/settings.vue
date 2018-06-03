@@ -26,7 +26,7 @@
 				<el-submenu :index='index("groups/list")'>
 					<template slot="title" style="background-color: blue">用户组</template>
 					<el-menu-item :index='index("groups/list")'>组列表</el-menu-item>
-					<el-menu-item :index='index("groups/upsertGroup")'>组编辑</el-menu-item>
+					<el-menu-item :index='index("groups/members")'>组成员</el-menu-item>
 				</el-submenu>
 			</el-menu>
 		</div>

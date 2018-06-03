@@ -122,10 +122,14 @@ export function Groups(options) {
 
 	initHttpOptions(self, options, "groups", "id");
 
-	self.create = self.restRequest("post");
+	self.create = self.apiRequest("post");
 	self.update = self.restRequest("put");
 	self.delete = self.restRequest("delete");
-	self.get = self.restRequest("get");
+	self.get = self.apiRequest("get");
+	self.getOne = self.restRequest("get");
+	self.createMember = self.restRequest("post", "members");
+	self.deleteMember = async (data, config) => await (self.restRequest("delete", "members/" + data.memberId))(data, config);
+	self.getMembers = self.restRequest("get", "members");
 	
 }
 export function Notes(options = {}){

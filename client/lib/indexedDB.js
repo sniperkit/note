@@ -1,3 +1,4 @@
+import _ from "lodash";
 const DBS = {}
 
 const defaultDBConfig = {
@@ -111,7 +112,7 @@ export const DBFactory = function (config) {
 		return new Promise(function(resolve, reject){
 			var transaction=self.indexDB.transaction([storeName], 'readwrite');
 			var store=transaction.objectStore(storeName);
-			var request=store.put(value);
+			var request=store.put(_.omitBy(value, _.isFunction));
 			request.onsuccess=function(e){
 				resolve(e.target.result);
 			};

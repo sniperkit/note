@@ -1,7 +1,6 @@
-import Sequelize from 'sequelize';
-import sequelize from "./database.js";
+import {Sequelize, sequelize, Model} from "./model.js";
 
-const Groups = sequelize.define("groups", {
+const model = sequelize.define("groups", {
 	id: {
 		type: Sequelize.BIGINT,
 		autoIncrement: true,
@@ -24,10 +23,30 @@ const Groups = sequelize.define("groups", {
 }, {
 	charset: "utf8mb4",
 	collate: 'utf8mb4_bin',
+
+	indexes: [
+	{
+		unique: true,
+		fields: ["userId", "groupname"],
+	},
+	],
 });
 
-//Groups.sync({force:true}).then(() => {
+//model.sync({force:true}).then(() => {
   //console.log("create files table successfully");
 //});
 
-export default Groups;
+
+export const Groups = class extends Model {
+	constructor() {
+		super();
+
+		this.model = model;
+	}
+}
+
+export const groups = new Groups();
+
+Model.register("groups", Groups, groups, model);
+
+export default groups;

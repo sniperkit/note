@@ -29,8 +29,8 @@
 				</span>
 				<span v-if="data.type == 'blob'" class="custom-tree-node">
 					<span class="tree-node-text">
-						<i v-show="data.isConflict" @click.stop="clickFixedConflict(data)" class="fa fa-warning" aria-hidden="true" data-toggle="tooltip" title="冲突"></i>
-						<i v-show="!data.isConflict" :class='isRefresh(data) ? "el-icon-loading" : isModify(data) ? "iconfont icon-edit" : "iconfont icon-file"'></i>
+						<i v-show="node.isConflict" @click="clickFixedConflict(data)" class="fa fa-warning" aria-hidden="true" data-toggle="tooltip" title="冲突"></i>
+						<i v-show="!node.isConflict" :class='(node.isRefresh || data.isRefresh) ? "el-icon-loading" : (node.isModify || data.isModify) ? "iconfont icon-edit" : "iconfont icon-file"'></i>
 						<span>{{data.aliasname || data.name}}</span>
 					</span>
 					<span class="tree-node-btn-group">
@@ -55,8 +55,8 @@
 				</span>
 				<span v-if="data.type == 'blob'" class="custom-tree-node">
 					<span class="tree-node-text">
-						<i v-show="data.isConflict" @click="clickFixedConflict(data)" class="fa fa-warning" aria-hidden="true" data-toggle="tooltip" title="冲突"></i>
-						<i v-show="!data.isConflict" :class='isRefresh(data) ? "el-icon-loading" : isModify(data) ? "iconfont icon-edit" : "iconfont icon-file"'></i>
+						<i v-show="node.isConflict" @click="clickFixedConflict(data)" class="fa fa-warning" aria-hidden="true" data-toggle="tooltip" title="冲突"></i>
+						<i v-show="!node.isConflict" :class='node.isRefresh ? "el-icon-loading" : node.isModify ? "iconfont icon-edit" : "iconfont icon-file"'></i>
 						<span>{{data.aliasname || data.name}}</span>
 					</span>
 					<span class="tree-node-btn-group">
@@ -137,14 +137,6 @@ export default {
 	},
 
 	methods: {
-		...mapActions({
-			setPagePath: "editor/setPagePath",
-			setPage: "editor/setPage",
-			savePage: "editor/savePage",
-			deletePage: "editor/deletePage",
-			setSwitchPage: "editor/setSwitchPage",
-		}),
-
 		getPageByPath(path) {
 			return this.pages[path];
 		},
@@ -170,7 +162,9 @@ export default {
 			if (result.isErr()) return;
 			const pages = result.getData().items  || [];
 			const pagemap = {};
+			let node = null;
 			pages.forEach(page => {
+				
 				const paths = page.key.split("/");
 				page.name = paths[paths.length-1];
 				page.path = util.getPathByKey(page.key);
@@ -180,6 +174,23 @@ export default {
 				page.name = page.name.replace(/\..*$/, "");
 				page.url = page.path.replace(/\..*$/, "");
 
+				page.setRefresh = function(x){
+					const key = this.path;
+					node = self.$refs.filetree.getNode(key);
+					vue.set(node || {}, "isRefresh", x);
+					node = self.$refs.openedTreeComp.getNode(key);
+					vue.set(node || {}, "isRefresh", x);
+
+					this.isRefresh = x;
+				}
+				page.setModify = function(x) {
+					const key = this.path;
+					node = self.$refs.filetree.getNode(key);
+					vue.set(node || {}, "isModify", x);
+					node = self.$refs.openedTreeComp.getNode(key);
+					vue.set(node || {}, "isModify", x);
+					this.isModify = x;
+				}
 				pagemap[page.path] = page;
 			});
 			_.merge(self.pages, pagemap);
@@ -238,13 +249,17 @@ export default {
 			const self = this;
 			//console.log(node);
 			if (node.level == 0) {
-				return resolve([{
+				const data = {
 					name:"我的站点",
 					type: 'tree',
 					path: self.user.username,
-				}]);
+					nodes: []
+				}
+				//self.filetree.push(data);
+				return resolve([data]);
 			} else if (node.level == 1) {
 				const sites = await self.getSites();
+				//vue.set(self.filetree[0].nodes, sites);
 				return resolve(sites);
 			} else if (node.level == 2){
 				const pages = await self.getSitePage(node.data);
@@ -252,12 +267,6 @@ export default {
 			} else {
 				return resolve(node.data && node.data.nodes || []);
 			}
-		},
-		isRefresh(data) {
-			return (this.getPageByPath(data.path) || {}).isRefresh;
-		},
-		isModify(data) {
-			return (this.getPageByPath(data.path) || {}).isModify;
 		},
 		loadPage(page, cb, errcb) {
 			const self = this;
@@ -299,7 +308,7 @@ export default {
 				_loadPageFromServer();
 			})
 		},
-		clickSelectPage(data) {
+		clickSelectPage(data, node) {
 			var self = this;
 			// 激活文件树项
 			self.setCurrentItem(data.path);
@@ -313,8 +322,11 @@ export default {
 			const page = this.getPageByPath(path);
 			if (!page) return ;
 
+			self.$set(self.openedPages, page.path, page);
+
 			const finish = function() {
-				page.isRefresh = false;
+				page.setRefresh(false);
+				page.setModify(page.isModify);
 				window.location.hash = "#" + path.substring(0, path.length - config.pageSuffix.length);
 				// 设置当前page
 				self.emit(self.EVENTS.__EVENT__FILETREE__OUT__PAGE__, {
@@ -322,11 +334,10 @@ export default {
 					page: page,
 				});
 				self.page = page;
-				self.$set(self.openedPages, page.path, page);
 			}
 
 			if (page.content == undefined) {
-				page.isRefresh = true;
+				page.setRefresh(true);
 				this.loadPage(page, function() {
 					finish();
 				}, function(){

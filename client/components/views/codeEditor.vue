@@ -15,7 +15,6 @@
 
 <script>
 import vue from "vue";
-import {mapActions, mapGetters} from "vuex";
 import {Base64} from "js-base64";
 import {
 	Dialog,
@@ -55,10 +54,6 @@ export default {
 	},
 
 	computed: {
-		...mapGetters({
-			user: "user/user",
-			isLogin: "user/isAuthenticated",
-		}),
 		codemirror() {
 			return this.$refs.cm && this.$refs.cm.codemirror;
 		},
@@ -92,7 +87,7 @@ export default {
 				this.change.timer = undefined;
 			} else {
 				const isModify = this.page.content != payload.text;
-				self.$set(self.page, "isModify", isModify);
+				self.page.setModify(isModify);
 
 				if (this.change.timer) {
 					clearTimeout(this.change.timer);
@@ -113,11 +108,11 @@ export default {
 				return;
 			}
 			this.page.content = text;
-			this.page.isRefresh = true;
+			this.page.setRefresh(true);
 			const type = util.getTypeByPath(filename);
 			const result = await api.files.upsert({...this.page, type, size: text.length});
-			this.page.isRefresh = false;
-			this.page.isModify = false;
+			this.page.setRefresh(false);
+			this.page.setModify(false);
 			if (result.isErr()) {
 				Message(result.getMessage());
 			}
