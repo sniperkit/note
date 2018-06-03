@@ -49,7 +49,7 @@ export const user = {
 export const login = (x) => {
 	_.merge(user, x);
 
-	if (isAuthenticated()){
+	if (!isAuthenticated()){
 		return logout();
 	}
 
