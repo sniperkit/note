@@ -9,7 +9,7 @@
 							<i class="el-icon-arrow-down el-icon--right"></i>
 						</span>
 						<el-dropdown-menu slot="dropdown">
-							<el-dropdown-item>我的主页</el-dropdown-item>
+							<el-dropdown-item command="user-profile">我的主页</el-dropdown-item>
 							<el-dropdown-item command="settings">设置</el-dropdown-item>
 							<el-dropdown-item command="editor">编辑器</el-dropdown-item>
 							<el-dropdown-item command="tagModEditor">模块编辑器</el-dropdown-item>
@@ -56,6 +56,11 @@ export default {
 				this.logout();
 				this.$router.push({name: g_app.getRouteName("login")});
 				return;
+			}
+			
+			if (cmd == "user-profile") {
+				this.$router.push({path:"/" + this.user.username});
+				return ;
 			}
 
 			this.$router.push({name: g_app.getRouteName(cmd)});

@@ -42,7 +42,57 @@ export const user = {
 	id: null,
 	username: null,
 	token: null,
+
+	...localStorageGetUser(),
 };
+
+export const login = (x) => {
+	_.merge(user, x);
+
+	if (isAuthenticated()){
+		return logout();
+	}
+
+	if (process.client) {
+		localStorageSetUser(user);
+		Cookies.set("token", user.token);
+	}
+
+	api.options.baseURL = config.baseURL;
+	api.options.headers['Authorization'] = "Bearer " + user.token;
+
+}
+
+export const logout = () => {
+	user.id = null;
+	user.username = null;
+	user.token = null;
+
+	if (process.client) {
+		localStorageSetUser({});
+		Cookies.remove("token");
+		api.options.headers['Authorization'] = undefined;
+	}
+}
+
+export const isAuthenticated = () => {
+	if (!user.token) return false;
+	const payload = jwt.decode(user.token, null, true);
+
+	if (payload.nbf && Date.now() < payload.nbf*1000) {
+		return false;
+	}
+	if (payload.exp && Date.now() > payload.exp*1000) {
+		return false;
+	}
+
+	return true;
+}
+
+if (isAuthenticated()) {
+	api.options.baseURL = config.baseURL;
+	api.options.headers['Authorization'] = "Bearer " + user.token;
+}
 
 export const component = {
 	data: function() {
@@ -66,60 +116,19 @@ export const component = {
 		emit(eventName, ...args) {
 			events.$emit(eventName, ...args);
 		},
-		login(user) {
-			if (user) {
-				_.merge(this.user, user);
-				if (process.client) {
-					localStorageSetUser(user);
-					Cookies.set("token", user.token);
-				}
-				return true;
-			}
-	
-			if (this.user.id) return true;
-
-			user = localStorageGetUser();
-			_.merge(this.user, user);
-
-			if (!this.isAuthenticated()){
-				this.logout();
-				return false;
-			}
-
-			this.api.options.baseURL = config.baseURL;
-			this.api.options.headers['Authorization'] = "Bearer " + this.user.token;
-
-			return true;
+		login(userinfo) {
+			login(userinfo);
 		},
 		logout() {
-			this.user.id = null;
-			this.user.username = null;
-			this.user.token = null;
-
-			if (process.client) {
-				localStorageSetUser({});
-				Cookies.remove("token");
-				this.api.options.headers['Authorization'] = undefined;
-			}
+			logout();
 		},
 		isAuthenticated() {
-			if (!this.user || !this.user.token) return false;
-			const payload = jwt.decode(this.user.token, null, true);
-
-			if (payload.nbf && Date.now() < payload.nbf*1000) {
-				return false;
-			}
-			if (payload.exp && Date.now() > payload.exp*1000) {
-				return false;
-			}
-
-			return true;
+			return isAuthenticated();
 		}
 	},
 
 	beforeMount() {
 		const self = this;
-		self.login();
 	},
 }
 

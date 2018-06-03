@@ -9,7 +9,6 @@
 import {
 	Upload,
 } from "element-ui";
-import {mapActions, mapGetters} from "vuex";
 import fileManager from "../components/views/fileManager.vue";
 import api from "@@/common/api/note.js";
 import qiniuUpload from "@@/common/api/qiniu.js";
@@ -23,10 +22,6 @@ export default {
 	},
 
 	computed: {
-		...mapGetters({
-			user: "user/user",
-			isLogin: "user/isAuthenticated",
-		}),
 	},
 
 	methods: {
