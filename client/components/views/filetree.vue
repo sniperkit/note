@@ -1,5 +1,5 @@
 <template>
-	<div class="kp_forbit_copy">
+	<div class="kp_forbit_copy" style="margin-bottom:60px">
 		<el-dialog :visible.sync="isShowNewFile" title="新增文件" width="500px">
 			<el-form :model="newFileForm" label-width="80px" label-position="right" style="width:300px;">
 				<el-form-item label="类型">
