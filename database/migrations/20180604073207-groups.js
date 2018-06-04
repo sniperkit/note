@@ -22,6 +22,16 @@ module.exports = {
 			description: {
 				type: Sequelize.STRING(128),
 			},
+
+			createdAt: {
+				allowNull: false,
+				type: Sequelize.DATE
+			},
+
+			updatedAt: {
+				allowNull: false,
+				type: Sequelize.DATE
+			},
 		}, {
 			charset: "utf8mb4",
 			collate: 'utf8mb4_bin',
@@ -36,5 +46,6 @@ module.exports = {
 	},
 
 	down: (queryInterface, Sequelize) => {
+		return queryInterface.dropTable('groups');
 	}
 };

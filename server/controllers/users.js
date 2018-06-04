@@ -85,7 +85,7 @@ Users.prototype.login = async function(ctx) {
 	});
 	
 	if (!user) {
-		return ERR.setMessage("用户名或密码错误");
+		return ERR().setMessage("用户名或密码错误");
 	}
 
 	user = user.get({plain:true});

@@ -12,8 +12,8 @@ module.exports = {
     "host": developmentConfig.host,
 	"port": developmentConfig.port,
     "database": "note-dev",
-    "dialect": "mysql"
-	"operatorsAliases":Sequelize.Op
+    "dialect": "mysql",
+	"operatorsAliases":Sequelize.Op,
   },
   "test": {
     "username": testConfig.username,
@@ -21,8 +21,8 @@ module.exports = {
     "host": testConfig.host,
 	"port": testConfig.port,
     "database": "note-dev",
-    "dialect": "mysql"
-	"operatorsAliases":Sequelize.Op
+    "dialect": "mysql",
+	"operatorsAliases":Sequelize.Op,
   },
   "production": {
     "username": productionConfig.username,
@@ -30,7 +30,7 @@ module.exports = {
     "host": productionConfig.host,
 	"port": productionConfig.port || 3306,
     "database": "note",
-    "dialect": "mysql"
-	"operatorsAliases":Sequelize.Op
+    "dialect": "mysql",
+	"operatorsAliases":Sequelize.Op,
   }
 };
