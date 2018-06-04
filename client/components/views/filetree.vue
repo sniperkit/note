@@ -433,7 +433,7 @@ export default {
 		},
 		async clickDeleteBtn(data, node) {
 			const path = data.path;
-			const page = this.getPagePath(path);
+			const page = this.getPageByPath(path);
 			page.isRefresh = true;
 			const result = await api.files.delete({key:page.key});
 			if (result.isErr()) {
