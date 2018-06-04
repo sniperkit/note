@@ -1,21 +1,21 @@
 {
   "development": {
     "username": "wuxiangan",
-    "password": "wuxiangan",
+    "password": "",
     "database": "note",
     "host": "39.106.11.114",
     "dialect": "mysql"
   },
   "test": {
     "username": "wuxiangan",
-    "password": "wuxiangan",
+    "password": "",
     "database": "note-dev",
     "host": "39.106.11.114",
     "dialect": "mysql"
   },
   "production": {
     "username": "wuxiangan",
-    "password": "wuxiangan",
+    "password": "",
     "database": "note",
     "host": "39.106.11.114",
     "dialect": "mysql"
