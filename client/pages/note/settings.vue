@@ -13,11 +13,11 @@
 					<el-menu-item :index='index("site/settings")'>站点配置</el-menu-item>
 					<el-menu-item :index='index("site/new")'>新建站点</el-menu-item>
 				</el-submenu>
-				<el-submenu :index='index("dataSource")'>
-					<template slot="title" style="background-color: blue">数据源</template>
-					<el-menu-item :index='index("dataSource")'>列表</el-menu-item>
-					<el-menu-item :index='index("dataSource/upsert")'>更新</el-menu-item>
-				</el-submenu>
+				<!--<el-submenu :index='index("dataSource")'>-->
+					<!--<template slot="title" style="background-color: blue">数据源</template>-->
+					<!--<el-menu-item :index='index("dataSource")'>列表</el-menu-item>-->
+					<!--<el-menu-item :index='index("dataSource/upsert")'>更新</el-menu-item>-->
+				<!--</el-submenu>-->
 				<el-submenu :index='index("files/list")'>
 					<template slot="title" style="background-color: blue">文件</template>
 					<el-menu-item :index='index("files/list")'>列表</el-menu-item>

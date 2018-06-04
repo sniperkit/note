@@ -11,6 +11,7 @@ const productionConfig = {
 }
 
 const developmentConfig = {
+	origin: "http://localhost:3000",
 	ESService: {
 		baseURL: "http://es.keepwork.com/api/v0/",
 	},

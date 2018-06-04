@@ -12,6 +12,7 @@ export function httpRequest(method, url, data, config) {
 	}
 
 	return axios.request(config).then(res => new Err(res.data.code, res.data.message, res.data.data)).catch(e => new Err(-1, "请求异常", e));
+	//return axios.request(config).then(res => new Err(res.data.code, res.data.message, res.data.data));
 }
 
 export const httpGet = (url, data, config) => httpRequest("get", url, data, config);
@@ -89,13 +90,8 @@ export function Files(options) {
 	const prefix = "files";
 
 	initHttpOptions(self, options, "files", "key");
-	//initHttpOptions(self, {...options, 
-		//baseURL:"http://10.27.3.3:8088/api/v0/",
-		//headers: {
-			//Authorization: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsInVzZXJuYW1lIjoieGlhb3lhbyIsImV4cCI6MTUyNzY3NTYxMS4yNjR9.7LHTA1eIs8xc7s0qiNFYAWfQVAKW3geQdDNAq_DRmEc",
-		//},
-	//}, "files", "key");
 
+	self.raw = self.restRequest("get", "raw");
 	self.get = self.restRequest("get");
 	self.upsert = self.restRequest("post");
 	self.delete = self.restRequest("delete") 

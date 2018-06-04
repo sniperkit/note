@@ -15,6 +15,9 @@ const filetypes = {
 	ogg: "audios",
 	wav: "audios",
 
+	json: "datas",
+	yml: "datas",
+
 	unknow: "files",
 }
 export const util = {};

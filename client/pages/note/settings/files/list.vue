@@ -63,6 +63,7 @@ import {
 	TableColumn,
 	Message,
 } from "element-ui";
+import axios from "axios";
 import vue from "vue";
 import vueClipboard from 'vue-clipboard2';
 import {mapActions, mapGetters} from "vuex";
@@ -98,6 +99,7 @@ export default {
 
 	methods: {
 		async clickSubmitNewFolderBtn() {
+			const self = this;
 			if (!this.folder.filename.trim()) {
 				Message("目录名不能为空");
 				return;
@@ -105,17 +107,26 @@ export default {
 
 			const folder = this.folder;
 			const filename = folder.filename.trim();
-			const blob=new Blob(["this is a folder"], {type: "text/plain"}); 
-			console.log(blob);
-			folder.key += filename + "/";
+			const blob = new Blob(["this is a folder"], {type: "text/plain"}); 
+			const parentKey = folder.key;
+			const key = parentKey + filename + "/";
 
-			const ok = await qiniuUpload(folder.key, blob);
+			const ok = await qiniuUpload(key, blob);
 			this.isShowNewFolder = false;
 
 			if (!ok) {
 				Message("创建目录失败")
 				return;
 			}
+
+			const node = self.$refs.filetree.getNode(parentKey);
+			const newNode = {
+				key: key,
+				label: filename,
+			}
+			self.$refs.filetree.append(newNode, node);
+			const treestr = JSON.stringify(self.trees);
+			qiniuUpload(self.key, treestr);
 		},
 		clickNewFolderBtn(data) {
 			this.folder.key = data.key;
@@ -127,28 +138,31 @@ export default {
 		async loadTrees(node, resolve) {
 			const self = this;
 			const username = self.user.username;
-			const trees = [
-			{
-				label: self.user.username,
-				key: self.user.username + "/",
-				children: [
+			const path = this.path;
+			const key = this.key;
+			
+			let trees = [
+			{                  
+				label: self.user.username,      
+				key: self.user.username + "/",  
+				children: [    
 				{
-					label: "images",
-					key: `${username}/images`,
-				},
-				{
-					label: "videos",
-					key: `${username}/videos`,
-				},
-				{
-					label: "files",
-					key: `${username}/files`,
+					label: "images",                
+					key: `${username}/images`,      
+				},             
+				{              
+					label: "videos",                
+					key: `${username}/videos`,      
+				},             
+				{              
+					label: "files",                 
+					key: `${username}/files`,       
 				},
 				]
 			}
 			];
 
-			self.trees = trees;
+			self.trees = await axios.get(config.origin + "/" + path).then(res => res.data).catch(() => trees);
 		},
 		async getFileList(prefix) {
 			let result = await this.api.files.get({raw:true, prefix});
@@ -181,6 +195,8 @@ export default {
 	},
 
 	async mounted() {
+		this.path = this.user.username + "/filetree.json";
+		this.key = util.getKeyByPath(this.path);
 		this.loadTrees();
 		//await this.getFileList();
 	}

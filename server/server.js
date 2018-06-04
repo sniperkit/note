@@ -16,6 +16,7 @@ import registerControllerRouter from "./controllers/index.js";
 import config from "./config.js";
 import models from "./models/index.js";
 import api from "../common/api/note.js";
+import util from "../common/util.js";
 
 const files = new Files();
 
@@ -56,7 +57,8 @@ export default (app, views) => {
 		}
 
 		console.log(path);
-		ctx.state.params = {filename:path.substring(1)};
+		const key = util.getKeyByPath(path.substring(1));
+		ctx.params = {id: encodeURIComponent(key)};
 		files.raw(ctx);
 	});
 }

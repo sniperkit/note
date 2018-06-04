@@ -1,4 +1,5 @@
 import * as qiniu from "qiniu-js";
+import config from "@/config.js";
 import ERR from "../error.js";
 import api from "./note.js";
 import util from "../util.js";
@@ -14,6 +15,10 @@ const qiniuUpload = async (key, file, token, params = {}, observer = {}) => {
 			return ;
 		}
 		token = data.getData();
+	}
+
+	if (typeof(file) == "string") {
+		file = new Blob([file], {type: "text/plain"});
 	}
 
 	const opts =  {
@@ -74,7 +79,7 @@ const qiniuUpload = async (key, file, token, params = {}, observer = {}) => {
 		return ;
 	}
 
-	return config.origin + util.getPathByKey(key); 
+	return config.origin + "/" + util.getPathByKey(key); 
 	//data = await api.qiniu.getDownloadUrl({key:key});
 	//if (data.isErr()) return;
 

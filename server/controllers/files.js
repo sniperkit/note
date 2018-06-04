@@ -47,9 +47,7 @@ function writeGitFile(params) {
 
 
 Files.prototype.raw = async function(ctx) {
-	const params = ctx.state.params;
-	const filename = params.filename;
-	const key = util.getKeyByPath(filename);
+	const key = decodeURIComponent(ctx.params.id);
 
 	const url = storage.getDownloadUrl(key).getData();
 
@@ -306,9 +304,14 @@ Files.getRoutes = function() {
 		authentated: true,
 	},
 	{
-		path: "raw",
+		path: ":id/raw",
 		method: "get",
 		action: "raw",
+		validate: {
+			params: {
+				id: joi.string().required(),
+			}
+		}
 	},
 	{
 		path: ":id/url",
