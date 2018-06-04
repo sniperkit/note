@@ -403,6 +403,25 @@ export default {
 			    url:path.replace(/\.md$/, ""),
 			    username:node.username,
 			}
+			if (newNode.leaf) {
+				newNode.setRefresh = function(x){
+					const key = this.path;
+					let tmpnode = self.$refs.filetree.getNode(key);
+					vue.set(tmpnode || {}, "isRefresh", x);
+					tmpnode = self.$refs.openedTreeComp.getNode(key);
+					vue.set(tmpnode || {}, "isRefresh", x);
+
+					this.isRefresh = x;
+				}
+				newNode.setModify = function(x) {
+					const key = this.path;
+					let tmpnode = self.$refs.filetree.getNode(key);
+					vue.set(tmpnode || {}, "isModify", x);
+					tmpnode = self.$refs.openedTreeComp.getNode(key);
+					vue.set(tmpnode || {}, "isModify", x);
+					this.isModify = x;
+				}
+			} 
 			self.pages[newNode.path] = newNode;
 			form.isLoading = true;
 			if (form.type != "tree") {
