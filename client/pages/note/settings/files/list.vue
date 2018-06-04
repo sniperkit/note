@@ -105,11 +105,11 @@ export default {
 
 			const folder = this.folder;
 			const filename = folder.filename.trim();
-			const file=new File(["this is a folder"], filename, {type: "text/plain"}); 
-			console.log(file);
+			const blob=new Blob(["this is a folder"], {type: "text/plain"}); 
+			console.log(blob);
 			folder.key += filename + "/";
 
-			const ok = await qiniuUpload(folder.key, file);
+			const ok = await qiniuUpload(folder.key, blob);
 			this.isShowNewFolder = false;
 
 			if (!ok) {

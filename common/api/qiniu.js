@@ -21,7 +21,7 @@ const qiniuUpload = async (key, file, token, params = {}, observer = {}) => {
 		putExtra: {
 			mimeType: null,
 			params: {
-				"x:filename": params.filename,
+				"x:filename": params.filename || key.substring(key.lastIndexOf("/") + 1),
 				"x:public": params.public || false,
 				"x:sitename": params.sitename || "",
 				"x:type": util.getTypeByPath(key),
