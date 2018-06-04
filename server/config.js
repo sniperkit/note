@@ -53,6 +53,6 @@ const configs = {
 	"test": _.merge({}, commonConfig, defaultConfig, testConfig, secretConfig),
 }
 
-console.log(process.env.NODE_ENV);
+//console.log(process.env.NODE_ENV);
 
 export default configs[process.env.NODE_ENV];
