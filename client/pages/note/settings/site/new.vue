@@ -14,8 +14,8 @@
 			<el-input v-model="site.description" placeholder="描述"></el-input>
 		</el-form-item>
 
-		<el-form-item label="私有">
-			<el-switch v-model="site.private">
+		<el-form-item label="公开">
+			<el-switch v-model="site.public">
 			</el-switch>
 		</el-form-item>
 		<el-form-item>

@@ -25,6 +25,7 @@ api.options.baseURL = config.baseURL;
 const apiRouter = new Router({
 	prefix: config.apiUrlPrefix,
 });
+
 registerControllerRouter(apiRouter);
 
 export default (app, views) => {

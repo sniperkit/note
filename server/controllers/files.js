@@ -28,24 +28,6 @@ function writeGitFile(params) {
 	gitlab.upsertFile(params.key, {content:params.content});
 }
 
-//Files.prototype.uploadFile = async function(ctx) {
-	//const username = ctx.state.user.username;
-	//const params = ctx.state.params;
-	//params.username = username;
-	
-	//let result = await storage.upload(ctx);
-	//if (result.isErr()) return result;
-
-	//params.hash = result.getData().hash;
-	//await this.model.upsert(params);
-
-	//// 往git写一份
-	//writeGitFile(params);
-
-	//return ERR.ERR_OK({hash:params.hash});
-//}
-
-
 Files.prototype.raw = async function(ctx) {
 	const key = decodeURIComponent(ctx.params.id);
 
@@ -305,7 +287,7 @@ Files.getRoutes = function() {
 	},
 	{
 		path: ":id/raw",
-		method: "get",
+		method: "GET",
 		action: "raw",
 		validate: {
 			params: {

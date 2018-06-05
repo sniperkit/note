@@ -7,8 +7,9 @@ const defaultConfig = {
 
 	host: "0.0.0.0",
 	port: 3000,
+	origin: "http://wxaxiaoyao.cn",
 
-	baseURL: "http://wxaxiaoyao.cn/api/v0/",
+	baseURL: "/api/v0/",
 	proxyBaseURL: "http://47.52.20.34:7654/api/v0/",
 
 	keepwork: {

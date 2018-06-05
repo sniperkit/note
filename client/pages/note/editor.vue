@@ -50,7 +50,7 @@ export default {
 	middleware: "authenticated",
 	data: function() {
 		return {
-			splitStrip1_width:"18%",
+			splitStrip1_width:"350px",
 			splitStrip2_width:"50%",
 			value:undefined,
 			mode:"editor",

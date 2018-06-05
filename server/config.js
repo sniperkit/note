@@ -6,11 +6,11 @@ import secretConfig from "./.config.js";
 const defaultConfig = {
 	secret: "keepwork",
 
-	baseURL: "/api/v0/",
 	host: "0.0.0.0",
 	port: 3000,
 	protocol: "http",
 	origin: "http://0.0.0.0:3000",
+	baseURL: "/api/v0/",
 
 	database: {
 		//port:3306,
