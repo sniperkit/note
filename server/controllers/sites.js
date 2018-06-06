@@ -11,12 +11,12 @@ export const Sites = function() {
 
 Sites.prototype.create = async function(ctx) {
 	const params = ctx.state.params;
-	const username = ctx.state.user.username;
-	params.username = username;
+	const userId = ctx.state.user.userId;
+	params.userId = userId;
 
 	let data = await this.model.findOne({
 		where: {
-			username:username,
+			userId:userId,
 		    sitename: params.sitename,	
 		}
 	});
@@ -33,14 +33,15 @@ Sites.prototype.create = async function(ctx) {
 
 Sites.prototype.find = async function(ctx) {
 	const params = ctx.state.params;
+	const userId = ctx.state.user.userId;
 	const username = ctx.state.user.username;
 
 	const where = {public: true};
 
-	if (params.username) where.username = params.username;
+	if (params.userId) where.userId = params.userId;
 
-	if (params.owned && username) {
-		where.username = username;
+	if (params.owned && userId) {
+		where.userId = userId;
 		delete where.public;
 	}
 
@@ -54,16 +55,13 @@ Sites.prototype.find = async function(ctx) {
 }
 
 Sites.prototype.update = async function(ctx) {
-	const params = ctx.state.params;
-	const username = ctx.state.user.username;
-
-	if (username != params.username) {
-		return ERR.ERR_PARAMS();
-	}
+	const siteId = ctx.params.id;
+	const userId = ctx.state.user.userId;
 
 	const result = await this.model.update(params, {
 		where: {
-			id: params.id
+			id: siteId,
+			userId: userId,
 		},
 		fields: ['description'],
 	});
@@ -76,14 +74,13 @@ Sites.prototype.update = async function(ctx) {
 }
 
 Sites.prototype.delete = async function(ctx) {
-	const params = ctx.state.params;
-	const username = ctx.state.user.username;
-	params.username = username;
+	const siteId = ctx.params.id;
+	const userId = ctx.state.user.userId;
 
 	const result = await this.model.destroy({
 		where: {
-			username: params.username,
-			sitename: params.sitename,
+			id: siteId,
+			userId:userId,
 		}
 	})
 
@@ -142,20 +139,26 @@ Sites.getRoutes = function() {
 		action: "find",
 	},
 	{
+		path: ":id",
 		method: "delete",
 		action: "delete",
 		authenticated: true,
 		validate: {
-			query: {
-				sitename: joi.string().max(48).required(),
-				username: joi.string().max(48).required(),
+			params: {
+				id: joi.number().required(),
 			},
 		},
 	},
 	{
+		path: ":id",
 		method: "put",
 		action: "update",
 		authenticated: true,
+		validate: {
+			params: {
+				id: joi.number().required(),
+			},
+		},
 	},
 	{
 		method: "post",

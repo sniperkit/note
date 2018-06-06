@@ -8,8 +8,8 @@ const Sites = sequelize.define('sites', {
 		primaryKey: true,
 	},
 	
-	username: {
-		type: Sequelize.STRING(48),
+	userId: {
+		type: Sequelize.BIGINT,
 		allowNull: false,
 	},
 
@@ -18,9 +18,8 @@ const Sites = sequelize.define('sites', {
 		allowNull: false,
 	},
 
-	public: {
-		type: Sequelize.BOOLEAN,
-		defaultValue: false,
+	level: {
+		type: Sequelize.INTEGER,
 	},
 
 	description: {
@@ -31,7 +30,7 @@ const Sites = sequelize.define('sites', {
 	collate: 'utf8mb4_bin',
 });
 
-//Site.sync({force:true}).then(() => {
+//Sites.sync({force:true}).then(() => {
 	//console.log("create site table successfully");
 //});
 

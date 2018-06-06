@@ -8,7 +8,7 @@ const Storages = sequelize.define("storages", {
 		primaryKey: true,
 	},
 	
-	username: {  // 文件所属者
+	userId: {  // 文件所属者
 		type: Sequelize.STRING(48),
 		unique: true,
 		allowNull: false,
@@ -24,10 +24,6 @@ const Storages = sequelize.define("storages", {
 		defaultValue: 0,
 	},
 
-	fileCount: {
-		type: Sequelize.INTEGER,
-		defaultValue: 0,
-	},
 }, {
 	charset: "utf8mb4",
 	collate: 'utf8mb4_bin',
