@@ -36,12 +36,20 @@ util.jwt_decode = function(token, key, noVerify) {
 	return jwt.decode(token, key, noVerify);
 }
 
-util.getTypeByPath = function(path) {
-	for (let key in filetypes) {
-		if (_.endsWith(path, key)) return filetypes[key];
+util.getTypeByKey = function(key) {
+	for (let ext in filetypes) {
+		if (_.endsWith(key, ext)) return filetypes[ext];
 	}
 
 	return "files";
+}
+
+util.getUsernameByKey = function(key) {
+	return key.substring(0, key.indexOf("/"));
+}
+// 获取目录
+util.getFolderByKey = function(key) {
+	return key.substring(0, key.lastIndexOf("/", key.length-2) + 1);
 }
 
 util.getKeyByPath = function(path, filetype) {

@@ -13,21 +13,8 @@ const Files = sequelize.define("files", {
 		unique: true,
 	},
 
-	folderKey: {
+	folder: {
 		type: Sequelize.STRING(256),
-	},
-
-	filename: { // 文件名  方便用户识别文件
-		type: Sequelize.STRING(64),
-	},
-
-	userId: {  // 文件所属者
-		type: Sequelize.BIGINT,
-		allowNull: false,
-	},
-
-	siteId: { // 存在 归于站点  不存在归于 用户  用于多人编辑引用站点资源
-		type: Sequelize.BIGINT,
 	},
 
 	level: {   // 是否公开

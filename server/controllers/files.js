@@ -28,15 +28,15 @@ function writeGitFile(params) {
 	gitlab.upsertFile(params.key, {content:params.content});
 }
 
-//Files.prototype.getFileFolder = async function(key) {
-	//const parentKey = key.substring(0, key.lastIndexOf("/", key.length-2) + 1);
+Files.prototype.getFileFolder = async function(key) {
+	const parentKey = key.substring(0, key.lastIndexOf("/", key.length-2) + 1);
 
-	//const result = await storage.get(parentKey);
+	const result = await storage.get(parentKey);
 
-	//if (result.isErr()) return {};
+	if (result.isErr()) return {};
 
-	//return result.getData();
-//}
+	return result.getData();
+}
 
 Files.prototype.raw = async function(ctx) {
 	const key = decodeURIComponent(ctx.params.id);
@@ -85,10 +85,13 @@ Files.prototype.upsert = async function(ctx) {
 	const key = decodeURIComponent(ctx.params.id);
 	const username = ctx.state.user.username;
 	const userId = ctx.state.user.userId;
+
 	params.userId = userId;
 	params.key = key;
+	params.folder = util.getFolderByKey(key);
+	params.type = util.getTypeByKey(key);
 
-	if (key.indexOf(username + "/") != 0) {
+	if (util.getUsernameByKey(key) != username) {
 		return ERR.ERR_PARAMS();
 	}
 	
@@ -129,17 +132,13 @@ Files.prototype.delete = async function(ctx) {
 
 Files.prototype.find = async function(ctx) {
 	const params = ctx.state.params;
-	const userId = ctx.state.user.userId;
 
 	if (params.raw) {
 		return storage.list(params.prefix || username);
 	}
 
-	
 	const where = {};
-	if (userId) {
-		where.userId = userId;
-	} else {
+	if (!userId) {
 		where.public = true;
 	}
 
@@ -225,17 +224,13 @@ Files.prototype.rename = async function(ctx) {
 
 Files.prototype.qiniu = async function(ctx) {
 	const params = ctx.request.body;
+	const key = params.key;
 
-	let data = await this.model.upsert({
-		userId: params.userId,
-		siteId: params.userId,
-		key:  params.key,
-		hash: params.hash,
-		size: params.size,
-		type: params.type,
-		filename: params.filename,
-		level: params.level,
-	});
+	params.key = key;
+	params.folder = util.getFolderByKey(key);
+	params.type = util.getTypeByKey(key);
+
+	let data = await this.model.upsert(params);
 	
 	// 添加记录失败 应删除文件
 	if (!data) {

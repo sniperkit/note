@@ -109,8 +109,7 @@ export default {
 			}
 			this.page.content = text;
 			this.page.setRefresh(true);
-			const type = util.getTypeByPath(filename);
-			const result = await api.files.upsert({...this.page, type, size: text.length});
+			const result = await api.files.upsert({...this.page, size: text.length});
 			this.page.setRefresh(false);
 			this.page.setModify(false);
 			if (result.isErr()) {
