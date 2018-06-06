@@ -14,26 +14,30 @@ module.exports = {
 				unique: true,
 			},
 
-			username: {  // 文件所属者
-				type: Sequelize.STRING(48),
-				allowNull: false,
-			},
-
-			sitename: { // 存在 归于站点  不存在归于 用户  用于多人编辑引用站点资源
-				type: Sequelize.STRING(64),
+			folderKey: {
+				type: Sequelize.STRING(256),
 			},
 
 			filename: { // 文件名  方便用户识别文件
 				type: Sequelize.STRING(64),
 			},
 
-			public: {   // 是否公开
-				type: Sequelize.BOOLEAN,
-				defaultValue: false, 
+			userId: {  // 文件所属者
+				type: Sequelize.BIGINT,
+				allowNull: false,
+			},
+
+			siteId: { // 存在 归于站点  不存在归于 用户  用于多人编辑引用站点资源
+				type: Sequelize.BIGINT,
+			},
+
+			level: {   // 是否公开
+				type: Sequelize.INTEGER,
 			},
 
 			type: {     // 文件类型
 				type: Sequelize.STRING(12),
+				defaultValue: "files",
 			},
 
 			size: {

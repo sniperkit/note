@@ -28,6 +28,16 @@ function writeGitFile(params) {
 	gitlab.upsertFile(params.key, {content:params.content});
 }
 
+//Files.prototype.getFileFolder = async function(key) {
+	//const parentKey = key.substring(0, key.lastIndexOf("/", key.length-2) + 1);
+
+	//const result = await storage.get(parentKey);
+
+	//if (result.isErr()) return {};
+
+	//return result.getData();
+//}
+
 Files.prototype.raw = async function(ctx) {
 	const key = decodeURIComponent(ctx.params.id);
 
@@ -46,12 +56,12 @@ Files.prototype.token = async function(ctx) {
 }
 
 Files.prototype.statistics = async function(ctx) {
-	const username = ctx.state.user.username;
-	let result = await sequelize.query("SELECT SUM(size) AS `sum`, COUNT(*) as `count` from `files where `username` = :username`", {
+	const userId = ctx.state.user.userId;
+	let result = await sequelize.query("SELECT SUM(size) AS `sum`, COUNT(*) as `count` from `files where `userId` = :userId`", {
 		type: sequelize.QueryTypes.SELECT,
 		raw: true,
 		replacements:{
-			username: username,
+			userId: userId,
 		},	
 	});
 	let data = result[0] || {};
@@ -74,7 +84,8 @@ Files.prototype.upsert = async function(ctx) {
 	const params = ctx.state.params;
 	const key = decodeURIComponent(ctx.params.id);
 	const username = ctx.state.user.username;
-	params.username = username;
+	const userId = ctx.state.user.userId;
+	params.userId = userId;
 	params.key = key;
 
 	if (key.indexOf(username + "/") != 0) {
@@ -101,7 +112,7 @@ Files.prototype.upsert = async function(ctx) {
 
 Files.prototype.delete = async function(ctx) {
 	const key = decodeURIComponent(ctx.params.id);
-	const username = ctx.state.user.username;
+	const userId = ctx.state.user.userId;
 
 	let data = await storage.delete(key);
 	if (data.isErr()) return data;
@@ -109,7 +120,7 @@ Files.prototype.delete = async function(ctx) {
 	data = await this.model.destroy({
 		where: {
 			key: key,
-			username: username,
+			userId: userId,
 		}
 	});
 
@@ -118,7 +129,7 @@ Files.prototype.delete = async function(ctx) {
 
 Files.prototype.find = async function(ctx) {
 	const params = ctx.state.params;
-	const username = ctx.state.user.username;
+	const userId = ctx.state.user.userId;
 
 	if (params.raw) {
 		return storage.list(params.prefix || username);
@@ -126,8 +137,8 @@ Files.prototype.find = async function(ctx) {
 
 	
 	const where = {};
-	if (username) {
-		where.username = username;
+	if (userId) {
+		where.userId = userId;
 	} else {
 		where.public = true;
 	}
@@ -137,8 +148,6 @@ Files.prototype.find = async function(ctx) {
 	} else {
 		where.type = {[ne]:"pages"};
 	}
-
-	where.username = username || params.username;
 
 	let data = await this.model.findAll({
 		where: where,
@@ -151,7 +160,7 @@ Files.prototype.find = async function(ctx) {
 
 Files.prototype.findOne = async function(ctx) {
 	const key = decodeURIComponent(ctx.params.id);
-	//const username = ctx.state.user.username;
+	//const userId = ctx.state.user.userId;
 
 	let content = undefined;
 	let isPage = false;
@@ -216,20 +225,16 @@ Files.prototype.rename = async function(ctx) {
 
 Files.prototype.qiniu = async function(ctx) {
 	const params = ctx.request.body;
-	const {key} = params;
-	const username = key.split("/")[0].split("_")[0];
-	//console.log(params);
 
-	const value = (val) => val == "null" ? undefined : val;
 	let data = await this.model.upsert({
-		username: username,
-		sitename: value(params.sitename),
-		key:params.key,
+		userId: params.userId,
+		siteId: params.userId,
+		key:  params.key,
 		hash: params.hash,
 		size: params.size,
 		type: params.type,
-		filename: value(params.filename),
-		public: value(params.public),
+		filename: params.filename,
+		level: params.level,
 	});
 	
 	// 添加记录失败 应删除文件

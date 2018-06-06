@@ -132,8 +132,8 @@ export default {
 			this.folder.key = data.key;
 			this.isShowNewFolder = true;
 		},
-		clickSelectNode(){
-
+		clickSelectNode(data){
+			console.log(data);
 		},
 		async loadTrees(node, resolve) {
 			const self = this;

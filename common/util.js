@@ -1,24 +1,27 @@
 import jwt from "jwt-simple";
+import _ from "lodash";
 
 const filetypes = {
-	md: "pages",
+	"/": "folders",
 
-	jpg: "images",
-	jpeg: "images",
-	png: "images",
-	svg: "images",
+	".md": "pages",
 
-	mp4: "vedios",
-	webm: "vedios",
+	".jpg": "images",
+	".jpeg": "images",
+	".png": "images",
+	".svg": "images",
 
-	mp3: "audios",
-	ogg: "audios",
-	wav: "audios",
+	".mp4": "vedios",
+	".webm": "vedios",
 
-	json: "datas",
-	yml: "datas",
+	".mp3": "audios",
+	".ogg": "audios",
+	".wav": "audios",
 
-	unknow: "files",
+	".json": "datas",
+	".yml": "datas",
+
+	//unknow: "files",
 }
 export const util = {};
 
@@ -34,22 +37,15 @@ util.jwt_decode = function(token, key, noVerify) {
 }
 
 util.getTypeByPath = function(path) {
-	const ext = path.substring(path.lastIndexOf(".") + 1);
+	for (let key in filetypes) {
+		if (_.endsWith(path, key)) return filetypes[key];
+	}
 
-	return filetypes[ext] || "files";
+	return "files";
 }
 
 util.getKeyByPath = function(path, filetype) {
-	const paths = path.split("/");
-	if (paths.length < 2) return path;
-
-	if (!filetype) {
-		const filename = paths[paths.length-1];
-		const ext = filename.split(".")[1];
-		if (!ext) return path;
-
-		filetype = filetypes[ext] || "files";
-	}
+	filetype = filetype || this.getTypeByPath(path);
 
 	paths.splice(1, 0, filetype);
 
@@ -58,8 +54,7 @@ util.getKeyByPath = function(path, filetype) {
 
 util.getPathByKey = function(key) {
 	const paths = key.split("/");
-	if (paths.length < 3) return key;
-
+	//if (paths.length < 3) return key;
 	paths.splice(1, 1);
 
 	return paths.join('/');
