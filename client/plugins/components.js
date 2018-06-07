@@ -92,6 +92,8 @@ export const isAuthenticated = () => {
 if (isAuthenticated()) {
 	api.options.baseURL = config.baseURL;
 	api.options.headers['Authorization'] = "Bearer " + user.token;
+} else {
+	logout();
 }
 
 export const component = {
