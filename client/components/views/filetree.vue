@@ -142,12 +142,13 @@ export default {
 		},
 
 		async getSites() {
+			const self = this;
 			let result = await api.sites.get({owned: true});
 			const sites = result.getData() || [];
 			sites.forEach(site => {
 				site.name = site.sitename;
 				site.type = "tree";
-				site.path = site.username + "/" + site.sitename;
+				site.path = self.user.username + "/" + site.sitename;
 				this.sites[site.sitename] = site;
 			});
 			return sites;
@@ -156,7 +157,7 @@ export default {
 		async getSitePage(site) {
 			const self = this;
 			const result = await api.files.get({
-				prefix: [site.username, "pages", site.sitename].join("/"),
+				prefix: [self.user.username, "pages", site.sitename].join("/"),
 				raw: true,
 			});
 			if (result.isErr()) return;
