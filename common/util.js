@@ -44,6 +44,14 @@ util.getTypeByKey = function(key) {
 	return "files";
 }
 
+util.getTypeByFilename = function(filename) {
+	for (let ext in filetypes) {
+		if (_.endsWith(filename, ext)) return filetypes[ext];
+	}
+
+	return "files";
+}
+
 util.getUsernameByKey = function(key) {
 	return key.substring(0, key.indexOf("/"));
 }
@@ -53,7 +61,9 @@ util.getFolderByKey = function(key) {
 }
 
 util.getKeyByPath = function(path, filetype) {
-	filetype = filetype || this.getTypeByPath(path);
+	const paths = path.split("/");
+
+	filetype = filetype || this.getTypeByFilename(path);
 
 	paths.splice(1, 0, filetype);
 
