@@ -115,7 +115,6 @@ Files.prototype.upsert = async function(ctx) {
 
 Files.prototype.delete = async function(ctx) {
 	const key = decodeURIComponent(ctx.params.id);
-	const userId = ctx.state.user.userId;
 
 	let data = await storage.delete(key);
 	if (data.isErr()) return data;
@@ -123,7 +122,6 @@ Files.prototype.delete = async function(ctx) {
 	data = await this.model.destroy({
 		where: {
 			key: key,
-			userId: userId,
 		}
 	});
 
@@ -191,12 +189,10 @@ Files.prototype.findOne = async function(ctx) {
 Files.prototype.rename = async function(ctx) {
 	const filename = ctx.state.params.filename;
 	const id = ctx.params.id;
-	const username = ctx.state.user.username;
 	
 	let data = await this.model.findOne({
 		where: {
 			id: id,
-			username: username,
 		}
 	});
 
