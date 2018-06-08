@@ -41,6 +41,11 @@ export class Model {
 		return await this.model.findAll(options);	
 	}
 
+	async findAll(options) {
+		Model.filterWhere(options.where);
+		return await this.model.findAll(options);	
+	}
+
 	async findOne(...args) {
 		return await this.model.findOne(...args);	
 	}

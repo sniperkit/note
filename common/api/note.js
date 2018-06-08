@@ -39,6 +39,12 @@ function initHttpOptions(self, options = {}, prefix, key = "id") {
 	self.httpDelete = httpDelete;
 	self.apiRequest = (method = "get", url) => (data, config) => httpRequest(method, getUrl(prefix, url, false), data, Object.assign(self.options, config));
 	self.restRequest = (method = "get", url) => (data, config) => httpRequest(method, getUrl(prefix, url, true, data, key), data, Object.assign(self.options, config));
+
+	// rest api
+	self.create = self.apiRequest("post");
+	self.update = self.restRequest("put");
+	self.delete = self.restRequest("delete");
+	self.get = self.restRequest("get");
 }
 
 export function DataSource(options) {
@@ -128,6 +134,13 @@ export function Groups(options) {
 	self.getMembers = self.restRequest("get", "members");
 	
 }
+
+export function GroupMembers(options) {
+	const self = this;
+
+	initHttpOptions(self, options, "groupMembers", "id");
+}
+
 export function Notes(options = {}){
 	const self = this;
 	initHttpOptions(self, options);
@@ -138,6 +151,7 @@ export function Notes(options = {}){
 	self.files = new Files(self.options);
 	self.sites = new Sites(self.options);
 	self.groups = new Groups(self.options);
+	self.groupMembers = new GroupMembers(self.options);
 }
 export const options = {
 	headers: {

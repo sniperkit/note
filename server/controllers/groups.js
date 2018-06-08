@@ -65,7 +65,7 @@ export const Groups = class extends Controller {
 		const params = ctx.state.params;
 		const memberId = params.memberId && parseInt(params.memberId);
 
-		let sql = 'select gm.id, userId, groupId, memberId, username as memberName, nickname  from keepwork.groupMembers as gm, keepwork.users as u where gm.memberId = u.id and groupId=:groupId and userId=:userId';
+		let sql = 'select gm.id, userId, groupId, memberId, username as memberName, nickname  from groupMembers as gm, users as u where gm.memberId = u.id and groupId=:groupId and userId=:userId';
 
 		if (memberId) sql += " and memberId=:memberId";
 		let result = await sequelize.query(sql, {

@@ -98,6 +98,10 @@ export default {
 				id: this.search.groupId,
 				memberId: this.search.memberId,
 			})
+			//let result = await this.api.groupMembers.get({
+				//groupId: this.search.groupId,
+				//memberId: this.search.memberId,
+			//})
 			this.members = result.getData() || [];
 
 			const group = self.groups.find(x => x.id == self.search.groupId);
@@ -116,9 +120,8 @@ export default {
 			this.$router.push(url);
 		},
 		async clickDeleteBtn(data, index) {
-			let result = await this.api.groups.deleteMember({
-				id: data.groupId,
-				memberId:data.memberId,
+			let result = await this.api.groupMembers.delete({
+				id: data.id,
 			});
 			if (result.isErr()) {
 				Message("删除成员失败");
@@ -136,11 +139,12 @@ export default {
 			}
 
 			const params = {
-				id: this.member.groupId,
+				groupId: this.member.groupId,
 				memberId:memberId,
+				level: 0,
 			};
 
-			let result = await this.api.groups.createMember(params);
+			let result = await this.api.groupMembers.create(params);
 
 			if (result.isErr()) {
 				Message("添加成员失败");

@@ -46,8 +46,10 @@ export default (app, views) => {
 			"/_",
 			"/favicon.ico",
 			"/_nuxt/",
-			"/note"
-		]
+			"/note",
+			"/api/",
+		];
+
 		if (path.split("/").length < 3 || path.substring(path.lastIndexOf("/")).indexOf(".") < 0) {
 			return await next();
 		}

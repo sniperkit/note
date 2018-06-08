@@ -1,68 +1,66 @@
 import joi from "joi";
 
-import groupMembersModel from "../models/groupMembers.js";
+import Controller from "./controller.js";
+import { models , sequelize} from "@/models";
 
-import ERR from "../../common/error.js";
+const userModel = models["users"];
+const groupMembersModel = models["groupMembers"];
 
-export GroupMembers = function() {
-	this.model = groupMembersModel;
-}
+import ERR from "@@/common/error.js";
 
-GroupMembers.prototype.find = function() {
+export const GroupMembers = class extends Controller {
+	constructor() {
+		super();
 
-}
+		this.model = groupMembersModel;
+	}
 
-GroupMembers.prototype.findOne = function() {
+	async create(ctx) {
+		const params = ctx.state.params;
+		params.userId = ctx.state.user.userId;
 
-}
+		const user = userModel.findOne({
+			where: {
+				id: params.memberId,
+			}
+		});
 
-GroupMembers.prototype.create = function() {
-
-}
-
-GroupMembers.prototype.update = function() {
-
-}
-
-GroupMembers.getRoutes = function() {
-	const self = this;
-	self.pathPrefix = "groups";
-	const routes = [
-	{
-		method: "GET",
-		action: "find",
-	},
-	{
-		path: ":id",
-		method: "GET",
-		action: "findOne",
-		authentated: true,
-		validate: {
-			params: {
-				id: joi.string().required(),
-			},
+		if (!user) {
+			return ERR.ERR().setMessage("用户不存在");
 		}
-	},
-	{
-		method: "POST",
-		action: "create",
-		authentated: true,
-	},
-	{
-		path: ":id",
-		method: "PUT",
-		action: "update",
-		authentated: true,
-	},
-	{
-		path: ":id",
-		method: "DELETE",
-		action: "delete",
-		authentated: true,
-	},
-	];
 
-	return routes;
+		let result = await this.model.create(params);
+
+		return ERR.ERR_OK(result);
+	}
+
+	async update(ctx) {
+
+	}
+
+	static getRoutes() {
+		this.pathPrefix = "groupMembers";
+		const baseRoutes = super.getRoutes();
+
+		const routes = [
+		{
+			method: "POST",
+			action: "create",
+			authentated: true,
+			validate: {
+				body: {
+					memberId: joi.number().required(),
+					level: joi.number().required(),
+					groupId: joi.number().required(),
+				},
+			}
+		},
+		];
+
+		return routes.concat(baseRoutes);
+	}
 }
+
+
 
 export default GroupMembers;
