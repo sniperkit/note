@@ -26,10 +26,7 @@ const qiniuUpload = async (key, file, token, params = {}, observer = {}) => {
 		putExtra: {
 			mimeType: null,
 			params: {
-				"x:filename": params.filename || key.substring(key.lastIndexOf("/") + 1),
 				"x:public": params.public || false,
-				"x:sitename": params.sitename || "",
-				"x:type": util.getTypeByPath(key),
 			},
 		},
 		config: {
@@ -53,37 +50,22 @@ const qiniuUpload = async (key, file, token, params = {}, observer = {}) => {
 				resolve(false);
 				//console.log(err);
 			},
-			complete(res){
+			async complete(res){
+				const result = await api.files.qiniu(res);
+				if (result.isErr()) {
+					observer.error && observer.error();
+					return resolve(false);
+				}
 				observer.complete && observer.complete(res);
-				resolve(true);
 				//console.log(res);
+				resolve(true);
 			}
 		});
 	})
 
 	if (!ok) return;
 
-	if (key[key.length-1] == "/") {
-		return true;
-	}
-
-	let result = await api.files.upsert({
-		...params,
-		size: file.size,
-		key: key,
-		type: util.getTypeByPath(key),
-	});
-
-	if (result.isErr()) {
-		console.log("上传失败");
-		return ;
-	}
-
 	return config.origin + "/" + util.getPathByKey(key); 
-	//data = await api.qiniu.getDownloadUrl({key:key});
-	//if (data.isErr()) return;
-
-	//return data.getData();
 }
 
 export default qiniuUpload;

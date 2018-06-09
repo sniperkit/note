@@ -129,11 +129,9 @@ export default {
 				Message("文件名为空, 取消文件上传");
 				return;
 			};
-			console.log(this.path);
 			const file = this.file;
 			const filename = this.uploadFilename;
 			const isImage = file.type.indexOf("image") == 0;
-			const filetype = util.getTypeByPath(filename);
 			let username = this.user.username;
 			let sitename = undefined;
 			let path = undefined;
@@ -151,7 +149,6 @@ export default {
 				username,
 				sitename,
 				filename,
-				type: filetype,
 			});
 
 			const cmComp = this.$refs.cm;

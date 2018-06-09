@@ -46,7 +46,7 @@ export default (app, views) => {
 			"/_",
 			"/favicon.ico",
 			"/_nuxt/",
-			"/note",
+			//"/note",
 			"/api/",
 		];
 

@@ -102,6 +102,7 @@ export function Files(options) {
 	self.upsert = self.restRequest("post");
 	self.delete = self.restRequest("delete") 
 	self.token = self.restRequest("get", "token");
+	self.qiniu = self.apiRequest("post", "qiniu");
 }
 
 export const mod = {

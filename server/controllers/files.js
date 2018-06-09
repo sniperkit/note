@@ -235,6 +235,33 @@ Files.prototype.qiniu = async function(ctx) {
 	return ERR.ERR_OK(data);
 }
 
+Files.prototype.qiniuImport = async function(ctx) {
+	const params = ctx.state.params;
+	let marker = undefined;
+	do {
+		let result = await storage.list(params.prefix || "", 200, marker);
+		if (result.isErr()) return result;
+		let data = result.getData();
+		let items = data.items;
+		marker = data.marker;
+
+		for (let i = 0; i < items.length; i++) {
+			let item = items[i];
+			let key = item.key;
+			await this.model.upsert({
+				key: item.key,
+				hash: item.hash,
+				size: item.size,
+				folder: util.getFolderByKey(key),
+				type: util.getTypeByKey(key),
+			});
+		}
+
+	} while(marker);
+
+	return ERR.ERR_OK();
+}
+
 Files.prototype.transform = async function(ctx) {
 	let list = await storage.list("xiaoyao");
 	list = list.data.items;
@@ -269,6 +296,11 @@ Files.getRoutes = function() {
 		path: "transform",
 		method: "get",
 		action: "transform",
+	},
+	{
+		path: "qiniuImport",
+		method: "get",
+		action: "qiniuImport",
 	},
 	{
 		path: "qiniu",
