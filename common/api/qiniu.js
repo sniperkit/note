@@ -7,6 +7,7 @@ import util from "../util.js";
 
 const qiniuUpload = async (key, file, token, params = {}, observer = {}) => {
 	let data = null;
+	let content = "";
 	if (!token) {
 		data = await api.files.token({
 			key:key,
@@ -18,6 +19,7 @@ const qiniuUpload = async (key, file, token, params = {}, observer = {}) => {
 	}
 
 	if (typeof(file) == "string") {
+		content = file;
 		file = new Blob([file], {type: "text/plain"});
 	}
 
@@ -27,6 +29,7 @@ const qiniuUpload = async (key, file, token, params = {}, observer = {}) => {
 			mimeType: null,
 			params: {
 				"x:public": params.public || false,
+				"x:content": content,
 			},
 		},
 		config: {
@@ -51,7 +54,7 @@ const qiniuUpload = async (key, file, token, params = {}, observer = {}) => {
 				//console.log(err);
 			},
 			async complete(res){
-				const result = await api.files.qiniu(res);
+				const result = await api.files.qiniu({key:res.key, size:res.fsize, hash:res.hash, content});
 				if (result.isErr()) {
 					observer.error && observer.error();
 					return resolve(false);

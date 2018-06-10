@@ -29,16 +29,12 @@ const apiRouter = new Router({
 registerControllerRouter(apiRouter);
 
 export default (app, views) => {
-	const viewRouter = new Router({});
-
 	app
-	//.use(Static("../.nuxt/"))
 	.use(cors())
 	.use(KoaBody())
 	.use(jwt({secret:config.secret, passthrough:true, cookie:"token"}))
 	.use(apiRouter.routes())
-	.use(apiRouter.allowedMethods())
-	.use(viewRouter.routes());
+	.use(apiRouter.allowedMethods());
 
 	app.use(async (ctx, next) => {
 		const path = ctx.request.path;
@@ -46,7 +42,7 @@ export default (app, views) => {
 			"/_",
 			"/favicon.ico",
 			"/_nuxt/",
-			//"/note",
+			"/static/",
 			"/api/",
 		];
 

@@ -28,6 +28,14 @@ function writeGitFile(params) {
 	gitlab.upsertFile(params.key, {content:params.content});
 }
 
+Files.prototype.isAuth = function (username, key)  {
+	if (key.indexOf(username + "/") == 0) {
+		return true;
+	}
+
+	return false;
+}
+
 Files.prototype.getFileFolder = async function(key) {
 	const parentKey = key.substring(0, key.lastIndexOf("/", key.length-2) + 1);
 
@@ -130,21 +138,18 @@ Files.prototype.delete = async function(ctx) {
 
 Files.prototype.find = async function(ctx) {
 	const params = ctx.state.params;
+	const username = ctx.state.user.username;
 
 	if (params.raw) {
 		return storage.list(params.prefix || username);
 	}
 
+	if (!this.isAuth(username, params.folder)) return ERR.ERR_PARAMS();
+	
 	const where = {};
-	if (!userId) {
-		where.public = true;
-	}
 
-	if (params.type) {
-		where.type = params.type;
-	} else {
-		where.type = {[ne]:"pages"};
-	}
+	where.folder = params.folder;
+	if (params.type) where.type = params.type;
 
 	let data = await this.model.findAll({
 		where: where,
@@ -220,24 +225,33 @@ Files.prototype.rename = async function(ctx) {
 
 Files.prototype.qiniu = async function(ctx) {
 	const params = ctx.request.body;
-	const key = params.key;
+	let key = params.key;
+	let folder = util.getFolderByKey(key);
+	let type = util.getTypeByKey(key);
 
 	params.key = key;
-	params.folder = util.getFolderByKey(key);
-	params.type = util.getTypeByKey(key);
+	params.folder = folder;
+	params.type = type;
 
 	let data = await this.model.upsert(params);
-	
 	// 添加记录失败 应删除文件
-	if (!data) {
-	}
+	if (params.content) writeGitFile(params);
 
+	do {
+		key = folder;
+		folder = util.getFolderByKey(key);
+		type = util.getTypeByKey(key);
+		
+		this.model.upsert({key, folder, type, size: 0});
+	} while(folder);
+	
 	return ERR.ERR_OK(data);
 }
 
 Files.prototype.qiniuImport = async function(ctx) {
 	const params = ctx.state.params;
 	let marker = undefined;
+	let keys = {};
 	do {
 		let result = await storage.list(params.prefix || "", 200, marker);
 		if (result.isErr()) return result;
@@ -248,13 +262,30 @@ Files.prototype.qiniuImport = async function(ctx) {
 		for (let i = 0; i < items.length; i++) {
 			let item = items[i];
 			let key = item.key;
+			let folder = util.getFolderByKey(key);
 			await this.model.upsert({
 				key: item.key,
 				hash: item.hash,
-				size: item.size,
-				folder: util.getFolderByKey(key),
+				size: item.fsize,
+				folder: folder,
 				type: util.getTypeByKey(key),
 			});
+
+			do {
+				key = folder;
+				folder = util.getFolderByKey(key);
+				
+				if (keys[key]) continue;
+
+				await this.model.upsert({
+					key:key,
+					size: 0,
+					folder: folder,
+					type: util.getTypeByKey(key),
+				});
+
+				keys[key] = true;
+			} while(folder);
 		}
 
 	} while(marker);
