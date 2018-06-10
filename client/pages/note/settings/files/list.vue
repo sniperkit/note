@@ -14,7 +14,9 @@
 
 		<el-row>
 			<el-col :span="4">
-				<el-tree ref="filetree" :data="trees" node-key="key" :highlight-current="true" @node-click="clickSelectNode">
+				<el-tree ref="filetree"  node-key="key" :highlight-current="true" 
+					lazy :load="loadTreeNode"
+					@node-click="clickSelectNode">
 					<span class="custom-tree-node" slot-scope="{node, data}">
 						<span>
 							<!--<i class="iconfont icon-folder"></i>-->
@@ -27,16 +29,10 @@
 				</el-tree>
 			</el-col>
 			<el-col :span="20">
-				<el-table :data="files">
-					<el-table-column prop="filename" label="名称"></el-table-column>
+				<el-table :data="nodeFiles">
 					<el-table-column width="300px" prop="key" label="KEY"></el-table-column>
-					<el-table-column prop="sitename" label="站点"></el-table-column>
+					<el-table-column prop="size" label="大小"></el-table-column>
 					<el-table-column prop="type" label="类型"></el-table-column>
-					<el-table-column fixed="right" prop="public" label="公开">
-						<template slot-scope="{row, $index}">
-							<span>{{row.public ? "公开" : "私有"}}</span>
-						</template>
-					</el-table-column>
 					<el-table-column fixed="right" label="操作">
 						<template slot-scope="{row, $index}">
 							<i @click="clickCopyBtn(row, $index)" class="iconfont icon-link" aria-hidden="true" data-toggle="tooltip" title="删除"></i>
@@ -91,9 +87,24 @@ export default {
 	data: function() {
 		return {
 			isShowNewFolder: false,
+			currentKey:"",
 			folder: {},
 			files:[],
 			trees: [],
+		}
+	},
+
+	computed: {
+		nodeFiles() {
+			const nodes = [];
+			const files = this.files;
+			for (let i = 0; i < files.length; i++) {
+				if (files[i].folder == this.currentKey) {
+					nodes.push(files[i]);
+				}
+			}
+
+			return nodes;
 		}
 	},
 
@@ -133,36 +144,44 @@ export default {
 			this.isShowNewFolder = true;
 		},
 		clickSelectNode(data){
-			console.log(data);
+			this.currentKey = data.key;
 		},
-		async loadTrees(node, resolve) {
+		async loadTreeNode(node, resolve) {
 			const self = this;
 			const username = self.user.username;
-			const path = this.path;
-			const key = this.key;
 			
-			let trees = [
-			{                  
-				label: self.user.username,      
-				key: self.user.username + "/",  
-				children: [    
-				{
-					label: "images",                
-					key: `${username}/images`,      
-				},             
-				{              
-					label: "videos",                
-					key: `${username}/videos`,      
-				},             
-				{              
-					label: "files",                 
-					key: `${username}/files`,       
-				},
-				]
-			}
-			];
+			console.log(node);	
+			if (node.level == 0) {
+				return resolve([{
+					label:username,
+					key: username + "/",
+				}]);
+			} 
 
-			self.trees = await axios.get(config.origin + "/" + path).then(res => res.data).catch(() => trees);
+			const nodeData = node.data;
+			const nodeKey = nodeData.key;
+			const result = await this.api.files.get({
+				folder:nodeKey,
+			});
+			const files = result.getData() || [];
+			const nodes = [];
+
+			for (let i = 0; i < files.length; i++) {
+				let file = files[i];
+				let key = file.key;
+
+				if (file.type == "folders") {
+					nodes.push({
+						label: key.substring(nodeKey.length, key.length-1),
+						key:key,
+					});
+				} else {
+					self.files.push(file);
+				}
+				
+			}
+
+			resolve(nodes);
 		},
 		async getFileList(prefix) {
 			let result = await this.api.files.get({raw:true, prefix});
@@ -195,10 +214,6 @@ export default {
 	},
 
 	async mounted() {
-		this.path = this.user.username + "/filetree.json";
-		this.key = util.getKeyByPath(this.path);
-		this.loadTrees();
-		//await this.getFileList();
 	}
 
 }

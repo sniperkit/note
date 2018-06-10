@@ -1,4 +1,5 @@
 import vue from "vue";
+import _ from "lodash";
 import jwt from "jwt-simple";
 
 import EVENTS from "@/lib/events.js";
@@ -47,7 +48,7 @@ export const user = {
 };
 
 export const login = (x) => {
-	_.merge(user, x);
+	_.each(x, (val, key) => vue.set(user, key, val));
 
 	if (!isAuthenticated()){
 		return logout();
@@ -64,9 +65,7 @@ export const login = (x) => {
 }
 
 export const logout = () => {
-	user.id = null;
-	user.username = null;
-	user.token = null;
+	_.each(user, (val, key) => vue.delete(user, key));
 
 	if (process.client) {
 		localStorageSetUser({});

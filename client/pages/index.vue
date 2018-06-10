@@ -1,24 +1,22 @@
 <template>
 	<div>
-		<fileManager></fileManager>
+		<!--<Board></Board>-->
 	</div>
 </template>
 
 <script>
-
-import {
-	Upload,
-} from "element-ui";
-import fileManager from "../components/views/fileManager.vue";
-import api from "@@/common/api/note.js";
-import qiniuUpload from "@@/common/api/qiniu.js";
+import Board from "@/components/bases/board.vue";
 
 export default {
 	layout: "index",
 
+	data: function() {
+		return {
+		}
+	},
+
 	components: {
-		[Upload.name]: Upload,
-		fileManager,
+		Board,
 	},
 
 	computed: {
@@ -28,7 +26,6 @@ export default {
 	},
 
 	mounted() {
-		//console.log(this.user);
 	}
 }
 </script>

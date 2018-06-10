@@ -109,12 +109,13 @@ export default {
 			}
 			this.page.content = text;
 			this.page.setRefresh(true);
-			const result = await api.files.upsert({...this.page, size: text.length});
+			const result = await qiniuUpload(this.page.key, text);
+			if (!result) {
+				Message("文件保存失败");
+				return;
+			}
 			this.page.setRefresh(false);
 			this.page.setModify(false);
-			if (result.isErr()) {
-				Message(result.getMessage());
-			}
 		},
 
 		fileUploadEvent(file) {

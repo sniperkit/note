@@ -4,8 +4,8 @@
 			<el-form :model="newFileForm" label-width="80px" label-position="right" style="width:300px;">
 				<el-form-item label="类型">
 					<el-select v-model="newFileForm.type" placeholder="请选择类型">
-						<el-option label="文件" value="blob"></el-option>
-						<el-option label="目录" value="tree"></el-option>
+						<el-option label="文件" value="pages"></el-option>
+						<el-option label="目录" value="folders"></el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item label="文件名">
@@ -19,19 +19,19 @@
 				<el-button type="primary" @click="clickSubmitNewFileBtn">确 定</el-button>
 			</div>
 		</el-dialog>
-		<el-tree ref="openedTreeComp" :data="openedPageTree" :props="treeprops" node-key="path" :default-expand-all="true" :highlight-current="true" @node-click="clickSelectPage">
+		<el-tree ref="openedTreeComp" :data="openedPageTree"  :props="treeprops" node-key="path" :default-expand-all="true" :highlight-current="true" @node-click="clickSelectPage">
 			<span class="custom-tree-node" slot-scope="{node, data}">
-				<span v-if="data.type == 'tree'" class="custom-tree-node">
+				<span v-if="data.type == 'folders'" class="custom-tree-node">
 					<span>
 						<!--<i class="iconfont icon-folder"></i>-->
-						<span>{{data.aliasname || data.name}}</span>
+						<span>{{data.label}}</span>
 					</span>
 				</span>
-				<span v-if="data.type == 'blob'" class="custom-tree-node">
+				<span v-if="data.type == 'pages'" class="custom-tree-node">
 					<span class="tree-node-text">
 						<i v-show="node.isConflict" @click="clickFixedConflict(data)" class="fa fa-warning" aria-hidden="true" data-toggle="tooltip" title="冲突"></i>
 						<i v-show="!node.isConflict" :class='(node.isRefresh || data.isRefresh) ? "el-icon-loading" : (node.isModify || data.isModify) ? "iconfont icon-edit" : "iconfont icon-file"'></i>
-						<span>{{data.aliasname || data.name}}</span>
+						<span>{{data.label}}</span>
 					</span>
 					<span class="tree-node-btn-group">
 						<i @click.stop="clickOpenBtn(data)"class="iconfont icon-open" aria-hidden="true" data-toggle="tooltip" title="访问"></i>
@@ -41,23 +41,23 @@
 				</span>
 			</span>
 		</el-tree>
-		<el-tree ref="filetree" :data="filetree" :props="treeprops" lazy :load="loadTreeNode"
+		<el-tree ref="filetree" lazy :load="loadTreeNode" :props="treeprops"
 			node-key="path" :highlight-current="true" @node-click="clickSelectPage">
 			<span class="custom-tree-node" slot-scope="{node, data}">
-				<span v-if="data.type == 'tree'" class="custom-tree-node">
+				<span v-if="data.type == 'folders'" class="custom-tree-node">
 					<span>
 						<!--<i class="iconfont icon-folder"></i>-->
-						<span>{{data.aliasname || data.name}}</span>
+						<span>{{data.label}}</span>
 					</span>
-					<span>
+					<span v-if="node.level != 1">
 						<i class="iconfont icon-plus" @click.stop="clickNewFileBtn(data, node)"></i> 
 					</span>
 				</span>
-				<span v-if="data.type == 'blob'" class="custom-tree-node">
+				<span v-if="data.type == 'pages'" class="custom-tree-node">
 					<span class="tree-node-text">
 						<i v-show="node.isConflict" @click="clickFixedConflict(data)" class="fa fa-warning" aria-hidden="true" data-toggle="tooltip" title="冲突"></i>
 						<i v-show="!node.isConflict" :class='node.isRefresh ? "el-icon-loading" : node.isModify ? "iconfont icon-edit" : "iconfont icon-file"'></i>
-						<span>{{data.aliasname || data.name}}</span>
+						<span>{{data.label}}</span>
 					</span>
 					<span class="tree-node-btn-group">
 						<i @click.stop="clickOpenBtn(data)"class="iconfont icon-open" aria-hidden="true" data-toggle="tooltip" title="访问"></i>
@@ -105,17 +105,16 @@ export default {
 	},
 	data: function(){
 		return {
-			treeprops: {
-				children:"nodes",
-				label:"name",
-				isLeaf: "leaf",
-			},
 			openedPages:{},
 			isShowNewFile:false,
-			newFileForm:{ type:"blob", isLoading:false },
+			newFileForm:{ type:"pages", isLoading:false },
 			sites: {},
-			filetree:[],
 			pages: {},
+			treeprops: {
+				isLeaf: (data, node) => {
+					return data.type == "pages";
+				}
+			}
 		};
 	},
 
@@ -125,12 +124,12 @@ export default {
 		},
 
 		openedPageTree() {
-			let tree = {name:"已打开页面", type:"tree", path:"", nodes:[]};
+			let tree = {label:"已打开页面", type:"folders", path:"",children:[]};
 			for (var key in this.openedPages) {
 				if (!this.openedPages[key]) {
 					continue;
 				}
-				tree.nodes.push(this.openedPages[key]);
+				tree.children.push(this.openedPages[key]);
 			}
 			return [tree];
 		},
@@ -147,127 +146,75 @@ export default {
 			const sites = result.getData() || [];
 			sites.forEach(site => {
 				site.name = site.sitename;
-				site.type = "tree";
+				site.type = "folders";
 				site.path = self.user.username + "/" + site.sitename;
 				this.sites[site.sitename] = site;
 			});
 			return sites;
 		},
 
-		async getSitePage(site) {
+		fileToPage(file) {
 			const self = this;
-			const result = await api.files.get({
-				prefix: [self.user.username, "pages", site.sitename].join("/"),
-				raw: true,
-			});
-			if (result.isErr()) return;
-			const pages = result.getData().items  || [];
-			const pagemap = {};
-			let node = null;
-			pages.forEach(page => {
-				
-				const paths = page.key.split("/");
-				page.name = paths[paths.length-1];
-				page.path = util.getPathByKey(page.key);
-				page.type = "blob";
-				page.leaf = true;
-				page.username = paths[0];
-				page.name = page.name.replace(/\..*$/, "");
-				page.url = page.path.replace(/\..*$/, "");
+			const key = file.key;
+			const path = util.getPathByKey(key);
+			const paths = path.split("/");
+			const page = {};
+			page.key = key;
+			page.path = path;
+			page.hash = file.hash;
+			page.label = file.type == "pages" ? paths[paths.length-1] : paths[paths.length-2];
+			page.type = file.type;
+			page.username = paths[0];
+			page.label = page.label.replace(/\..*$/, "");
 
-				page.setRefresh = function(x){
-					const key = this.path;
-					node = self.$refs.filetree.getNode(key);
-					vue.set(node || {}, "isRefresh", x);
-					node = self.$refs.openedTreeComp.getNode(key);
-					vue.set(node || {}, "isRefresh", x);
+			page.setRefresh = function(x){
+				const key = this.path;
+				let node = self.$refs.filetree.getNode(key);
+				vue.set(node || {}, "isRefresh", x);
+				node = self.$refs.openedTreeComp.getNode(key);
+				vue.set(node || {}, "isRefresh", x);
 
-					this.isRefresh = x;
-				}
-				page.setModify = function(x) {
-					const key = this.path;
-					node = self.$refs.filetree.getNode(key);
-					vue.set(node || {}, "isModify", x);
-					node = self.$refs.openedTreeComp.getNode(key);
-					vue.set(node || {}, "isModify", x);
-					this.isModify = x;
-				}
-				pagemap[page.path] = page;
-			});
-			_.merge(self.pages, pagemap);
-			return self.generateTreeNodes(pagemap);
-		},
-
-		generateTreeNodes(pages) {
-			var roottree = [], i, j, k, name;
-			for (var key in pages) {
-				var node = pages[key];
-				var paths = node.path.split("/");
-				var tree = roottree;
-				var path = "";
-
-				if (node.path.indexOf(".md") < 0) {
-					continue;
-				}
-
-				for (j = 0; j < paths.length - 1; j++) {
-					name = paths[j];
-					for (k = 0; k < tree.length; k++) {
-						if (tree[k].name == name && tree[k].type == "tree") {
-							break;
-						}
-					}
-					if (k == tree.length) {
-						tree.push({
-							path: paths.slice(0,j+1).join("/"), 
-							name:name, 
-							type:"tree", 
-							nodes:[]
-						});
-						tree[k].url = tree[k].path;
-					}
-					tree = tree[k].nodes;
-					
-				}
-				for (k = 0; k < tree.length; k++) {
-					if (tree[k].name == node.name && tree[k].type == node.type){
-						break;
-					}
-				}
-
-				if (k == tree.length) {
-					tree.push(node);
-				} 
+				this.isRefresh = x;
+			}
+			page.setModify = function(x) {
+				const key = this.path;
+				let node = self.$refs.filetree.getNode(key);
+				vue.set(node || {}, "isModify", x);
+				node = self.$refs.openedTreeComp.getNode(key);
+				vue.set(node || {}, "isModify", x);
+				this.isModify = x;
 			}
 
-			if (!roottree[0] || !roottree[0].nodes || !roottree[0].nodes[0]) {
-				return [];
-			}
-			return roottree[0].nodes[0].nodes;
+			self.pages[path] = page;
+			//console.log(page);
+			return page;
 		},
 
 		async loadTreeNode(node, resolve) {
 			const self = this;
-			//console.log(node);
+			const username = self.user.username;
+			//console.log(node);	
 			if (node.level == 0) {
-				const data = {
-					name:"我的站点",
-					type: 'tree',
-					path: self.user.username,
-					nodes: []
-				}
-				//self.filetree.push(data);
-				return resolve([data]);
-			} else if (node.level == 1) {
-				const sites = await self.getSites();
-				//vue.set(self.filetree[0].nodes, sites);
-				return resolve(sites);
-			} else if (node.level == 2){
-				const pages = await self.getSitePage(node.data);
-				return resolve(pages);
-			} else {
-				return resolve(node.data && node.data.nodes || []);
+				return resolve([{
+					label:username,
+					path: username + "/",
+					key: username + "/pages/",
+					type: "folders",
+				}]);
+			} 
+
+			const nodeData = node.data;
+			const nodeKey = nodeData.key;
+
+			const result = await this.api.files.get({folder:nodeKey});
+			const files = result.getData() || [];
+			const nodes = [];
+
+			for (let i = 0; i < files.length; i++) {
+				nodes.push(self.fileToPage(files[i]));
 			}
+
+			resolve(nodes);
 		},
 		loadPage(page, cb, errcb) {
 			const self = this;
@@ -313,7 +260,7 @@ export default {
 			var self = this;
 			// 激活文件树项
 			self.setCurrentItem(data.path);
-			if (data.type == "tree") {
+			if (data.type == "folders") {
 				return;
 			}
 
@@ -388,47 +335,26 @@ export default {
 				return;
 			}
 			const node = this.newFileForm.data;
-			let path = node.path + '/' + form.filename + (form.type == "tree" ? "" : ".md");
+			let path = node.path + form.filename + (form.type == "folders" ? "/" : ".md");
 			const page = this.getPageByPath(path);
 			if (page && page.path) {
 				this.$message("文件已存在");
 				return;
 			}
-			let newNode = {
-				path:path,
+			let file = {
 				key: util.getKeyByPath(path, "pages"),
-			    name:form.filename,
 			    type:form.type,
-				leaf: form.type == "blob",
 			    content:"",
-			    url:path.replace(/\.md$/, ""),
-			    username:node.username,
 			}
-			if (newNode.leaf) {
-				newNode.setRefresh = function(x){
-					const key = this.path;
-					let tmpnode = self.$refs.filetree.getNode(key);
-					vue.set(tmpnode || {}, "isRefresh", x);
-					tmpnode = self.$refs.openedTreeComp.getNode(key);
-					vue.set(tmpnode || {}, "isRefresh", x);
-
-					this.isRefresh = x;
-				}
-				newNode.setModify = function(x) {
-					const key = this.path;
-					let tmpnode = self.$refs.filetree.getNode(key);
-					vue.set(tmpnode || {}, "isModify", x);
-					tmpnode = self.$refs.openedTreeComp.getNode(key);
-					vue.set(tmpnode || {}, "isModify", x);
-					this.isModify = x;
-				}
-			} 
-			self.pages[newNode.path] = newNode;
+			let newpage = self.fileToPage(file);
+			newpage.content = "";
+			console.log(newpage);
+			self.pages[newpage.path] = newpage;
 			form.isLoading = true;
-			if (form.type != "tree") {
+			if (form.type != "folders") {
 				//await this.savePage(newNode);
 			}
-			self.$refs.filetree.append(newNode, node.path);
+			self.$refs.filetree.append(newpage, node.path);
 			this.isShowNewFile = false;
 			form.isLoading = false;
 		},

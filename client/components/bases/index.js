@@ -3,6 +3,7 @@ import vue from "vue";
 import _ from "lodash";
 
 import common from "./common.js";
+//import Board from "./board.vue";
 import Toc from "./toc.vue";
 import Title from "./title.vue";
 import Media from "./media.vue";
@@ -13,6 +14,7 @@ import Userpage from "./userpage.vue";
 
 const components =  {
 	Userpage,
+	//Board,
 	Toc,
 	Title,
 	Media,
