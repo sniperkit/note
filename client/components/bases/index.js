@@ -8,11 +8,13 @@ import Toc from "./toc.vue";
 import Title from "./title.vue";
 import Media from "./media.vue";
 import Markdown from "./markdown.vue";
+import TagText from "./tagText.vue";
 //import wikiCarousel from "./wikiCarousel.vue";
 import Userpage from "./userpage.vue";
 //import adiComponents from "./adi.js";
 
 const components =  {
+	TagText,
 	Userpage,
 	//Board,
 	Toc,

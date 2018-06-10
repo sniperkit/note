@@ -134,6 +134,7 @@ export default {
 			self.codemirror.on("cursorActivity", function(cm){
 				var pos = self.codemirror.getCursor();
 				self.$emit("cursorActivity", pos);
+				//self.codemirror.focus();
 			});
 
 			self.codemirror.on("paste", function(cm, e) {

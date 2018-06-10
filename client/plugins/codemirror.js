@@ -8,6 +8,7 @@ import "codemirror/addon/fold/foldgutter.js";
 import "codemirror/addon/fold/foldcode.js";
 import "codemirror/addon/fold/markdown-fold.js";
 import "codemirror/addon/fold/xml-fold.js";
+import 'codemirror/addon/selection/active-line.js';
 
 const CodeMirror = require("codemirror");
 
@@ -37,10 +38,14 @@ const VueCodemirror = require("vue-codemirror");
 vue.use(VueCodemirror, {
 	options: {
 		tabSize:4,
+		line: true,
 		mode:"text/x-markdown",
 		lineNumbers: true,
 		theme:"default",
 		lineWrapping: true,
+		styleActiveLine: true,
+		indentWithTabs: false,
+		matchBrackets: true,
 		foldGutter: true,
 		foldOptions: {
 			rangeFinder: new CodeMirror.fold.combine(CodeMirror.fold.markdown, CodeMirror.fold.xml, CodeMirror.fold.wikiCmdFold),
