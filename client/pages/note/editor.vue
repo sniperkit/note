@@ -6,7 +6,7 @@
 		<el-aside ref="splitStrip1" :width="splitStrip1_width">
 			<left></left>
 		</el-aside>
-		<el-container ref="splitStrip1R">
+		<el-container ref="splitStrip1R" style="min-width:700px">
 			<div class="split-strip kp_forbit_copy" @mousedown="splitStripMousedown('splitStrip1')"></div>
 			<el-aside ref="splitStrip2" :width="splitStrip2_width">
 				<code-editor ref="codemirror"></code-editor>

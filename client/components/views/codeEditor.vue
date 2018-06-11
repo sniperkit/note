@@ -96,13 +96,17 @@ export default {
 				}
 				this.change.timer = setTimeout(function(){
 					self.savePageToDB();
-				}, 5000);
+					self.save();
+				}, 30000);
 			}
 
 			this.page.content = payload.text;
 		},
 
 		async save(payload) {
+			if (!this.$refs.cm) 	return;
+			payload = payload || this.$refs.cm.getValue();
+
 			let {filename, text} = payload;
 			if (!filename) {
 				return;
