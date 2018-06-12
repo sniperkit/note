@@ -110,7 +110,7 @@ export default {
 			this.page.hash = result.hash;
 			this.page.setRefresh(false);
 			this.page.setModify(false);
-			this.savePageToDB();
+			g_app.pageDB.setItem(this.page);
 		},
 
 		fileUploadEvent(file) {
