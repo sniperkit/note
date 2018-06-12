@@ -6,10 +6,9 @@ import util from "../util.js";
 
 
 const qiniuUpload = async (key, file, token, params = {}, observer = {}) => {
-	let data = null;
 	let content = "";
 	if (!token) {
-		data = await api.files.token({
+		const data = await api.files.token({
 			key:key,
 		});
 		if (data.isErr()) {
@@ -40,7 +39,6 @@ const qiniuUpload = async (key, file, token, params = {}, observer = {}) => {
 	//console.log(file);
 
 	const observable = qiniu.upload(file, key, opts.token, opts.putExtra, opts.config);
-
 	const ok = await new Promise((resolve, reject) => {
 		observable.subscribe({
 			next(res) {
@@ -61,14 +59,20 @@ const qiniuUpload = async (key, file, token, params = {}, observer = {}) => {
 				}
 				observer.complete && observer.complete(res);
 				//console.log(res);
-				resolve(true);
+				resolve({
+					hash:res.hash,
+					key:key,
+					size:res.fsize,
+				});
 			}
 		});
 	})
 
 	if (!ok) return;
 
-	return config.origin + "/" + util.getPathByKey(key); 
+	ok.url = config.origin + "/" + util.getPathByKey(key); 
+
+	return ok;
 }
 
 export default qiniuUpload;

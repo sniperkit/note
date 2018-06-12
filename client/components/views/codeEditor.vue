@@ -101,15 +101,16 @@ export default {
 		async save(payload) {
 			if (!this.page || !this.page.path || !this.page.isModify) return ;
 
-			this.page.content = text;
 			this.page.setRefresh(true);
-			const result = await qiniuUpload(this.page.key, text);
+			const result = await qiniuUpload(this.page.key, this.page.content);
 			if (!result) {
 				Message("文件保存失败");
 				return;
 			}
+			this.page.hash = result.hash;
 			this.page.setRefresh(false);
 			this.page.setModify(false);
+			this.savePageToDB();
 		},
 
 		fileUploadEvent(file) {
@@ -140,18 +141,22 @@ export default {
 			}
 			const key = util.getKeyByPath(path);
 			this.loading = true;
-			const url = await qiniuUpload(key, file, null, {
+			const ok = await qiniuUpload(key, file, null, {
 				username,
 				sitename,
 				filename,
 			});
 
-			const cmComp = this.$refs.cm;
-			let content = '['+ this.uploadFilename +'](' + url+')'; 
-			if (isImage){
-				content = "!" + content;	
+			if (ok) {
+				const url = ok.url;
+				const cmComp = this.$refs.cm;
+				let content = '['+ this.uploadFilename +'](' + url+')'; 
+				if (isImage){
+					content = "!" + content;	
+				}
+				cmComp.insertContent(content);
 			}
-			cmComp.insertContent(content);
+
 			this.loading = false;
 		},
 
