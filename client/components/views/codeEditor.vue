@@ -61,12 +61,10 @@ export default {
 
 	methods: {
 		savePageToDB(){
-			if (!this.$refs.cm) 	return;
-			var value = this.$refs.cm.getValue();
+			if (!this.page || !this.page.path || !this.page.isModify) return ;
+			
 			this.change.timer && clearTimeout(this.change.timer);
-			if (this.page && this.page.path) {
-				g_app.pageDB.setItem(this.page);
-			}
+			g_app.pageDB.setItem(this.page);
 		},
 
 		textChange(payload) {
@@ -84,33 +82,25 @@ export default {
 				this.change.filename = payload.filename;
 				// 立即保存切换的后的内容
 				self.savePageToDB();
-				this.change.timer = undefined;
+				self.save();
+				self.change.timer && clearTimeout(self.change.timer);
 			} else {
 				const isModify = this.page.content != payload.text;
 				self.page.setModify(isModify);
 
-				if (this.change.timer) {
-					clearTimeout(this.change.timer);
-				} else {
-					self.savePageToDB(); // 第一次修改 也做立即保存
-				}
-				this.change.timer = setTimeout(function(){
+				self.change.timer && clearTimeout(self.change.timer);
+				self.change.timer = setTimeout(function(){
 					self.savePageToDB();
 					self.save();
-				}, 30000);
+				}, 20000);
 			}
 
 			this.page.content = payload.text;
 		},
 
 		async save(payload) {
-			if (!this.$refs.cm) 	return;
-			payload = payload || this.$refs.cm.getValue();
+			if (!this.page || !this.page.path || !this.page.isModify) return ;
 
-			let {filename, text} = payload;
-			if (!filename) {
-				return;
-			}
 			this.page.content = text;
 			this.page.setRefresh(true);
 			const result = await qiniuUpload(this.page.key, text);
