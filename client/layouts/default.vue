@@ -1,20 +1,12 @@
 <template>
-	<!--<div style="display:flex; height:100%; flex-direction:column;">-->
-		<!--<div style="height:60px;">-->
-			<!--<Header></Header>-->
-		<!--</div>-->
-		<!--<div style="flex:1">-->
-			<!--<nuxt></nuxt>-->
-		<!--</div>-->
-	<!--</div>-->
-	<el-container>
-		<el-header>
+	<div class="defaultContainer">
+		<div class="headerContainer">
 			<Header></Header>
-		</el-header>
-		<el-main>
+		</div>
+		<div class="mainContainer">
 			<nuxt/>
-		</el-main>
-	</el-container>
+		</div>
+	</div>
 </template>
 
 <script>
@@ -39,11 +31,20 @@ export default {
 }
 </script>
 
-<style>
-.el-container, .el-main {
-	height:100%;
+<style scoped>
+.defaultContainer {
+	height: 100%;
 }
-.el-container>.el-header,.el-main,.el-footer{
-	padding:0px;
+
+.headerContainer {
+	height: 60px;
+}
+
+.mainContainer {
+	position: absolute;
+	left: 0px;
+	right: 0px;
+	top:60px;
+	bottom: 0px;
 }
 </style>
