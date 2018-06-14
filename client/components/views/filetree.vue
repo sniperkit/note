@@ -361,7 +361,7 @@ export default {
 		async clickDeleteBtn(data, node) {
 			const path = data.path;
 			const page = this.getPageByPath(path);
-			page.isRefresh = true;
+			page.setRefresh(true);
 			const result = await api.files.delete({key:page.key});
 			if (result.isErr()) {
 				Message(result.getMessage());
@@ -369,9 +369,9 @@ export default {
 			g_app.pageDB.deleteItem(path);
 			delete this.openedPages[path];
 			delete this.pages[path];
-			this.$refs.filetree.remove(node);
-			this.$refs.openedTreeComp.remove(node);
-			page.isRefresh = false;
+			this.$refs.filetree.remove(path);
+			this.$refs.openedTreeComp.remove(path);
+			page.setRefresh(false);
 		},
 	},
 
