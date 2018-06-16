@@ -1,7 +1,7 @@
 <template>
 	<div class="container" style="margin-top:40px">
 		<el-row>
-			<el-col :span="8" :offset="8">
+			<el-col :span="8" :offset="8" :xs="{span:22, offset:1}">
 				<el-form ref="registerForm" :model="registerForm" :rules="registerRules" label-width="80px">
 					<el-form-item label="用户名:" prop="username">
 						<el-input v-model="registerForm.username"></el-input>

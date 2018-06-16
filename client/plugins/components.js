@@ -125,7 +125,10 @@ export const component = {
 		},
 		isAuthenticated() {
 			return isAuthenticated();
-		}
+		},
+		pushName(name) {
+			this.$router.push({name:config.urlPrefix + '-' + name});
+		},
 	},
 
 	beforeMount() {

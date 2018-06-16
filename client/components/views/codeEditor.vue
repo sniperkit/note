@@ -61,12 +61,10 @@ export default {
 
 	methods: {
 		savePageToDB(){
-			if (!this.$refs.cm) 	return;
-			var value = this.$refs.cm.getValue();
+			if (!this.page || !this.page.path || !this.page.isModify) return ;
+			
 			this.change.timer && clearTimeout(this.change.timer);
-			if (this.page && this.page.path) {
-				g_app.pageDB.setItem(this.page);
-			}
+			g_app.pageDB.setItem(this.page);
 		},
 
 		textChange(payload) {
@@ -84,38 +82,35 @@ export default {
 				this.change.filename = payload.filename;
 				// 立即保存切换的后的内容
 				self.savePageToDB();
-				this.change.timer = undefined;
+				self.save();
+				self.change.timer && clearTimeout(self.change.timer);
 			} else {
 				const isModify = this.page.content != payload.text;
 				self.page.setModify(isModify);
 
-				if (this.change.timer) {
-					clearTimeout(this.change.timer);
-				} else {
-					self.savePageToDB(); // 第一次修改 也做立即保存
-				}
-				this.change.timer = setTimeout(function(){
+				self.change.timer && clearTimeout(self.change.timer);
+				self.change.timer = setTimeout(function(){
 					self.savePageToDB();
-				}, 5000);
+					self.save();
+				}, 20000);
 			}
 
 			this.page.content = payload.text;
 		},
 
 		async save(payload) {
-			let {filename, text} = payload;
-			if (!filename) {
-				return;
-			}
-			this.page.content = text;
+			if (!this.page || !this.page.path || !this.page.isModify) return ;
+
 			this.page.setRefresh(true);
-			const result = await qiniuUpload(this.page.key, text);
+			const result = await qiniuUpload(this.page.key, this.page.content);
 			if (!result) {
 				Message("文件保存失败");
 				return;
 			}
+			this.page.hash = result.hash;
 			this.page.setRefresh(false);
 			this.page.setModify(false);
+			g_app.pageDB.setItem(this.page);
 		},
 
 		fileUploadEvent(file) {
@@ -146,18 +141,22 @@ export default {
 			}
 			const key = util.getKeyByPath(path);
 			this.loading = true;
-			const url = await qiniuUpload(key, file, null, {
+			const ok = await qiniuUpload(key, file, null, {
 				username,
 				sitename,
 				filename,
 			});
 
-			const cmComp = this.$refs.cm;
-			let content = '['+ this.uploadFilename +'](' + url+')'; 
-			if (isImage){
-				content = "!" + content;	
+			if (ok) {
+				const url = ok.url;
+				const cmComp = this.$refs.cm;
+				let content = '['+ this.uploadFilename +'](' + url+')'; 
+				if (isImage){
+					content = "!" + content;	
+				}
+				cmComp.insertContent(content);
 			}
-			cmComp.insertContent(content);
+
 			this.loading = false;
 		},
 

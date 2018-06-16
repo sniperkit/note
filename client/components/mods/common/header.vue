@@ -2,47 +2,18 @@
 	<div class="headerContainer">
 		<div class="container full-height flex-col">
 			<div class="flex-row">
-				<div v-show="user.id">
-					<el-dropdown @command="handleCommand" trigger="click">
-						<span class="el-dropdown-link" style="cursor:pointer">
-							{{user.nickname || user.username || "逍遥"}}
-							<i class="el-icon-arrow-down el-icon--right"></i>
-						</span>
-						<el-dropdown-menu slot="dropdown">
-							<el-dropdown-item command="user-profile">我的主页</el-dropdown-item>
-							<el-dropdown-item command="settings">设置</el-dropdown-item>
-							<el-dropdown-item command="editor">编辑器</el-dropdown-item>
-							<el-dropdown-item command="tagModEditor">模块编辑器</el-dropdown-item>
-							<el-dropdown-item divided command="logout">退出</el-dropdown-item>
-						</el-dropdown-menu>
-					</el-dropdown>
-				</div>
-				<div v-show="!user.id">
-					<el-button type="text" @click="clickLoginBtn">登陆</el-button>
-					<el-button type="text" @click="clickRegisterBtn">注册</el-button>
-				</div>
+				<user-link></user-link>
 			</div>
 		</div>
 	</div>
 </template>
 
 <script>
-import vue from "vue";
-import Cookies from 'js-cookie';
 
-import {
-	Button, 
-	Dropdown, 
-	DropdownMenu, 
-	DropdownItem
-} from "element-ui";
-
+import UserLink from  "@/components/bases/userLink.vue";
 export default {
 	components: {
-		[Button.name]: Button,
-		[Dropdown.name]: Dropdown,
-		[DropdownMenu.name]: DropdownMenu,
-		[DropdownItem.name]: DropdownItem,
+		UserLink,
 	},
 
 	data: function() {
@@ -51,26 +22,6 @@ export default {
 	},
 
 	methods: {
-		handleCommand(cmd){
-			if (cmd == "logout") {
-				this.logout();
-				this.$router.push({name: g_app.getRouteName("login")});
-				return;
-			}
-			
-			if (cmd == "user-profile") {
-				this.$router.push({path:"/" + this.user.username});
-				return ;
-			}
-
-			this.$router.push({name: g_app.getRouteName(cmd)});
-		},
-		clickLoginBtn() {
-			this.$router.push({name: g_app.getRouteName("login")});
-		},
-		clickRegisterBtn() {
-			this.$router.push({name: g_app.getRouteName("register")});
-		},
 	},
 
 	mounted() {
@@ -91,6 +42,7 @@ export default {
 
 .flex-row {
 	display: flex;
-	justify-content: flex-end
+	justify-content: flex-end;
+	padding-right: 10px;
 }
 </style>
