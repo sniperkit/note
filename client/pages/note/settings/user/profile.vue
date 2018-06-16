@@ -58,8 +58,8 @@ export default {
 			if (this.portrait) {
 				const name = this.portrait.name;
 				const path= this.user.username +"/portrait" + name.substring(name.lastIndexOf("."));
-				const url = await qiniuUpload(util.getKeyByPath(path), this.portrait);
-				this.userinfo.portrait = url;
+				const data = await qiniuUpload(util.getKeyByPath(path), this.portrait);
+				this.userinfo.portrait = data && data.url;
 			}
 
 			const result = await this.api.users.setBaseInfo(this.userinfo);
