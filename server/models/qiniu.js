@@ -1,12 +1,22 @@
 import axios from "axios";
 import qiniu from "qiniu";
-import config from "../config.js";
-import {ERR, ERR_OK, ERR_PARAMS} from "../../common/error.js";
+
+import config from "@/config.js";
+import {ERR, ERR_OK, ERR_PARAMS} from "@@/common/error.js";
+import {
+	QINIU_AUDIT_STATE_NO_AUDIT,
+	QINIU_AUDIT_STATE_PASS,
+	QINIU_AUDIT_STATE_NOPASS,
+	QINIU_AUDIT_STATE_FAILED,
+} from "@@/common/consts.js";
 
 const accessKey = config.qiniu.accessKey;
 const secretKey = config.qiniu.secretKey;
 const bucketName = config.qiniu.bucketName;
 const bucketDomian = config.qiniu.bucketDomian;
+
+const mac = new qiniu.auth.digest.Mac(accessKey, secretKey);
+const apiUrlPrefix = config.origin + config.apiUrlPrefix;
 
 
 const Qiniu = {
@@ -172,4 +182,51 @@ Qiniu.list = async function(prefix = "", limit = 200, marker) {
 	return result;
 }
 
+Qiniu.imageAudit = async function(key) {
+	const uri = "http://argus.atlab.ai/v1/image/censor";
+	//const imgUrl = "http://7xlv47.com1.z0.glb.clouddn.com/pulpsexy.jpg";
+	const imgUrl = (key.indexOf("http://") == 0 || key.indexOf("https://") == 0) ? key : this.getDownloadUrl(key).getData();
+	const data = {data: {uri:imgUrl}};
+	const signed = qiniu.util.generateAccessTokenV2(mac, uri, "POST", "application/json", JSON.stringify(data));
+	const result = await axios.request({
+		url:uri, 
+		method: "POST",
+		headers: {
+			"Authorization": signed,
+			"Content-Type": "application/json",
+		},
+		data:JSON.stringify(data),
+	}).then(res => res.data);
+
+	if (!result || result.code != 0) return QINIU_AUDIT_STATE_FAILED;
+	if (result.result.label != 0) return QINIU_AUDIT_STATE_NOPASS;
+	return QINIU_AUDIT_STATE_PASS;
+}
+
+Qiniu.videoAudit = async function(id, key = "", async = true) {
+	const uri = "http://argus.atlab.ai/v1/video/" + (id || 0);
+	const videoUrl = (key.indexOf("http://") == 0 || key.indexOf("https://") == 0) ? key : this.getDownloadUrl(key).getData();
+	//const videoUrl = "http://oy41jt2uj.bkt.clouddn.com/97eb5420-708a-11e8-aaf9-f9dea1bb2117.mp4?e=2129423642&token=LYZsjH0681n9sWZqCM4E2KmU6DsJOE7CAM4O3eJq:cny8ZH-tZl4PPMp_sUAn-chowHc=";
+	const data = {
+		data: {uri:videoUrl}, 
+		params: {
+			async: async,
+			hookURL: apiUrlPrefix + "files/audit",
+		},
+		ops:[{op:"pulp"}, {op:"terror"}, {op:"politician"}]
+	};
+	const signed = qiniu.util.generateAccessTokenV2(mac, uri, "POST", "application/json", JSON.stringify(data));
+	const result = await axios.request({
+		url:uri, 
+		method: "POST",
+		headers: {
+			"Authorization": signed,
+			"Content-Type": "application/json",
+		},
+		data:JSON.stringify(data),
+	}).then(res => res.data);
+	
+	console.log(result);
+	return result;
+}
 export default Qiniu;

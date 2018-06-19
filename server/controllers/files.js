@@ -1,11 +1,18 @@
 import _ from "lodash";
 import joi from "joi";
+import axios from "axios";
 import Sequelize from "sequelize";
 import sequelize from "../models/database.js";
 
 import ERR from "../../common/error.js";
 import gitlab from "../../common/api/gitlab.js";
 import util from "../../common/util.js";
+import {
+	QINIU_AUDIT_STATE_NO_AUDIT,
+	QINIU_AUDIT_STATE_PASS,
+	QINIU_AUDIT_STATE_NOPASS,
+	QINIU_AUDIT_STATE_FAILED,
+} from "@@/common/consts.js";
 
 import qiniu from "../models/qiniu.js";
 import filesModel from "../models/files.js";
@@ -248,6 +255,7 @@ Files.prototype.qiniu = async function(ctx) {
 	return ERR.ERR_OK(data);
 }
 
+
 Files.prototype.qiniuImport = async function(ctx) {
 	const params = ctx.state.params;
 	let marker = undefined;
@@ -319,6 +327,84 @@ Files.prototype.transform = async function(ctx) {
 	return ERR.ERR_OK(list);
 }
 
+Files.prototype.audit = async function(ctx) {
+	const params = ctx.state.params;
+	console.log(params);
+	// id 需加密解密
+	const data = util.aesDecode(params.id, config.secret);
+	const result = params.result;
+	const pulp = result.pulp;
+	const terror = result.terror;
+	const politician = result.politician;
+	let auditResult = QINIU_AUDIT_STATE_NO_AUDIT;
+	
+	if (!data || !data.id) {
+		console.log("数据错误");
+		return;
+	}
+	const id = data.id;
+	//console.log(data);
+
+	if (pulp.code != 0 || terror.code != 0 || politician.code != 0) {
+		auditResult = QINIU_AUDIT_STATE_FAILED;
+	} else {
+		const pulpLabels = pulp.result.labels;
+		const terrorLabels = terror.result.labels;
+		const politicianLabels = politician.result.labels;
+
+		let index = _.findIndex(pulpLabels, label => label.label != '2');
+		index = index == -1 && _.findIndex(terrorLabels, label => label.label != '0');
+
+		if (index != -1 || politicianLabels) {
+			auditResult = QINIU_AUDIT_STATE_NOPASS;
+		} else {
+			auditResult = QINIU_AUDIT_STATE_PASS;
+		}
+	}
+
+	console.log(id, auditResult);
+
+	let ok = await this.model.update({
+		checked: auditResult,
+	}, {
+		where: {
+			id: id,
+		}
+	});
+
+	//console.log(ok);
+	//console.log(result.pulp.result);
+	//console.log(result.terror.result);
+	//console.log(result.politician.result);
+}
+
+//Files.prototype.videoAudit = async function(ctx) {
+	//const params = ctx.state.params;
+	//const result = await storage.videoAudit(params.id || 0, params.key, false);
+	//const pulpLabels = result.pulp.labels;
+	//const terrorLabels = result.terror.labels;
+	//const politicianLabels = result.politician.labels;
+	//let auditResult = QINIU_AUDIT_STATE_NO_AUDIT;
+	//let index = _.findIndex(pulpLabels, label => label.label != '2');
+	//index = index == -1 && _.findIndex(terrorLabels, label => label.label != '0');
+
+	//if (index != -1 || politicianLabels) {
+		//auditResult = QINIU_AUDIT_STATE_NOPASS;
+	//} else {
+		//auditResult = QINIU_AUDIT_STATE_PASS;
+	//}
+
+	//return ERR.ERR_OK(auditResult);
+//}
+
+//Files.prototype.imageAudit = async function(ctx) {
+	//const params = ctx.state.params;
+
+	//const result = await storage.imageAudit(params.key);
+
+	//return ERR.ERR_OK(result);
+//}
+
 Files.getRoutes = function() {
 	const self = this;
 	self.pathPrefix = "files";
@@ -332,6 +418,11 @@ Files.getRoutes = function() {
 		path: "qiniuImport",
 		method: "get",
 		action: "qiniuImport",
+	},
+	{
+		path: "audit",
+		method: "post",
+		action: "audit",
 	},
 	{
 		path: "qiniu",
