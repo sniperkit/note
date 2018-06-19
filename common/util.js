@@ -11,8 +11,8 @@ const filetypes = {
 	".png": "images",
 	".svg": "images",
 
-	".mp4": "vedios",
-	".webm": "vedios",
+	".mp4": "videos",
+	".webm": "videos",
 
 	".mp3": "audios",
 	".ogg": "audios",
