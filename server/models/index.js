@@ -1,10 +1,5 @@
 
-import _Sequelize from 'sequelize';
-import _sequelize from "./database.js";
-
-export const Sequelize = _Sequelize;
-export const sequelize = _sequelize;
-
+import models from "./models.js";
 import users from "./users.js";
 import dataSources from "./dataSources.js";
 import files from "./files.js";
@@ -16,7 +11,8 @@ import siteGroups from "./siteGroups.js";
 import siteMembers from "./siteMembers.js";
 import siteFiles from "./siteFiles.js";
 
-export const models = {
+export default {
+	models,
 	users,
 	dataSources,
 	files,
@@ -28,5 +24,3 @@ export const models = {
 	siteMembers,
 	siteFiles
 }
-
-export default models;

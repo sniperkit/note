@@ -1,21 +1,23 @@
 import joi from "joi";
 import _ from "lodash";
 
+import models from "@/models/index.js";
 import ERR from "@@/common/error.js";
 
 export const Controller = class {
 	constructor() {
+		this.modelName = _.camelCase(this.constructor.name);
 	}
 
-	id(ctx) {
-		return parseInt(ctx.params.id);
+	get model() {
+		return models[this.modelName];
 	}
 
 	async find(ctx) {
 		const userId = ctx.state.user.userId;
-		const params = ctx.state.params;
+		const params = ctx.state.params || {};
 
-		_.map(params, (val, key) => {if (val === "") delete params[key];});
+		_.map(params, (val, key) => {if (val === "" || val == undefined) delete params[key];});
 
 		const where = {...params, userId};
 		let result =  await this.model.find({where});
@@ -24,7 +26,7 @@ export const Controller = class {
 	}
 
 	async findOne(ctx) {
-		const id = this.id(ctx);
+		const id = ctx.params.id;
 		const userId = ctx.state.user.userId;
 		let result = await this.model.findOne({
 			where: {
@@ -48,10 +50,10 @@ export const Controller = class {
 	}
 
 	async delete(ctx) {
-		const id = this.id(ctx);
+		const id = ctx.params.id;
 		const userId = ctx.state.user.userId;
 
-		let result = await this.model.delete({
+		let result = await this.model.destroy({
 			where: {
 				userId,
 				id,
@@ -63,7 +65,7 @@ export const Controller = class {
 
 	async update(ctx) {
 		const params = ctx.state.params;
-		const id = this.id(ctx);
+		const id = ctx.params.id;
 		const userId = ctx.state.user.userId;
 		
 		params.userId = userId;
@@ -80,8 +82,10 @@ export const Controller = class {
 	static getRoutes() {
 		const routes = [
 		{
+			path: "",
 			method: "GET",
 			action: "find",
+			authentated: true,
 		},
 		{
 			path: ":id",
@@ -95,6 +99,7 @@ export const Controller = class {
 			}
 		},
 		{
+			path: "",
 			method: "POST",
 			action: "create",
 			authentated: true,

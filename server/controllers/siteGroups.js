@@ -1,7 +1,7 @@
 import joi from "joi";
 
 import Controller from "@/controllers/controller.js";
-import { models , sequelize} from "@/models";
+import models from "@/models";
 
 import consts from "@@/common/consts.js";
 import ERR from "@@/common/error.js";
@@ -24,17 +24,17 @@ export const SiteGroups = class extends Controller {
 
 		params.userId = userId;
 
-		let result = await sitesModel:findOne({
+		let result = await sitesModel.findOne({
 			where: {
 				userId: userId,
-				siteId: params.siteId,
+				id: params.siteId,
 			}
 		});
 
 		if (!result) return ERR.ERR_PARAMS();
 
 
-		let result = await this.model.create(params);
+		result = await this.model.create(params);
 
 		return ERR.ERR_OK(result);
 	}
@@ -44,6 +44,7 @@ export const SiteGroups = class extends Controller {
 		this.pathPrefix = "siteGroups";
 		const baseRoutes = super.getRoutes();
 		const routes = [
+		{
 			method: "POST",
 			action: "create",
 			authentated: true,
@@ -53,8 +54,8 @@ export const SiteGroups = class extends Controller {
 					level: joi.number().required(),
 					groupId: joi.number().required(),
 				},
-			}
-
+			},
+		},
 		];
 
 		return routes.concat(baseRoutes);

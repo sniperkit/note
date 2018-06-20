@@ -1,7 +1,9 @@
 import joi from "joi";
 
-import Controller from "./controller.js";
-import { models , sequelize} from "../models";
+import sequelize from "@/models/database.js";
+import Controller from "@/controllers/controller.js";
+import models from "@/models";
+
 import consts from "@@/common/consts.js";
 import ERR from "@@/common/error.js";
 
@@ -15,8 +17,6 @@ const USER_ACCESS_LEVEL_WRITE = consts.USER_ACCESS_LEVEL.USER_ACCESS_LEVEL_WRITE
 export const Groups = class extends Controller {
 	constructor() {
 		super();
-
-		this.model = groupsModel;
 	}
 	//
 	async createMember(ctx) {

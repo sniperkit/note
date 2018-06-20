@@ -1,7 +1,7 @@
 import joi from "joi";
 
-import Controller from "./controller.js";
-import { models , sequelize} from "@/models";
+import Controller from "@/controllers/controller.js";
+import models from "@/models";
 
 const userModel = models["users"];
 const groupMembersModel = models["groupMembers"];
@@ -11,8 +11,6 @@ import ERR from "@@/common/error.js";
 export const GroupMembers = class extends Controller {
 	constructor() {
 		super();
-
-		this.model = groupMembersModel;
 	}
 
 	async create(ctx) {
@@ -32,10 +30,6 @@ export const GroupMembers = class extends Controller {
 		let result = await this.model.create(params);
 
 		return ERR.ERR_OK(result);
-	}
-
-	async update(ctx) {
-
 	}
 
 	static getRoutes() {
@@ -60,7 +54,5 @@ export const GroupMembers = class extends Controller {
 		return routes.concat(baseRoutes);
 	}
 }
-
-
 
 export default GroupMembers;
