@@ -77,8 +77,9 @@ const sites = sequelize.define('sites', {
 		allowNull: false,
 	},
 
-	level: {
-		type: Sequelize.INTEGER,
+	visibility: {
+		type: Sequelize.STRING(12), // public private
+		defaultValue: "public",
 	},
 
 	description: {
@@ -92,6 +93,37 @@ const sites = sequelize.define('sites', {
 	//console.log("create site table successfully");
 //});
 
+
+// 站点域名
+export const domains = sequelize.define("domains", {
+	id: {
+		type: Sequelize.BIGINT,
+		autoIncrement: true,
+		primaryKey: true,
+	},
+	
+	domain: {
+		type: Sequelize.STRING(32),
+		unique: true,
+		allowNull: false,
+	},
+
+	userId: {
+		type: Sequelize.BIGINT,
+		allowNull: false,
+	},
+
+	siteId: {
+		type: Sequelize.BIGINT,
+		allowNull: false,
+	},
+}, {
+	charset: "utf8mb4",
+	collate: 'utf8mb4_bin',
+});
+//domains.sync({force:true}).then(() => {
+	//console.log("create site table successfully");
+//});
 
 // 状态表
 export const states = sequelize.define("states", {
@@ -256,10 +288,52 @@ export const siteGroups = sequelize.define("siteGroups", {
   //console.log("create files table successfully");
 //});
 
+
+// 收藏表
+export const favorites = sequelize.define("favorites", {
+	id: {
+		type: Sequelize.BIGINT,
+		autoIncrement: true,
+		primaryKey: true,
+	},
+
+	userId: {
+		type: Sequelize.BIGINT,
+		allowNull: false,
+	},
+
+	favoriteId: {
+		type: Sequelize.BIGINT,
+		allowNull: false,
+	},
+
+	type: {
+		type: Sequelize.INTEGER,
+		allowNull: false,
+	},
+}, {
+	charset: "utf8mb4",
+	collate: 'utf8mb4_bin',
+
+	indexes: [
+	{
+		unique: true,
+		fields: ["userId", "favoriteId", "type"],
+	},
+	],
+});
+//favorites.sync({force:true}).then(() => {
+  //console.log("create files table successfully");
+//});
+
+
 export default {
 	users,
 	sites,
+	states,
+	domains,
 	groups,
 	groupMembers,
 	siteGroups,
+	favorites,
 };

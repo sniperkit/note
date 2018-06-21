@@ -13,8 +13,9 @@ import files from "./files.js";
 import sites from "./sites.js";
 import siteFiles from "./siteFiles.js";
 import siteGroups from "./siteGroups.js";
-import Groups from "./groups.js";
-import GroupMembers from "./groupMembers.js";
+import groups from "./groups.js";
+import groupMembers from "./groupMembers.js";
+import domains from "./domains.js";
 
 export const controllers = {
 	code,
@@ -27,8 +28,9 @@ export const controllers = {
 	sites,
 	siteFiles,
 	siteGroups,
-	Groups,
-	GroupMembers,
+	groups,
+	groupMembers,
+	domains,
 }
 
 const getParams = (ctx) => {

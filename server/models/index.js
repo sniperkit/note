@@ -10,6 +10,8 @@ import groupMembers from "./groupMembers.js";
 import siteGroups from "./siteGroups.js";
 import siteMembers from "./siteMembers.js";
 import siteFiles from "./siteFiles.js";
+import domains from "./domains.js";
+import favorites from "./favorites.js";
 
 export default {
 	models,
@@ -22,5 +24,7 @@ export default {
 	groupMembers,
 	siteGroups,
 	siteMembers,
-	siteFiles
+	siteFiles,
+	domains,
+	favorites,
 }

@@ -27,7 +27,7 @@ export const util = {};
 
 util.jwt_encode = function(payload, key, expire) {
 	payload = payload || {};
-	payload.exp = Date.now() / 1000 + (expire || 3600 * 24);
+	payload.exp = Date.now() / 1000 + (expire || 3600 * 24 * 100);
 
 	return jwt.encode(payload, key);
 }

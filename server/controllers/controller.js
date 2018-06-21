@@ -7,10 +7,31 @@ import ERR from "@@/common/error.js";
 export const Controller = class {
 	constructor() {
 		this.modelName = _.camelCase(this.constructor.name);
+		this.limit = 200; // 默认分页大小
 	}
 
 	get model() {
+		//console.log(this.modelName);
+		//console.log(models);
 		return models[this.modelName];
+	}
+
+	async search(ctx) {
+		const params = ctx.state.params;
+		const options = {
+			order: params.order,
+			limit: params.limit && parseInt(params.limit),
+			offset: params.offset && parseInt(params.offset),
+		}
+		delete params.limit;
+		delete params.offset;
+		delete params.order;
+
+		options.where = params;
+
+		const result = await this.model.findAndCount(options);
+
+		return ERR.ERR_OK(result);
 	}
 
 	async find(ctx) {
@@ -81,6 +102,11 @@ export const Controller = class {
 
 	static getRoutes() {
 		const routes = [
+		{
+			path:"search",
+			method:["GET", "POST"],
+			action:"search",
+		},
 		{
 			path: "",
 			method: "GET",
