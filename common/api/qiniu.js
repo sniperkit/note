@@ -17,7 +17,7 @@ const qiniuUpload = async (key, file, token, params = {}, observer = {}) => {
 		token = data.getData();
 	}
 
-	if (typeof(file) == "string") {
+	if (typeof(file) == "string" && util.isPage(key)) {
 		content = file;
 		file = new Blob([file], {type: "text/plain"});
 	}
@@ -52,6 +52,9 @@ const qiniuUpload = async (key, file, token, params = {}, observer = {}) => {
 				//console.log(err);
 			},
 			async complete(res){
+				if (util.isPage(key)) {
+					api.pages.upsert({key:res.key, hash:res.hash, text:content, folder:util.getFolderByKey(key)});
+				}
 				const result = await api.files.qiniu({key:res.key, size:res.fsize, hash:res.hash, content});
 				if (result.isErr()) {
 					observer.error && observer.error();

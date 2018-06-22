@@ -1,11 +1,13 @@
 import _ from "lodash";
 import joi from "joi";
+import cache from 'memory-cache';
+import md5 from "blueimp-md5";
 
 import models from "@/models";
 import Controller from "@/controllers/controller.js";
 
 import util from "@@/common/util.js";
-import {ERR, ERR_OK, ERR_PARAMS} from "@@/common/error.js";
+import ERR from "@@/common/error.js";
 import config from "@/config.js";
 
 const userModel = models["users"];
@@ -15,29 +17,28 @@ export const Users = class extends Controller {
 		super();
 	}
 
-	async setBaseInfo(ctx) {
+	async update(ctx) {
+		const id = ctx.params.id;
+		const userId = ctx.state.user.userId;
 		const params = ctx.state.params;
 
-		const data = this.model.update(params, {
-			where: {
-				username: params.username,
-			},
-			fields: ["nickname", "sex", "description", "portrait"],
-		});
+		delete params.password;
 
-		if (!data) {
-			return ERR().setMessage("更新失败");
-		}
+		if (id != userId) return ERR.ERR_NO_PERMISSION();
 
-		return ERR_OK();
+		return await this.model.update(params, {where:{id:userId}});
 	}
 
-	async update(ctx) {
-		return await this.setBaseInfo(ctx);
+	async findById(ctx) {
+		const id = ctx.params.id;
+		
+		const result =  await this.model.findOne({where:{id}});
+
+		return ERR.ERR_OK(result);
 	}
 
 	async register(ctx) {
-		const params = ctx.request.body;
+		const params = ctx.state.params;
 		const usernameReg = /^[\w\d]+$/;
 		if (!usernameReg.test(params.username)) {
 			return ERR_PARAMS();
@@ -48,14 +49,14 @@ export const Users = class extends Controller {
 			},
 		});
 		
-		if (user) 	return ERR().setMessage("用户已存在");
+		if (user) 	return ERR.ERR().setMessage("用户已存在");
 
 		user = await this.model.create({
 			username: params.username,
 			password: params.password,
 		});
 
-		if (!user) return ERR();
+		if (!user) return ERR.ERR();
 		user = user.get({plain:true});
 
 		const token = util.jwt_encode({
@@ -65,7 +66,7 @@ export const Users = class extends Controller {
 
 		user.token = token;
 
-		return ERR_OK().setData(user);
+		return ERR.ERR_OK().setData(user);
 	}
 
 	async login(ctx) {
@@ -73,12 +74,12 @@ export const Users = class extends Controller {
 		let user = await this.model.findOne({
 			where: {
 				username: params.username,
-				password: params.password,
+				password: md5(params.password),
 			},
 		});
 		
 		if (!user) {
-			return ERR().setMessage("用户名或密码错误");
+			return ERR.ERR().setMessage("用户名或密码错误");
 		}
 
 		user = user.get({plain:true});
@@ -90,26 +91,26 @@ export const Users = class extends Controller {
 
 		user.token = token;
 
-		return ERR_OK().setData(user);
+		return ERR.ERR_OK().setData(user);
 	}
 
-	async modifyPassword(ctx) {
+	async changepwd(ctx) {
 		const params = ctx.state.params;
-		const username = ctx.state.user.username;
+		const userId = ctx.state.user.userId;
 
 		const result = await this.model.update({
 			password: params.newpassword,
 		}, {
 			where: {
-				username: username,
-				password: params.oldpassword,
+				userId: userId,
+				password: md5(params.oldpassword),
 			}
 		});
 
-		if (!result) return ERR();
-		if (result[0] == 0) return ERR().setMessage("密码错误");
+		if (!result) return ERR.ERR();
+		if (result[0] == 0) return ERR.ERR().setMessage("密码错误");
 
-		return ERR_OK();
+		return ERR.ERR_OK();
 	}
 
 	async search(ctx) {
@@ -130,18 +131,27 @@ export const Users = class extends Controller {
 			where,
 		});
 	
-		return ERR_OK(result);
+		return ERR.ERR_OK(result);
 	}
 
 	static getRoutes() {
 		this.pathPrefix = "users";
-		const baseRoutes = super.getRoutes();
 
 		const routes = [
 		{
 			path: "search",
 			method: "GET",
 			action: "search",
+		},
+		{
+			path: ":id",
+			method: "GET",
+			action: "findById",
+			validate: {
+				params: {
+					id: joi.number().required(),
+				},
+			}
 		},
 		{
 			path: ":id",
@@ -155,15 +165,9 @@ export const Users = class extends Controller {
 			}
 		},
 		{
-			path: "modifyPassword",
-			method: "put",
-			action: "modifyPassword",
-			authenticated: true,
-		},
-		{
-			path: "setBaseInfo",
-			method: "put",
-			action: "setBaseInfo",
+			path: ":id/changepwd",
+			method: ["POST", "PUT"],
+			action: "changepwd",
 			authenticated: true,
 		},
 		{
@@ -191,7 +195,6 @@ export const Users = class extends Controller {
 		];
 
 		return routes;
-		//return routes.concat(baseRoutes);
 	}
 }
 

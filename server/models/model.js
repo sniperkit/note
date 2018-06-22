@@ -1,5 +1,8 @@
 import _ from "lodash";
 
+import Sequelize from 'sequelize';
+import sequelize from "./database.js";
+
 import models from "./models.js";
 
 class Model {
@@ -9,6 +12,12 @@ class Model {
 				delete where[key];
 			}
 		}
+	}
+
+	wrapOptions(options) {
+		Model.filterWhere(options.where);
+		options.attributes = options.attributes || {};
+		options.attributes.exclude = options.attributes.exclude || this.exclude;
 	}
 
 	constructor() {
@@ -33,30 +42,38 @@ class Model {
 	}
 
 	async update(...args) {
-		return await this.model.upsert(...args);
+		return await this.model.update(...args);
 	}
 
 	async find(options) {
-		Model.filterWhere(options.where);
+		this.wrapOptions(options);
+		
 		return await this.model.findAll(options);	
 	}
 
 	async findAll(options) {
-		Model.filterWhere(options.where);
+		this.wrapOptions(options);
 		return await this.model.findAll(options);	
 	}
 
 	async findAndCount(options) {
-		Model.filterWhere(options.where);
+		this.wrapOptions(options);
 		return await this.model.findAndCount(options);	
 	}
 
-	async findOne(...args) {
-		return await this.model.findOne(...args);	
+	async findOne(options) {
+		this.wrapOptions(options);
+		return await this.model.findOne(options);	
 	}
 
 	async upsert(...args) {
 		return await this.model.upsert(...args);	
+	}
+
+	async query(sql, options) {
+		options = options || {};
+		options.type = options.type || sequelize.QueryTypes.SELECT;
+		return await sequelize.query(sql, options);
 	}
 }
 

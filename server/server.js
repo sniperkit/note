@@ -38,6 +38,14 @@ export default (app, views) => {
 
 	app.use(async (ctx, next) => {
 		const path = ctx.request.path;
+		const method = ctx.request.method;
+
+		if (method.toUpperCase() != "GET") {
+			ctx.status = 404;
+			ctx.body = "Not Found";
+			return;
+		}
+
 		const excludeList = [
 			"/_",
 			"/favicon.ico",

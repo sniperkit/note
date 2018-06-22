@@ -1,8 +1,8 @@
 
 // 用户访问权限
-export const USER_ACCESS_LEVEL_NONE = 1;
-export const USER_ACCESS_LEVEL_READ = 2;
-export const USER_ACCESS_LEVEL_WRITE = 4;
+export const USER_ACCESS_LEVEL_NONE = 0;
+export const USER_ACCESS_LEVEL_READ = 30;
+export const USER_ACCESS_LEVEL_WRITE = 40;
 export const USER_ACCESS_LEVEL = {
 	USER_ACCESS_LEVEL_NONE,
 	USER_ACCESS_LEVEL_READ,
@@ -32,15 +32,16 @@ export const ENITY_TYPE = {
 }
 
 // 站点可见性
-export const SITE_VISIBILITY_PUBLIC = 0; // 公开
-export const SITE_VISIBILITY_PRIVATE = 1; // 私有
-export const SITE_VISIBILITY = {
-	SITE_VISIBILITY_PUBLIC,
-	SITE_VISIBILITY_PRIVATE,
+export const ENITY_VISIBILITY_PUBLIC = 0; // 公开
+export const ENITY_VISIBILITY_PRIVATE = 1; // 私有
+export const ENITY_VISIBILITY = {
+	ENITY_VISIBILITY_PUBLIC,
+	ENITY_VISIBILITY_PRIVATE,
 }
 
 export default {
 	USER_ACCESS_LEVEL,
 	QINIU_AUDIT_STATE,
 	ENITY_TYPE,
+	ENITY_VISIBILITY,
 }

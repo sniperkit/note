@@ -44,6 +44,10 @@ util.getTypeByKey = function(key) {
 	return "files";
 }
 
+util.isPage = function(key) {
+	return this.getTypeByKey(key) == "pages";
+}
+
 util.getUsernameByKey = function(key) {
 	return key.substring(0, key.indexOf("/"));
 }

@@ -7,30 +7,30 @@ import code from "./code.js";
 import oauth from "./oauth.js";
 import users from "./users.js";
 import dataSource from "./dataSource.js";
-import gitlab from "./gitlab.js"; 
+import siteDataSources from "./siteDataSources.js";
 import qiniu from "./qiniu.js";
 import files from "./files.js";
 import sites from "./sites.js";
-import siteFiles from "./siteFiles.js";
 import siteGroups from "./siteGroups.js";
 import groups from "./groups.js";
 import groupMembers from "./groupMembers.js";
 import domains from "./domains.js";
+import pages from "./pages.js";
 
 export const controllers = {
 	code,
 	oauth,
 	users,
 	dataSource,
-	gitlab,
+	siteDataSources,
 	qiniu,
 	files,
 	sites,
-	siteFiles,
 	siteGroups,
 	groups,
 	groupMembers,
 	domains,
+	pages,
 }
 
 const getParams = (ctx) => {
@@ -74,8 +74,16 @@ export const registerControllerRouter = function(router) {
 						ctx.body = body || ctx.body;
 					} catch(e) {
 						console.log(e);
+						console.log(e.name);
 						ctx.status = 500;
-						ctx.body = "请求无法处理";
+
+						if (e.name == "SequelizeUniqueConstraintError") {
+							ctx.body = "记录已存在";
+						} else if(e.name == "SequelizeValidationError") {
+							ctx.body = "参数错误";
+						}else {
+							ctx.body = "请求无法处理";
+						}
 					}
 					//console.log(ctx.body);
 				});

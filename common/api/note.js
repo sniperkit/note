@@ -41,6 +41,7 @@ function initHttpOptions(self, options = {}, prefix, key = "id") {
 	self.restRequest = (method = "get", url) => (data, config) => httpRequest(method, getUrl(prefix, url, true, data, key), data, Object.assign(self.options, config));
 
 	// rest api
+	self.upsert = self.apiRequest("post", "upsert");
 	self.create = self.apiRequest("post");
 	self.update = self.restRequest("put");
 	self.delete = self.restRequest("delete");
@@ -120,6 +121,12 @@ export function Sites(options) {
 	self.get = self.restRequest("get");
 }
 
+export function Pages(options) {
+	const self = this;
+
+	initHttpOptions(self, options, "pages", "id");
+}
+
 export function Groups(options) {
 	const self = this;
 
@@ -151,6 +158,7 @@ export function Notes(options = {}){
 	self.users = new Users(self.options);
 	self.files = new Files(self.options);
 	self.sites = new Sites(self.options);
+	self.pages = new Pages(self.options);
 	self.groups = new Groups(self.options);
 	self.groupMembers = new GroupMembers(self.options);
 }

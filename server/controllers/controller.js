@@ -70,6 +70,16 @@ export const Controller = class {
 		return ERR.ERR_OK(result);
 	}
 
+	async upsert(ctx) {
+		const params = ctx.state.params;
+		const userId = ctx.state.user.userId;
+		params.userId = userId;
+
+		let result = await this.model.upsert(params);
+
+		return ERR.ERR_OK(result);
+	}
+
 	async delete(ctx) {
 		const id = ctx.params.id;
 		const userId = ctx.state.user.userId;
@@ -102,6 +112,11 @@ export const Controller = class {
 
 	static getRoutes() {
 		const routes = [
+		{
+			path:"upsert",
+			method:["PUT", "POST"],
+			action:"upsert",
+		},
 		{
 			path:"search",
 			method:["GET", "POST"],

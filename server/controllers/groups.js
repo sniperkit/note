@@ -18,6 +18,7 @@ export const Groups = class extends Controller {
 	constructor() {
 		super();
 	}
+
 	//
 	async createMember(ctx) {
 		const params = ctx.state.params;
@@ -90,11 +91,6 @@ export const Groups = class extends Controller {
 			method: "GET",
 			action: "findMembers",
 			authentated: true,
-			validate: {
-				params: {
-					id: joi.number().required(),
-				},
-			}
 		},
 		{
 			path: ":id/members",
@@ -125,77 +121,8 @@ export const Groups = class extends Controller {
 		}
 		];
 
-		return baseRoutes.concat(routes);
+		return routes.concat(baseRoutes);
 	}
 }
-
-//Groups.prototype.find = async function(ctx) {
-	//const userId = ctx.state.user.userId;
-
-	//let result = await this.model.findAll({
-		//where: {
-			//userId: userId,
-		//}
-	//});
-
-	//return ERR.ERR_OK(result);
-//}
-
-//Groups.prototype.findOne = async function(ctx) {
-	//const id = ctx.params.id;
-	//const userId = ctx.state.user.userId;
-
-	//let data = this.model.findOne({
-		//where: {
-			//id: id,
-			//userId: userId,
-		//}
-	//});
-
-	//return ERR.ERR_OK(data);
-//}
-
-//Groups.prototype.create = async function(ctx) {
-	//const params = ctx.state.params;
-	//const userId = ctx.state.user.userId;
-	//params.userId = userId;
-	
-	//let data = await this.model.create(params);
-
-	////data = data.get({plain:true});
-
-	//return ERR.ERR_OK(data);
-//}
-
-//Groups.prototype.update = async function(ctx) {
-	//const params = ctx.state.params;
-	//const id = ctx.params.id;
-	//const userId = ctx.state.user.userId;
-
-	//let data = await this.model.update(params, {
-		//where: {
-			//id: id,
-			//userId: userId,
-		//}
-	//})
-
-	//return ERR.ERR_OK(data);
-//}
-
-//Groups.prototype.delete = async function(ctx) {
-	//const id = ctx.params.id;
-	//const userId = ctx.state.user.userId;
-
-	//let data = await this.model.destroy({
-		//where: {
-			//id: id,
-			//userId: userId,
-		//}
-	//})
-
-	//return ERR.ERR_OK(data);
-//}
-
-
 
 export default Groups;

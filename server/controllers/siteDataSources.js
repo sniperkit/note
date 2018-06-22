@@ -8,7 +8,7 @@ import models from "@/models";
 import consts from "@@/common/consts.js";
 import ERR from "@@/common/error.js";
 
-export const DataSources = class extends Controller {
+export const SiteDataSources = class extends Controller {
 	// 构造函数
 	constructor() {
 		super();
@@ -16,7 +16,7 @@ export const DataSources = class extends Controller {
 
 	// 注册路由
 	static getRoutes() {
-		this.pathPrefix = "dataSources";
+		this.pathPrefix = "siteDataSources";
 		const baseRoutes = super.getRoutes();
 		const routes = [
 		];
@@ -25,4 +25,4 @@ export const DataSources = class extends Controller {
 	}
 }
 
-export default DataSources;
+export default SiteDataSources;

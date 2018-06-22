@@ -1,6 +1,4 @@
-import _ from "lodash";
 import joi from "joi";
-import jwt from "jwt-simple";
 
 import Controller from "@/controllers/controller.js";
 import models from "@/models";
@@ -8,16 +6,16 @@ import models from "@/models";
 import consts from "@@/common/consts.js";
 import ERR from "@@/common/error.js";
 
-export const DataSources = class extends Controller {
-	// 构造函数
+export const Pages = class extends Controller {
 	constructor() {
 		super();
 	}
 
-	// 注册路由
+
 	static getRoutes() {
-		this.pathPrefix = "dataSources";
+		this.pathPrefix = "pages";
 		const baseRoutes = super.getRoutes();
+
 		const routes = [
 		];
 
@@ -25,4 +23,4 @@ export const DataSources = class extends Controller {
 	}
 }
 
-export default DataSources;
+export default Pages;

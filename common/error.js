@@ -3,7 +3,7 @@ import _ from "lodash";
 export const Err = function(code, message, data) {
 	this.code = code || 0;
 	this.message = message || "OK";
-	this.data = data || null; // 请求数据
+	this.data = data; // 请求数据
 }
 
 Err.prototype.setMessage = function(message = "OK"){
@@ -57,6 +57,7 @@ export default {
 	ERR_PARAMS,
 	ERR_UNATUH,
 	ERR_NOT_FOUND,
+	ERR_NO_PERMISSION,
 };
 
 

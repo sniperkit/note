@@ -13,28 +13,17 @@ export const SiteGroups = class extends Controller {
 	// 构造函数
 	constructor() {
 		super();
-
-		this.model = siteGroupsModel;
 	}
 
-	// 创建记录
-	async create(ctx) {
-		const params = ctx.state.params;
+	async find(ctx) {
 		const userId = ctx.state.user.userId;
+		const sql = "select siteGroups.id, siteGroups.siteId, siteGroups.level, groups.groupname from siteGroups, groups where siteGroups.groupId = groups.id and siteGroups.userId = :userId";
 
-		params.userId = userId;
-
-		let result = await sitesModel.findOne({
-			where: {
-				userId: userId,
-				id: params.siteId,
+		const result = await this.model.query(sql, {
+			replacements:{
+				userId:userId,
 			}
 		});
-
-		if (!result) return ERR.ERR_PARAMS();
-
-
-		result = await this.model.create(params);
 
 		return ERR.ERR_OK(result);
 	}
@@ -44,18 +33,6 @@ export const SiteGroups = class extends Controller {
 		this.pathPrefix = "siteGroups";
 		const baseRoutes = super.getRoutes();
 		const routes = [
-		{
-			method: "POST",
-			action: "create",
-			authentated: true,
-			validate: {
-				body: {
-					siteId: joi.number().required(),
-					level: joi.number().required(),
-					groupId: joi.number().required(),
-				},
-			},
-		},
 		];
 
 		return routes.concat(baseRoutes);

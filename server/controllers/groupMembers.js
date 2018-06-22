@@ -3,6 +3,8 @@ import joi from "joi";
 import Controller from "@/controllers/controller.js";
 import models from "@/models";
 
+import sequelize from "@/models/database.js";
+
 const userModel = models["users"];
 const groupMembersModel = models["groupMembers"];
 
@@ -17,7 +19,7 @@ export const GroupMembers = class extends Controller {
 		const params = ctx.state.params;
 		params.userId = ctx.state.user.userId;
 
-		const user = userModel.findOne({
+		const user = await userModel.findOne({
 			where: {
 				id: params.memberId,
 			}
@@ -30,6 +32,24 @@ export const GroupMembers = class extends Controller {
 		let result = await this.model.create(params);
 
 		return ERR.ERR_OK(result);
+	}
+
+	async findOne(ctx) {
+		const id = ctx.params.id;
+		const userId = ctx.state.user.userId;
+		let sql = `select groupMembers.id, groupMembers.userId, groupMembers.groupId, groupMembers.level, groups.groupname, users.username, users.nickname, users.portrait 
+				   from groupMembers, groups, users 
+				   where groupMembers.groupId = groups.id and groupMembers.memberId = users.id 
+				   and groupMembers.id=:id and groupMembers.userId = :userId`;
+
+		let result = await this.model.query(sql, {
+			replacements: {
+				userId:userId,
+				id:id,
+			}
+		});
+
+		return ERR.ERR_OK(result[0]);
 	}
 
 	static getRoutes() {
@@ -46,6 +66,17 @@ export const GroupMembers = class extends Controller {
 					memberId: joi.number().required(),
 					level: joi.number().required(),
 					groupId: joi.number().required(),
+				},
+			}
+		},
+		{
+			path: ":id",
+			method: "GET",
+			action: "findOne",
+			authentated: true,
+			validate: {
+				params: {
+					id: joi.number().required(),
 				},
 			}
 		},

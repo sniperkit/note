@@ -30,6 +30,7 @@
   "dependencies": {
     "@koa/cors": "^2.2.1",
     "axios": "^0.18.0",
+    "blueimp-md5": "^2.10.0",
     "clipboard": "^2.0.1",
     "codemirror": "^5.37.0",
     "cross-env": "^5.0.1",
@@ -47,6 +48,7 @@
     "koa-router": "^7.4.0",
     "koa-static": "^4.0.2",
     "lodash": "^4.17.5",
+    "memory-cache": "^0.2.0",
     "mxgraph": "^3.9.3",
     "mysql2": "^1.5.3",
     "node-gitlab-api": "^3.0.2",

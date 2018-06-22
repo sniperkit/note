@@ -17,7 +17,7 @@ const Files = sequelize.define("files", {
 		type: Sequelize.STRING(256),
 	},
 
-	level: {   // 是否公开
+	visibility: {   // 是否公开
 		type: Sequelize.INTEGER,
 	},
 
