@@ -79,15 +79,14 @@ export function Qiniu(options) {
 export function Users(options) {
 	const self = this;
 
-	initHttpOptions(self, options);
+	initHttpOptions(self, options, "users", "id");
 
 	const apiRequest = (method, url) => (data, config) => httpRequest(method || "get", url, data, Object.assign(self.options, config));
 
 
 	self.login = apiRequest("post", "users/login");
 	self.register = apiRequest("post", "users/register");
-	self.setBaseInfo = apiRequest("put", "users/setBaseInfo");
-	self.modifyPassword = apiRequest("put", "users/modifyPassword");
+	self.changepwd = apiRequest("put", "users/changepwd");
 	self.isLogin = apiRequest("get", "users/isLogin");
 }
 

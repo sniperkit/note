@@ -1,5 +1,5 @@
 <template>
-	<div style="height:100%" v-loading="loading" element-loading-text="文件上传中...">
+	<div style="height:100%; width:100%" v-loading="loading" element-loading-text="文件上传中...">
 		<el-dialog title="文件上传" :visible.sync="fileUploadDialogVisible" width="500px">
 			<div style="color:red; margin-top:-20px; margin-bottom:10px"><b>存在同名文件会覆盖</b></div>
 			<el-input v-model="uploadFilename" placeholder="请输入文件名"></el-input>
@@ -96,9 +96,10 @@ export default {
 			}
 
 			this.page.content = payload.text;
+			this.page.cursor = this.codemirror.getDoc().getCursor();
 		},
 
-		async save(payload) {
+		async save() {
 			if (!this.page || !this.page.path || !this.page.isModify) return ;
 
 			this.page.setRefresh(true);
@@ -161,7 +162,10 @@ export default {
 		},
 
 		cursorActivity() {
+			const self = this;
+			if (!self.page) return ;
 
+			self.page.cursor = self.codemirror && self.codemirror.getDoc().getCursor();
 		},
 	},
 
@@ -175,6 +179,10 @@ export default {
 		g_app.vue.$on(g_app.consts.EVENT_ADD_MOD_TO_EDITOR, function(style){
 			self.value = self.$refs.cm.getValue();
 			self.value.text += '\n```@' + style.modName + '/' + style.styleName + '\n' +'```\n';
+		});
+
+		self.on(self.EVENTS.__EVENT__CODEMIRROR__IN__SAVE__, function() {
+			self.save();
 		});
 
 		self.on(self.EVENTS.__EVENT__CODEMIRROR__IN__PAGE__, function(data) {

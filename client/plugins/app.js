@@ -20,6 +20,7 @@ config.baseURL = window.location.origin + config.apiUrlPrefix;
 noteEndpoint.options.baseURL = config.baseURL;
 
 const app = {
+	isSmallScreen: window.innerWidth < 768,
 	object:{},
 	yaml,
 	events,

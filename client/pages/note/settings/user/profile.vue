@@ -62,7 +62,7 @@ export default {
 				this.userinfo.portrait = data && data.url;
 			}
 
-			const result = await this.api.users.setBaseInfo(this.userinfo);
+			const result = await this.api.users.update(this.userinfo);
 			if (result.isErr()) {
 				Message(result.getMessage());
 				return;

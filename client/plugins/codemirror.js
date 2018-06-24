@@ -46,6 +46,7 @@ vue.use(VueCodemirror, {
 		styleActiveLine: true,
 		indentWithTabs: false,
 		matchBrackets: true,
+		autofocus: true,
 		foldGutter: true,
 		foldOptions: {
 			rangeFinder: new CodeMirror.fold.combine(CodeMirror.fold.markdown, CodeMirror.fold.xml, CodeMirror.fold.wikiCmdFold),

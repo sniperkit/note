@@ -2,12 +2,12 @@
 	<div class="layoutContainer">
 		<div class="headerContainer">
 			<div class="container full-height">
-				<div style="position:relative; padding:10px;">
-					<el-button @click="clickSaveBtn" :size="btnSize" round plain type="primary" icon="iconfont icon-save"></el-button>
-					<el-button-group v-if="isSmallScreen">
-						<el-button round :type="viewMode == 'files' ? 'primary' : 'text'" @click="clickViewModelBtn('files')":size="btnSize" icon="iconfont icon-files"></el-button>
-						<el-button round :type="viewMode == 'code' ? 'primary' : 'text'" @click="clickViewModelBtn('code')" :size="btnSize" icon="iconfont icon-code"></el-button>
-						<el-button round :type="viewMode == 'preview' ? 'primary' : 'text'" @click="clickViewModelBtn('preview')":size="btnSize" icon="iconfont icon-preview"></el-button>
+				<div style="position:relative; padding:15px;">
+					<el-button @click="clickSaveBtn" round plain type="primary" icon="iconfont icon-save">保存</el-button>
+					<el-button-group style="margin-left:20px">
+						<el-button round plain  icon="iconfont icon-files">文件</el-button>
+						<el-button round plain  icon="iconfont icon-code">代码</el-button>
+						<el-button round plain  icon="iconfont icon-preview">预览</el-button>
 					</el-button-group>
 
 					<div style="position:absolute; top: 15px; right:10px;">
@@ -16,33 +16,24 @@
 				</div>
 			</div>
 		</div>
-		<div class="mainContainer">
-			<el-container v-if="isSmallScreen">
-				<left v-show="viewMode == 'files'"></left>
-				<code-editor v-show="viewMode == 'code'" ref="codemirror"></code-editor>
-				<div v-show="viewMode== 'preview'" class="preview-container">
-					<markdownEx :template="true"></markdownEx>
-				</div>
-			</el-container>
-			<el-container v-else 
-				@mouseup.native="splitStripMouseup"
-				@mousemove.native="splitStripMousemove"
-				@mouseleave.native="splitStripMouseup">
-				<el-aside ref="splitStrip1" :width="splitStrip1_width">
-					<left></left>
+		<el-container 
+			@mouseup.native="splitStripMouseup"
+			@mousemove.native="splitStripMousemove"
+			@mouseleave.native="splitStripMouseup">
+			<el-aside ref="splitStrip1" :width="splitStrip1_width">
+				<left></left>
+			</el-aside>
+			<el-container ref="splitStrip1R" style="min-width:700px">
+				<div class="split-strip kp_forbit_copy" @mousedown="splitStripMousedown('splitStrip1')"></div>
+				<el-aside ref="splitStrip2" :width="splitStrip2_width">
+					<code-editor ref="codemirror"></code-editor>
 				</el-aside>
-				<el-container ref="splitStrip1R">
-					<div class="split-strip kp_forbit_copy hidden-xs-only" @mousedown="splitStripMousedown('splitStrip1')"></div>
-					<el-aside ref="splitStrip2" :width="splitStrip2_width">
-						<code-editor ref="codemirror"></code-editor>
-					</el-aside>
-					<div class="split-strip kp_forbit_copy" @mousedown="splitStripMousedown('splitStrip2')"></div>
-					<el-main ref="splitStrip2R" class="preview-container">
-						<markdownEx :template="true"></markdownEx>
-					</el-main>
-				</el-container>
+				<div class="split-strip kp_forbit_copy" @mousedown="splitStripMousedown('splitStrip2')"></div>
+				<el-main ref="splitStrip2R" class="preview-container">
+					<markdownEx :template="true"></markdownEx>
+				</el-main>
 			</el-container>
-		</div>
+		</el-container>
 	</div>
 </template>
 
@@ -83,7 +74,6 @@ export default {
 	layout: "editor",
 	data: function() {
 		return {
-			viewMode:"code",
 			isSmallScreen: false,
 			splitStrip1_width:"350px",
 			splitStrip2_width:"50%",
@@ -95,11 +85,6 @@ export default {
 		}
 	},
 	computed: {
-		btnSize() {
-			return "small";
-			return this.isSmallScreen ? "mini" : "small"
-		},
-
 		renderContent() {
 			return this.pageContent;
 			const content = this.themeContent ? (this.themeContent + "\n" + this.pageContent) : this.pageContent;
@@ -111,20 +96,30 @@ export default {
 		},
 	},
 	watch:{
+		theme: function(theme) {
+			//adi.setTheme(theme);
+		},
+		pagePath: async function(path) {
+			//if (!path) {
+			//	this.themeContent = "";
+			//	return;
+			//}
+			//const paths = path.split("/");
+			//const themePath = [paths[0], paths[1], "theme.md"].join("/");
+
+			//if (themePath == path) {
+			//	this.themeContent = "";
+			//	return;
+			//}
+
+			//if (this.themes[themePath] == undefined) {
+			//	const result = await api.files.getContent({key:themePath});
+			//	this.themes[themePath] = result && result.isOk() ? result.getData() : "";
+			//}
+			//this.themeContent = this.themes[themePath];
+		}
 	},
 	methods: {
-		clickViewModelBtn(mode) {
-			const self = this;
-			self.viewMode = mode;
-			const timer = setInterval(()=> {
-				if (!self.codemirror) return;
-				clearInterval(timer);
-
-				const doc = self.codemirror.getDoc();
-				doc.setCursor(doc.getCursor());
-			}, 10);
-		},
-
 		splitStripMousedown(typ) {
 			var el = this.$refs[typ].$el;
 			this.splitStrip = {
@@ -208,9 +203,6 @@ export default {
 	mounted() {
 		const self = this;
 		self.isSmallScreen = window.innerWidth < 768;
-		window.onresize = () => {
-			self.isSmallScreen = window.innerWidth < 768;
-		}
 
 		self.on(self.EVENTS.__EVENT__CODEMIRROR__OUT__TEXT__, function(data) {
 			self.emit(self.EVENTS.__EVENT__MARKDOWN_EX__IN__TEXT__, data);
@@ -229,22 +221,12 @@ html,body, .el-container, .el-aside {
 html, body {
 	margin: 0px;
 }
-.active-btn {
-	background-color: blue;
-}
 .layoutContainer {
 	height: 100%;
 }
 .headerContainer {
 	height: 60px;
 	background-color: rgb(248,248,248);
-}
-.mainContainer {
-	position: absolute;
-	left: 0px;
-	right: 0px;
-	top:60px;
-	bottom: 0px;
 }
 .v-center {
 	display: flex;
@@ -258,7 +240,7 @@ html, body {
 	padding-right: 10px;
 }
 .preview-container {
-	overflow-y:auto; 
+	
 }
 .preview-container::-webkit-scrollbar {
 	display: none;

@@ -60,7 +60,7 @@ module.exports = {
 			
 		],
   	  	link: [
-			{ rel: "stylesheet", href: "http://at.alicdn.com/t/font_654450_u1b72nxvjffos9k9.css"},
+			{ rel: "stylesheet", href: "http://at.alicdn.com/t/font_654450_maay59ol039.css"},
 			{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
   	  	],
   	},
@@ -70,6 +70,7 @@ module.exports = {
   	css: [
 		'~assets/css/main.css',
 		'~assets/css/theme.scss',
+		'element-ui/lib/theme-chalk/display.css',
 	],
   	/*
   	** Customize the progress-bar color

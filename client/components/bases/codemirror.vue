@@ -211,12 +211,14 @@ export default {
 	mounted() {
 		const self = this;
 		self.isClient = true;
-		self.$nextTick(function(){
+		const timer = setInterval(()=> {
+			if (!self.$refs.cm || !self.$refs.cm.codemirror) return;
+			clearInterval(timer);
 			self.codemirror = self.$refs.cm.codemirror;
 			self.CodeMirror = this.CodeMirror || require("codemirror");
 			self.initCodeMirror();
 			self.swapDoc(self.value.filename, self.value.text);	
-		});
+		}, 100);
 	},
 
 	inheritAttrs:false,

@@ -2,10 +2,10 @@
 	<div>
 		<div v-show="user.id">
 			<el-dropdown @command="handleCommand" trigger="click">
-				<span class="el-dropdown-link" style="cursor:pointer">
+				<el-button round size="small" type="text" class="el-dropdown-link" style="cursor:pointer">
 					{{user.nickname || user.username || "逍遥"}}
 					<i class="el-icon-arrow-down el-icon--right"></i>
-				</span>
+				</el-button>
 				<el-dropdown-menu slot="dropdown">
 					<el-dropdown-item command="user-profile">我的主页</el-dropdown-item>
 					<el-dropdown-item command="settings">设置</el-dropdown-item>

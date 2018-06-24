@@ -38,6 +38,8 @@ export default {
 <style>
 .el-tabs, .el-tab-pane {
 	height:100%;
+	width: 100%;
+	border: 0px;
 }
 .left-el-tabs .el-tabs__content {
 	height:100%;

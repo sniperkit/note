@@ -10,22 +10,9 @@
 </template>
 
 <script>
-import {
-	Button,
-	Container,
-	Header,
-	Aside,
-	Main,
-	Footer,
-} from "element-ui";
 import _Header from "@/components/mods/common/header.vue";
 export default {
 	components: {
-		[Container.name]:Container,
-		[Header.name]:Header,
-		[Aside.name]:Aside,
-		[Main.name]:Main,
-		[Footer.name]:Footer,
 		Header:_Header,
 	}
 }
