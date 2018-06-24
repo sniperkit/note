@@ -82,16 +82,19 @@ export default {
 				this.change.filename = payload.filename;
 				// 立即保存切换的后的内容
 				self.savePageToDB();
-				self.save();
+				//self.save();
 				self.change.timer && clearTimeout(self.change.timer);
 			} else {
 				const isModify = this.page.content != payload.text;
-				self.page.setModify(isModify);
+				if (self.page.isModify != isModify) {
+					self.page.setModify(isModify);
+					self.emit(self.EVENTS.__EVENT__EDITOR__CURRENT__PAGE__, {isModify});
+				}
 
 				self.change.timer && clearTimeout(self.change.timer);
 				self.change.timer = setTimeout(function(){
 					self.savePageToDB();
-					self.save();
+					//self.save();
 				}, 20000);
 			}
 
@@ -111,6 +114,7 @@ export default {
 			this.page.hash = result.hash;
 			this.page.setRefresh(false);
 			this.page.setModify(false);
+			this.emit(this.EVENTS.__EVENT__EDITOR__CURRENT__PAGE__, {isModify:false});
 			g_app.pageDB.setItem(this.page);
 		},
 

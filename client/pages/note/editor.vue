@@ -3,7 +3,7 @@
 		<div class="headerContainer">
 			<div class="container full-height">
 				<div style="position:relative; padding:10px;">
-					<el-button @click="clickSaveBtn" :size="btnSize" round plain type="primary" icon="iconfont icon-save"></el-button>
+					<el-button @click="clickSaveBtn" :size="btnSize" round plain type="text" :icon="page.isRefresh ? 'el-icon-loading' : page.isModify ? 'iconfont icon-edit' : 'iconfont icon-save'"></el-button>
 					<el-button-group v-if="isSmallScreen">
 						<el-button round :type="viewMode == 'files' ? 'primary' : 'text'" @click="clickViewModelBtn('files')":size="btnSize" icon="iconfont icon-files"></el-button>
 						<el-button round :type="viewMode == 'code' ? 'primary' : 'text'" @click="clickViewModelBtn('code')" :size="btnSize" icon="iconfont icon-code"></el-button>
@@ -55,6 +55,7 @@ import {
 	ButtonGroup,
 } from "element-ui";
 import vue from "vue";
+import lodash from "lodash";
 
 import api from "@@/common/api/note.js";
 import {tags} from "@/lib/tags";
@@ -92,6 +93,7 @@ export default {
 			text:"",
 			themeContent: "",
 			themes:{},
+			page: {isRefresh:false, isModify:false},
 		}
 	},
 	computed: {
@@ -216,8 +218,12 @@ export default {
 			self.emit(self.EVENTS.__EVENT__MARKDOWN_EX__IN__TEXT__, data);
 		});
 		self.on(self.EVENTS.__EVENT__FILETREE__OUT__PAGE__, function(data){
+			_.merge(self.page, data.page);
 			self.emit(self.EVENTS.__EVENT__CODEMIRROR__IN__PAGE__, data);
-		})
+		});
+		self.on(self.EVENTS.__EVENT__EDITOR__CURRENT__PAGE__, function(data) {
+			_.merge(self.page, data);
+		});
 	},
 }
 </script>

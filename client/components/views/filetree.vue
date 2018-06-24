@@ -174,7 +174,8 @@ export default {
 				node = self.$refs.openedTreeComp.getNode(key);
 				vue.set(node || {}, "isRefresh", x);
 
-				this.isRefresh = x;
+				vue.set(this, "isRefresh", x);
+				//this.isRefresh = x;
 			}
 			page.setModify = function(x) {
 				const key = this.path;
@@ -182,7 +183,9 @@ export default {
 				vue.set(node || {}, "isModify", x);
 				node = self.$refs.openedTreeComp.getNode(key);
 				vue.set(node || {}, "isModify", x);
-				this.isModify = x;
+
+				vue.set(this, "isModify", x);
+				//this.isModify = x;
 			}
 
 			self.pages[path] = page;
