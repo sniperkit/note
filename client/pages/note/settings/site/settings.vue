@@ -15,6 +15,36 @@
 					</el-form-item>
 				</el-form>
 			</el-collapse-item>
+			<el-collapse-item title="站点组">
+				<el-form :inline="true" ref="form" :model="siteGroup" class="demo-form-inline">
+					<el-form-item label="组名">
+						<el-select v-model="siteGroup.groupId" filterable placeholder="请选择组">
+							<el-option v-for="(x, index) in groups" :key="index" :label="x.groupname" :value="x.id"></el-option>
+						</el-select>
+					</el-form-item>
+					
+					<el-form-item label="权限">
+						<el-select v-model="siteGroup.level" filterable placeholder="请选权限">
+							<el-option v-for="(x, index) in levels" :key="index" :label="x.label" :value="x.value"></el-option>
+						</el-select>
+					</el-form-item>
+
+					<el-form-item>
+						<el-button type="primary" @click="clickSubmitSiteGroupBtn">提交</el-button>
+					</el-form-item>
+				</el-form>
+				<el-table ref="groupTableCmp":data="siteGroups">
+					<el-table-column fixed prop="id" label="ID"></el-table-column>
+					<el-table-column fixed prop="groupname" label="组名"></el-table-column>
+					<el-table-column fixed prop="levelName" label="权限"></el-table-column>
+					<el-table-column fixed="right" label="操作">
+						<template slot-scope="{row, $index}">
+							<el-button type="text" @click="clickModifyBtn(row, $index)">修改</el-button>
+							<el-button type="text" @click="clickDeleteBtn(row, $index)">删除</el-button>
+						</template>
+					</el-table-column>
+				</el-table>
+			</el-collapse-item>
 		</el-collapse>
 	</div>
 </template>
@@ -26,6 +56,8 @@ import {
 	CollapseItem,
 	Form,
 	FormItem,
+	Table,
+	TableColumn,
 	Button,
 	Input,
 	Select,
@@ -33,7 +65,7 @@ import {
 	Message,
 } from "element-ui";
 
-import api from "@@/common/api/note.js";
+import _ from "lodash";
 
 export default {
 	components: {
@@ -45,6 +77,8 @@ export default {
 		[Input.name]: Input,
 		[Select.name]: Select,
 		[Option.name]: Option,
+		[Table.name]: Table,
+		[TableColumn.name]: TableColumn,
 	},
 
 	data: function() {
@@ -52,6 +86,23 @@ export default {
 			sitename: "",
 			site: {},
 			sites: [],
+			groups: [],
+			siteGroup: {
+				level: undefined,
+				groupId: undefined,
+			},
+			siteGroups: [],
+			levels: [{
+				value: 0,
+				label: "禁止访问",
+			}, {
+				value: 30,
+				label: "访问",
+			}, {
+				value: 40,
+				label: "编辑",
+			}],
+			levelMap: {0:"禁止访问", 30: "访问", 40: "编辑"},
 		}
 	},
 
@@ -63,23 +114,64 @@ export default {
 	},
 
 	methods: {
+		async getSiteGroups() {
+			const self = this;
+			// 获取站点组
+			let siteGroups = await this.api.siteGroups.get();
+			this.siteGroups = siteGroups.getData() || [];
+			_.each(self.siteGroups, val => val.levelName = self.levelMap[val.level]);
+		},
+
+		clickModifyBtn(data, index) {
+			this.siteGroup.groupId = data.groupId;
+			this.siteGroup.level = data.level;
+		},
+
+		async clickDeleteBtn(data, index) {
+			const result = await this.api.siteGroups.delete(data);
+			if (result.isErr()) {
+				return Message(result.getMessage());
+			}
+
+			this.siteGroups.splice(index,1);
+		},
+
 		async clickSubmitBaseInfoBtn() {
-			const result = await api.sites.update(this.site);
+			const result = await this.api.sites.update(this.site);
 			if (result.isErr()) {
 				return Message(result.getMessage());
 			}
 
 			return Message("站点信息更新成功");
-		}
+		},
+
+		async clickSubmitSiteGroupBtn() {
+			const siteGroup = this.siteGroup;
+			siteGroup.siteId = this.site.id;
+			console.log(this.siteGroup);
+
+			const result = await this.api.siteGroups.upsert(siteGroup);
+			if (result.isErr()) {
+				Message(result.getMessage());
+				return;
+			}
+			this.getSiteGroups();
+		},
 	},
 
 	async mounted() {
-		let result = await api.sites.get({});
+		const self = this;
+		let result = await this.api.sites.get({});
 		if (result.isErr()) {
 			Message(result.getMessage());
 			return;
 		}
+
+		this.getSiteGroups();
 		
+		// 获取用户组
+		let groups = await this.api.groups.get();
+		this.groups = groups.getData() || [];
 		this.sites = result.getData() || [];
 		this.site = this.sites[0] || {};
 		this.sitename = this.site.sitename;

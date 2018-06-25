@@ -9,7 +9,7 @@ module.exports = {
 				primaryKey: true,
 			},
 			
-			username: {  // 文件所属者
+			userId: {  // 文件所属者
 				type: Sequelize.STRING(48),
 				unique: true,
 				allowNull: false,
@@ -25,19 +25,14 @@ module.exports = {
 				defaultValue: 0,
 			},
 
-			fileCount: {
-				type: Sequelize.INTEGER,
-				defaultValue: 0,
-			},
-
 			createdAt: {
-				allowNull: false,
-				type: Sequelize.DATE
+				type: Sequelize.DATE,
+				defaultValue: Sequelize.NOW,
 			},
 
 			updatedAt: {
-				allowNull: false,
-				type: Sequelize.DATE
+				type: Sequelize.DATE,
+				defaultValue: Sequelize.NOW,
 			},
 		}, {
 			charset: "utf8mb4",

@@ -17,7 +17,7 @@ export const SiteGroups = class extends Controller {
 
 	async find(ctx) {
 		const userId = ctx.state.user.userId;
-		const sql = "select siteGroups.id, siteGroups.siteId, siteGroups.level, groups.groupname from siteGroups, groups where siteGroups.groupId = groups.id and siteGroups.userId = :userId";
+		const sql = "select siteGroups.id, siteGroups.siteId, siteGroups.groupId, siteGroups.level, groups.groupname from siteGroups, groups where siteGroups.groupId = groups.id and siteGroups.userId = :userId";
 
 		const result = await this.model.query(sql, {
 			replacements:{

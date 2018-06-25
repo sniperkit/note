@@ -37,7 +37,7 @@
 		
 		<el-table :data="members">
 			<el-table-column fixed prop="memberId" label="成员ID"></el-table-column>
-			<el-table-column fixed prop="memberName" label="成员名"></el-table-column>
+			<el-table-column fixed prop="memberUsername" label="成员名"></el-table-column>
 			<el-table-column fixed prop="groupname" label="组名"></el-table-column>
 			<el-table-column fixed="right" label="操作">
 				<template slot-scope="{row, $index}">
@@ -94,14 +94,14 @@ export default {
 	methods: {
 		async clickSearchBtn() {
 			const self = this;
-			let result = await this.api.groups.getMembers({
-				id: this.search.groupId,
-				memberId: this.search.memberId,
-			})
-			//let result = await this.api.groupMembers.get({
-				//groupId: this.search.groupId,
+			//let result = await this.api.groups.getMembers({
+				//id: this.search.groupId,
 				//memberId: this.search.memberId,
 			//})
+			let result = await this.api.groupMembers.get({
+				groupId: this.search.groupId,
+				memberId: this.search.memberId,
+			})
 			this.members = result.getData() || [];
 
 			const group = self.groups.find(x => x.id == self.search.groupId);

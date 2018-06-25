@@ -2,13 +2,6 @@
 
 module.exports = {
 	up: (queryInterface, Sequelize) => {
-		/*
-		  Add altering commands here.
-		  Return a promise to correctly handle asynchronicity.
-
-		  Example:
-		  return queryInterface.createTable('users', { id: Sequelize.INTEGER });
-		*/
 		return queryInterface.createTable('sites', {
 			id: {
 				type: Sequelize.BIGINT,
@@ -16,8 +9,8 @@ module.exports = {
 				primaryKey: true,
 			},
 			
-			username: {
-				type: Sequelize.STRING(48),
+			userId: {
+				type: Sequelize.BIGINT,
 				allowNull: false,
 			},
 
@@ -26,9 +19,9 @@ module.exports = {
 				allowNull: false,
 			},
 
-			public: {
-				type: Sequelize.BOOLEAN,
-				defaultValue: false,
+			visibility: {
+				type: Sequelize.INTEGER, // public private
+				defaultValue: 0,
 			},
 
 			description: {
@@ -36,18 +29,23 @@ module.exports = {
 			},
 
 			createdAt: {
-				allowNull: false,
-				type: Sequelize.DATE
+				type: Sequelize.DATE,
+				defaultValue: Sequelize.NOW,
 			},
 
 			updatedAt: {
-				allowNull: false,
-				type: Sequelize.DATE
+				type: Sequelize.DATE,
+				defaultValue: Sequelize.NOW,
 			},
 		}, {
 			charset: "utf8mb4",
 			collate: 'utf8mb4_bin',
-
+			indexes: [
+			{
+				unique: true,
+				fields: ["userId", "sitename"],
+			},
+			],
 		});
 	},
 

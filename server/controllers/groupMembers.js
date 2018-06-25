@@ -34,10 +34,26 @@ export const GroupMembers = class extends Controller {
 		return ERR.ERR_OK(result);
 	}
 
+	async find(ctx) {
+		const userId = ctx.state.user.userId;
+		let sql = `select groupMembers.id, groupMembers.userId, groupMembers.groupId, groupMembers.level, groupMembers.memberId, groups.groupname, users.username as memberUsername, users.nickname as memberNickname, users.portrait as memberPortrait
+				   from groupMembers, groups, users 
+				   where groupMembers.groupId = groups.id and groupMembers.memberId = users.id 
+				   and groupMembers.userId = :userId`;
+
+		let result = await this.model.query(sql, {
+			replacements: {
+				userId:userId,
+			}
+		});
+
+		return ERR.ERR_OK(result);
+	}
+
 	async findOne(ctx) {
 		const id = ctx.params.id;
 		const userId = ctx.state.user.userId;
-		let sql = `select groupMembers.id, groupMembers.userId, groupMembers.groupId, groupMembers.level, groups.groupname, users.username, users.nickname, users.portrait 
+		let sql = `select groupMembers.id, groupMembers.userId, groupMembers.groupId, groupMembers.level, groupMembers.memberId, groups.groupname, users.username as memberUsername, users.nickname as memberNickname, users.portrait as memberPortrait
 				   from groupMembers, groups, users 
 				   where groupMembers.groupId = groups.id and groupMembers.memberId = users.id 
 				   and groupMembers.id=:id and groupMembers.userId = :userId`;

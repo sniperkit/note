@@ -2,12 +2,6 @@
 
 module.exports = {
 	up: (queryInterface, Sequelize) => {
-		/*
-		  Add altering commands here.
-		  Return a promise to correctly handle asynchronicity.
-
-		  Example:
-		*/
 		return queryInterface.createTable('users', { 
 			id: {
 				type: Sequelize.BIGINT,
@@ -18,14 +12,14 @@ module.exports = {
 			username: {
 				type: Sequelize.STRING(48),
 				unique: true,
+				allowNull: false,
 			},
 
 			password: {
 				type: Sequelize.STRING(48),
-
-				//set(val) {
-					//this.setDataValue("password", val.toUpperCase());
-				//},
+				set(val) {
+					this.setDataValue("password", md5(val));
+				},
 			},
 
 			email: {
@@ -55,13 +49,13 @@ module.exports = {
 			},
 
 			createdAt: {
-				allowNull: false,
-				type: Sequelize.DATE
+				type: Sequelize.DATE,
+				defaultValue: Sequelize.NOW,
 			},
 
 			updatedAt: {
-				allowNull: false,
-				type: Sequelize.DATE
+				type: Sequelize.DATE,
+				defaultValue: Sequelize.NOW,
 			},
 		}, {
 			charset: "utf8mb4",

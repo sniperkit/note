@@ -1,9 +1,8 @@
-
 'use strict';
 
 module.exports = {
 	up: (queryInterface, Sequelize) => {
-		return queryInterface.createTable('groupMembers', { 
+		return queryInterface.createTable('siteGroups', { 
 			id: {
 				type: Sequelize.BIGINT,
 				autoIncrement: true,
@@ -15,12 +14,12 @@ module.exports = {
 				allowNull: false,
 			},
 
-			groupId: {
+			siteId: {
 				type: Sequelize.BIGINT,
 				allowNull: false,
 			},
 
-			memberId: {
+			groupId: {
 				type: Sequelize.BIGINT,
 				allowNull: false,
 			},
@@ -31,28 +30,16 @@ module.exports = {
 			},
 
 			createdAt: {
-				type: Sequelize.DATE,
-				defaultValue: Sequelize.NOW,
+				type: Sequelize.DATE
 			},
 
 			updatedAt: {
-				type: Sequelize.DATE,
-				defaultValue: Sequelize.NOW,
+				type: Sequelize.DATE
 			},
-		}, {
-			charset: "utf8mb4",
-			collate: 'utf8mb4_bin',
-
-			indexes: [
-			{
-				unique: true,
-				fields: ["groupId", "memberId"],
-			},
-			],
 		});
 	},
 
 	down: (queryInterface, Sequelize) => {
-		return queryInterface.dropTable('groupMembers');
+		return queryInterface.dropTable('siteGroups');
 	}
 };

@@ -3,15 +3,17 @@
 module.exports = {
 	up: (queryInterface, Sequelize) => {
 		return queryInterface.createTable('test', { 
-			id: Sequelize.INTEGER,
+			id: {
+				type: Sequelize.BIGINT,
+				autoIncrement: true,
+				primaryKey: true,
+			},
 
 			createdAt: {
-				allowNull: false,
 				type: Sequelize.DATE
 			},
 
 			updatedAt: {
-				allowNull: false,
 				type: Sequelize.DATE
 			},
 		});

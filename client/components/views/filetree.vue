@@ -198,15 +198,36 @@ export default {
 		async loadTreeNode(node, resolve) {
 			const self = this;
 			const username = self.user.username;
+			const userId = self.user.userId;
 			//console.log(node);	
 			if (node.level == 0) {
 				return resolve([{
-					label:username,
+					label: "我的站点",
 					path: username + "/",
 					key: username + "/pages/",
 					type: "folders",
+					username,
+				}, {
+					label: "参与站点",
+					path: "joins/",
+					key: "joins/pages/",
+					type: "folders",
 				}]);
-			} 
+			} else if(node.level == 1){
+				const data = node.data;
+				let sites = undefined;
+				const pages = [];
+				if (data.username) {
+					sites = await self.api.sites.get();
+				} else {
+					sites = await self.api.sites.getJoinSites({level:40});
+				}
+				_.each(sites, site => {
+					path = (site.userId == userId ? username : site.username) + "/" + site.sitename; 
+				})
+				console.log(sites);
+				return resolve(pages);
+			}
 
 			const nodeData = node.data;
 			const nodeKey = nodeData.key;

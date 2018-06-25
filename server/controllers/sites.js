@@ -87,9 +87,9 @@ export const Sites = class extends Controller {
 		const params = ctx.state.params;
 		const level = params.level || USER_ACCESS_LEVEL_NONE;
 
-		const sql = `select sites.* 
-			from sites, siteGroups, groupMembers 
-			where sites.id = siteGroups.siteId and siteGroups.groupId = groupMembers.groupId 
+		const sql = `select sites.*, users.username
+			from sites, siteGroups, groupMembers, users 
+			where sites.id = siteGroups.siteId and siteGroups.groupId = groupMembers.groupId and sites.userId = users.id
 			and groupMembers.memberId = :memberId and siteGroups.level >= :level`;
 
 		const result = await this.model.query(sql, {

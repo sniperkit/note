@@ -114,10 +114,7 @@ export function Sites(options) {
 
 	initHttpOptions(self, options, "sites", "id");
 
-	self.create = self.restRequest("post");
-	self.update = self.restRequest("put");
-	self.delete = self.restRequest("delete");
-	self.get = self.restRequest("get");
+	self.getJoinSites = self.apiRequest("get", "getJoinSites");
 }
 
 export function Pages(options) {
@@ -134,15 +131,6 @@ export function Groups(options) {
 	const self = this;
 
 	initHttpOptions(self, options, "groups", "id");
-
-	self.create = self.apiRequest("post");
-	self.update = self.restRequest("put");
-	self.delete = self.restRequest("delete");
-	self.get = self.apiRequest("get");
-	self.getOne = self.restRequest("get");
-	self.createMember = self.restRequest("post", "members");
-	self.deleteMember = async (data, config) => await (self.restRequest("delete", "members/" + data.memberId))(data, config);
-	self.getMembers = self.restRequest("get", "members");
 	
 }
 
@@ -150,6 +138,12 @@ export function GroupMembers(options) {
 	const self = this;
 
 	initHttpOptions(self, options, "groupMembers", "id");
+}
+
+export function SiteGroups(options) {
+	const self = this;
+
+	initHttpOptions(self, options, "siteGroups", "id");
 }
 
 export function Notes(options = {}){
@@ -164,10 +158,12 @@ export function Notes(options = {}){
 	self.pages = new Pages(self.options);
 	self.groups = new Groups(self.options);
 	self.groupMembers = new GroupMembers(self.options);
+	self.siteGroups = new SiteGroups(self.options);
 }
+
 export const options = {
 	headers: {
-
 	},
 }
+
 export default new Notes(options);

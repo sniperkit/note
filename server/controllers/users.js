@@ -134,10 +134,28 @@ export const Users = class extends Controller {
 		return ERR.ERR_OK(result);
 	}
 
+	async test(ctx) {
+		const params = ctx.state.params;
+		const where = {};
+		let sql = `select * from users where username = :username`;
+		let result = await this.model.query(sql, {
+			replacements: {
+				username:"'xiaoyao' or 1 = 1",
+			}
+		});
+	
+		return ERR.ERR_OK(result);
+	}
+
 	static getRoutes() {
 		this.pathPrefix = "users";
 
 		const routes = [
+		{
+			path: "test",
+			method: "GET",
+			action: "test",
+		},
 		{
 			path: "search",
 			method: "GET",
