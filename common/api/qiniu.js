@@ -6,7 +6,6 @@ import util from "../util.js";
 
 
 const qiniuUpload = async (key, file, token, params = {}, observer = {}) => {
-	let content = "";
 	if (!token) {
 		const data = await api.files.token({
 			key:key,
@@ -17,8 +16,7 @@ const qiniuUpload = async (key, file, token, params = {}, observer = {}) => {
 		token = data.getData();
 	}
 
-	if (typeof(file) == "string" && util.isPage(key)) {
-		content = file;
+	if (typeof(file) == "string") {
 		file = new Blob([file], {type: "text/plain"});
 	}
 
@@ -52,10 +50,7 @@ const qiniuUpload = async (key, file, token, params = {}, observer = {}) => {
 				//console.log(err);
 			},
 			async complete(res){
-				if (util.isPage(key)) {
-					api.pages.upsert({key:res.key, hash:res.hash, text:content, folder:util.getFolderByKey(key)});
-				}
-				const result = await api.files.qiniu({key:res.key, size:res.fsize, hash:res.hash, content});
+				const result = await api.files.qiniu({key:res.key, size:res.fsize, hash:res.hash});
 				if (result.isErr()) {
 					observer.error && observer.error();
 					return resolve(false);

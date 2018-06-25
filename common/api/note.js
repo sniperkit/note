@@ -124,6 +124,10 @@ export function Pages(options) {
 	const self = this;
 
 	initHttpOptions(self, options, "pages", "id");
+
+	self.getByKey = self.apiRequest("get", "getByKey");
+	self.deleteByKey = self.apiRequest("delete", "deleteByKey");
+	self.search = self.apiRequest("post", "search");
 }
 
 export function Groups(options) {

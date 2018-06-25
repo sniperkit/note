@@ -159,13 +159,15 @@ export default {
 			const path = util.getPathByKey(key);
 			const paths = path.split("/");
 			const page = {};
+			const type = _.endsWith(key, ".md") ? "pages" : "folders";
 			page.key = key;
 			page.path = path;
 			page.hash = file.hash;
-			page.label = file.type == "pages" ? paths[paths.length-1] : paths[paths.length-2];
-			page.type = file.type;
+			page.label = _.endsWith(key, ".md") ? paths[paths.length-1] : paths[paths.length-2];
+			page.type = type;
 			page.username = paths[0];
 			page.label = page.label.replace(/\..*$/, "");
+			page.folder = util.getFolderByKey(key);
 
 			page.setRefresh = function(x){
 				const key = this.path;
@@ -209,7 +211,7 @@ export default {
 			const nodeData = node.data;
 			const nodeKey = nodeData.key;
 
-			const result = await this.api.files.get({folder:nodeKey});
+			const result = await this.api.pages.search({folder:nodeKey});
 			const files = result.getData() || [];
 			const nodes = [];
 
@@ -223,7 +225,7 @@ export default {
 			const self = this;
 			let _loadPageFromServer = async function() {
 				console.log("服务器最新");
-				const result = await api.files.get({key:page.key});
+				const result = await api.pages.getByKey({key:page.key});
 				const file = result.getData();
 				if (!file && result.isErr()) {
 					Message(result.getMessage());
@@ -365,7 +367,7 @@ export default {
 			const path = data.path;
 			const page = this.getPageByPath(path);
 			page.setRefresh(true);
-			const result = await api.files.delete({key:page.key});
+			const result = await api.pages.deleteByKey({key:page.key});
 			if (result.isErr()) {
 				Message(result.getMessage());
 			}

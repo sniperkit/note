@@ -105,13 +105,13 @@ export default {
 		async save() {
 			if (!this.page || !this.page.path || !this.page.isModify) return ;
 
+			this.page.hash = util.hash(this.page.content);
 			this.page.setRefresh(true);
-			const result = await qiniuUpload(this.page.key, this.page.content);
+			const result = await this.api.pages.upsert(this.page);
 			if (!result) {
 				Message("文件保存失败");
 				return;
 			}
-			this.page.hash = result.hash;
 			this.page.setRefresh(false);
 			this.page.setModify(false);
 			this.emit(this.EVENTS.__EVENT__EDITOR__CURRENT__PAGE__, {isModify:false});

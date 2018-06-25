@@ -390,7 +390,7 @@ export const pages = sequelize.define("pages", {
 
 	//siteId: {
 		//type: Sequelize.BIGINT,
-		//allowNull: false,
+		////allowNull: false,
 	//},
 
 	key: {
@@ -408,10 +408,11 @@ export const pages = sequelize.define("pages", {
 		type: Sequelize.STRING(64),
 	},
 	
-	text: {
+	content: {
 		type: Sequelize.TEXT,
 		defaultValue: "",
 	},
+
 }, {
 	charset: "utf8mb4",
 	collate: 'utf8mb4_bin',
