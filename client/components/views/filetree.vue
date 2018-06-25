@@ -325,9 +325,6 @@ export default {
 		clickOpenBtn(data) {
 			window.open(window.location.origin + "/" + data.path.replace(/\..*$/,""));
 		},
-		//clickGitBtn(data) {
-		//	window.open(gitlab.getFileGitUrl(data.path));
-		//},
 		clickNewFileBtn(data, node) {
 			this.isShowNewFile = true;
 			this.newFileForm.data = data;
@@ -356,9 +353,7 @@ export default {
 			console.log(newpage);
 			self.pages[newpage.path] = newpage;
 			form.isLoading = true;
-			if (form.type != "folders") {
-				//await this.savePage(newNode);
-			}
+			await self.api.pages.upsert(newpage);
 			self.$refs.filetree.append(newpage, node.path);
 			this.isShowNewFile = false;
 			form.isLoading = false;
