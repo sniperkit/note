@@ -1,6 +1,5 @@
 import joi from "joi";
 
-import sequelize from "@/models/database.js";
 import Controller from "@/controllers/controller.js";
 import models from "@/models";
 

@@ -30,15 +30,13 @@ const defaultConfig = {
 		baseURL: "http://10.28.18.7:9200", 
 	},
 
-	oauth: {
+	oauths: {
 		github: {
 			clientId: "5cc0cf681e677a56771b",
-			clientSecret: "7d843c4eff4a4bd64d03076e04d5eff234a64091",
-			redirectUri: 'http://localhost:3000/api/v0/oauth/github',
+			redirectUri: 'http://localhost:3000/api/v0/oauthUsers/github',
 		},
 		facebook: {
 			clientId: "1942795522419535",
-			//clientId: "214912142619169",
 			clientSecret: "1f7bc8761f32b2c8a0923ecc5ebc8b5e",
 			//clientSecret: "669a9ce8eb9b2b872ed0a19905407593",
 			redirectUri: 'https://wxa.keepwork.com/api/wiki/auth/facebook',

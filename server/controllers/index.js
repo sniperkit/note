@@ -18,6 +18,7 @@ import groups from "./groups.js";
 import groupMembers from "./groupMembers.js";
 import domains from "./domains.js";
 import pages from "./pages.js";
+import oauthUsers from "./oauthUsers.js";
 
 export const controllers = {
 	tests,
@@ -35,6 +36,7 @@ export const controllers = {
 	groupMembers,
 	domains,
 	pages,
+	oauthUsers,
 }
 
 const getParams = (ctx) => {

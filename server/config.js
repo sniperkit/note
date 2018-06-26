@@ -1,7 +1,7 @@
 import _ from "lodash";
 
-import commonConfig from "../common/config.js";
-import secretConfig from "./.config.js";
+import commonConfig from "@@/common/config.js";
+import secretConfig from "@/.config.js";
 
 const defaultConfig = {
 	secret: "keepwork",
@@ -39,7 +39,7 @@ const defaultConfig = {
 		host: "smtp.exmail.qq.com",
 		port: 587,
 		user: "noreply@mail.keepwork.com",
-		pass: "xxx",
+		pass: "",
 		from: "noreply@mail.keepwork.com",
 	},
 
@@ -50,6 +50,13 @@ const defaultConfig = {
 		appId: "8a216da85d158d1b015d5a30365c1bfe",
 		accountSid: "8a216da85cce7c54015ce86f168408f1",
 		accountToken: "",
+	},
+
+	oauths: {
+		github: {
+			clientId: "5cc0cf681e677a56771b",
+			clientSecret: "",
+		},
 	}
 }
 

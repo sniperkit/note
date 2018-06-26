@@ -544,6 +544,12 @@ export const siteDataSources = sequelize.define("siteDataSources", {
 }, {
 	charset: "utf8mb4",
 	collate: 'utf8mb4_bin',
+	indexes: [
+	{
+		unique: true,
+		fields: ["userId", "siteId"],
+	},
+	],
 });
 //siteDataSources.sync({force:true}).then(() => {
   //console.log("create files table successfully");
@@ -601,7 +607,7 @@ export const storages = sequelize.define("storages", {
 	},
 	
 	userId: {  // 文件所属者
-		type: Sequelize.STRING(48),
+		type: Sequelize.BIGINT,
 		unique: true,
 		allowNull: false,
 	},
@@ -625,6 +631,47 @@ export const storages = sequelize.define("storages", {
 	//console.log("create files table successfully");
 //});
 
+export const oauthUsers = sequelize.define("oauthUsers", {
+	id: {
+		type: Sequelize.BIGINT,
+		autoIncrement: true,
+		primaryKey: true,
+	},
+	
+	userId: {  // 文件所属者
+		type: Sequelize.BIGINT,
+		allowNull: false,
+	},
+
+	externalId: {
+		type: Sequelize.STRING(48),
+	},
+
+	externalUsername: {
+		type: Sequelize.STRING(48),
+	},
+
+	type: {
+		type: Sequelize.INTEGER,
+	},
+}, {
+	charset: "utf8mb4",
+	collate: 'utf8mb4_bin',
+	indexes: [
+	{
+		unique: true,
+		fields: ["userId", "type"],
+	},
+	{
+		unique: true,
+		fields: ["externalId", "type"],
+	},
+	],
+});
+//oauthUsers.sync({force:true}).then(() => {
+	//console.log("create files table successfully");
+//});
+
 
 export default {
 	users,
@@ -642,4 +689,5 @@ export default {
 	siteDataSources,
 	files,
 	storages,
+	oauthUsers,
 };
