@@ -198,7 +198,7 @@ export default {
 		async loadTreeNode(node, resolve) {
 			const self = this;
 			const username = self.user.username;
-			const userId = self.user.userId;
+			const userId = self.user.id;
 			//console.log(node);	
 			if (node.level == 0) {
 				return resolve([{
@@ -222,10 +222,13 @@ export default {
 				} else {
 					sites = await self.api.sites.getJoinSites({level:40});
 				}
+				sites = sites.getData() || [];
 				_.each(sites, site => {
-					path = (site.userId == userId ? username : site.username) + "/" + site.sitename; 
-				})
-				console.log(sites);
+					//console.log(username, site.username, site.userId, userId);
+					const key = (site.userId == userId ? username : site.username) + "/pages/" + site.sitename + "/"; 
+					pages.push(self.fileToPage({key, hash:0}));
+				});
+				//console.log(sites);
 				return resolve(pages);
 			}
 
@@ -242,6 +245,7 @@ export default {
 
 			resolve(nodes);
 		},
+
 		loadPage(page, cb, errcb) {
 			const self = this;
 			let _loadPageFromServer = async function() {
@@ -282,6 +286,7 @@ export default {
 				_loadPageFromServer();
 			})
 		},
+
 		clickSelectPage(data, node) {
 			var self = this;
 			// 激活文件树项
@@ -371,7 +376,7 @@ export default {
 			}
 			let newpage = self.fileToPage(file);
 			newpage.content = "";
-			console.log(newpage);
+			//console.log(newpage);
 			self.pages[newpage.path] = newpage;
 			form.isLoading = true;
 			await self.api.pages.upsert(newpage);

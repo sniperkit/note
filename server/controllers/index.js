@@ -3,6 +3,7 @@ import {validate} from "../middlewares/index.js";
 
 import {ERR_UNATUH, ERR_OK, ERR_PARAMS} from "../../common/error.js";
 
+import tests from "./tests.js";
 import code from "./code.js";
 import oauth from "./oauth.js";
 import users from "./users.js";
@@ -12,12 +13,14 @@ import qiniu from "./qiniu.js";
 import files from "./files.js";
 import sites from "./sites.js";
 import siteGroups from "./siteGroups.js";
+import siteMembers from "./siteMembers.js";
 import groups from "./groups.js";
 import groupMembers from "./groupMembers.js";
 import domains from "./domains.js";
 import pages from "./pages.js";
 
 export const controllers = {
+	tests,
 	code,
 	oauth,
 	users,
@@ -27,6 +30,7 @@ export const controllers = {
 	files,
 	sites,
 	siteGroups,
+	siteMembers,
 	groups,
 	groupMembers,
 	domains,

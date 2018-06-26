@@ -52,6 +52,7 @@
     "mxgraph": "^3.9.3",
     "mysql2": "^1.5.3",
     "node-gitlab-api": "^3.0.2",
+    "nodemailer": "^4.6.7",
     "npm": "^6.0.0",
     "nuxt": "latest",
     "path-to-regexp": "^2.2.1",

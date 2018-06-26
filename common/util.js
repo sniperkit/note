@@ -102,4 +102,16 @@ util.getPathByKey = function(key) {
 	return paths.join('/');
 }
 
+util.parseKey = function(key) {
+	const obj = {key};
+	obj.path = this.getPathByKey(key);
+	obj.type = this.getTypeByKey(key);
+
+	const paths = obj.path.split("/");
+	obj.username = paths[0];
+	obj.sitename = paths[1];
+
+	return obj;
+}
+
 export default util;

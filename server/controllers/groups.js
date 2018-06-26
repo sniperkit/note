@@ -19,106 +19,26 @@ export const Groups = class extends Controller {
 		super();
 	}
 
-	//
-	async createMember(ctx) {
-		const params = ctx.state.params;
-		const id = ctx.params.id;
+	async delete(ctx) {
 		const userId = ctx.state.user.userId;
+		const id = ctx.params.id;
 
-		let data = await this.model.findOne({
-			where: {
-				id: id,
-				userId: userId,
-			}
-		});
-
+		const data = await this.model.findOne({where:{userId, id}});
 		if (!data) return ERR.ERR_PARAMS();
+		
+		const groupMembersModel = models["groupMembers"];
+		await groupMembersModel.delete({where:{groupId:id}});
+		
+		const siteGroupsModel = models["siteGroups"];
+		siteGroupsModel.delete({where:{groupId:id}});
 
-		let result = await groupMembersModel.create({
-			userId: userId,
-			groupId: id,
-			memberId: params.memberId,
-			level: params.level,
-		});
-
-		return ERR.ERR_OK(result);
-	}
-
-	async deleteMember(ctx) {
-		const id = ctx.params.id;
-		const memberId = ctx.params.memberId;
-		const userId = ctx.state.user.userId;
-
-		let result = await groupMembersModel.delete({
-			where: {
-				userId: userId,
-				groupId: id,
-				memberId: memberId,
-			}
-		});
-
-		return ERR.ERR_OK(result);
-	}
-
-	async findMembers(ctx) {
-		const id = ctx.params.id;
-		const userId = ctx.state.user.userId;
-		const params = ctx.state.params;
-		const memberId = params.memberId && parseInt(params.memberId);
-
-		let sql = 'select gm.id, userId, groupId, memberId, username as memberName, nickname  from groupMembers as gm, users as u where gm.memberId = u.id and groupId=:groupId and userId=:userId';
-
-		if (memberId) sql += " and memberId=:memberId";
-		let result = await sequelize.query(sql, {
-			type: sequelize.QueryTypes.SELECT,
-			raw: true,
-			replacements:{
-				userId: userId,
-				groupId: id,
-				memberId: memberId,
-			},	
-		});
-
-		return ERR.ERR_OK(result);
+		return ERR.ERR_OK();
 	}
 
 	static getRoutes() {
 		this.pathPrefix = "groups";
 		const baseRoutes = super.getRoutes();
 		const routes = [
-		{
-			path: ":id/members",
-			method: "GET",
-			action: "findMembers",
-			authentated: true,
-		},
-		{
-			path: ":id/members",
-			method: "POST",
-			action: "createMember",
-			authentated: true,
-			validate: {
-				params: {
-					id: joi.number().required(),
-				},
-				body: {
-					memberId: joi.number().required(),
-					level: joi.number().valid([USER_ACCESS_LEVEL_NONE, USER_ACCESS_LEVEL_READ, USER_ACCESS_LEVEL_WRITE]),
-				},
-			}
-		},
-		{
-			path: ":id/members/:memberId",
-			method: "DELETE",
-			action: "deleteMember",
-			authentated: true,
-			validate: {
-				params: {
-					id: joi.number().required(),
-					memberId: joi.number().required(),
-				},
-			}
-		}
 		];
 
 		return routes.concat(baseRoutes);

@@ -45,6 +45,34 @@
 					</el-table-column>
 				</el-table>
 			</el-collapse-item>
+			<el-collapse-item title="站点成员">
+				<el-form :inline="true" ref="form" :model="siteMember" class="demo-form-inline">
+					<el-form-item label="成员ID">
+						<el-input clearable v-model="siteMember.memberId" placeholder="成员ID"></el-input>
+					</el-form-item>
+					
+					<el-form-item label="权限">
+						<el-select v-model="siteMember.level" filterable placeholder="请选权限">
+							<el-option v-for="(x, index) in levels" :key="index" :label="x.label" :value="x.value"></el-option>
+						</el-select>
+					</el-form-item>
+
+					<el-form-item>
+						<el-button type="primary" @click="clickSubmitSiteMemberBtn">提交</el-button>
+					</el-form-item>
+				</el-form>
+				<el-table :data="siteMembers">
+					<el-table-column fixed prop="id" label="ID"></el-table-column>
+					<el-table-column fixed prop="memberId" label="成员ID"></el-table-column>
+					<el-table-column fixed prop="levelName" label="权限"></el-table-column>
+					<el-table-column fixed="right" label="操作">
+						<template slot-scope="{row, $index}">
+							<el-button type="text" @click="clickSiteMemberModifyBtn(row, $index)">修改</el-button>
+							<el-button type="text" @click="clickSiteMemberDeleteBtn(row, $index)">删除</el-button>
+						</template>
+					</el-table-column>
+				</el-table>
+			</el-collapse-item>
 		</el-collapse>
 	</div>
 </template>
@@ -92,6 +120,11 @@ export default {
 				groupId: undefined,
 			},
 			siteGroups: [],
+			siteMember: {
+				level: undefined,
+				memberId: undefined,
+			},
+			siteMembers: [],
 			levels: [{
 				value: 0,
 				label: "禁止访问",
@@ -122,6 +155,27 @@ export default {
 			_.each(self.siteGroups, val => val.levelName = self.levelMap[val.level]);
 		},
 
+		async getSiteMembers() {
+			const self = this;
+			let siteMembers = await this.api.siteMembers.get();
+			this.siteMembers = siteMembers.getData() || [];
+			_.each(self.siteMembers, val => val.levelName = self.levelMap[val.level]);
+		},
+
+		clickSiteMemberModifyBtn(data) {
+			this.siteMember.memberId = data.memberId;
+			this.siteMember.level = data.level;
+		},
+
+		async clickSiteMemberDeleteBtn(data, index) {
+			const result = await this.api.siteMembers.delete(data);
+			if (result.isErr()) {
+				return Message(result.getMessage());
+			}
+
+			this.siteMembers.splice(index,1);
+		},
+
 		clickModifyBtn(data, index) {
 			this.siteGroup.groupId = data.groupId;
 			this.siteGroup.level = data.level;
@@ -136,6 +190,18 @@ export default {
 			this.siteGroups.splice(index,1);
 		},
 
+		async clickSubmitSiteMemberBtn() {
+			const siteMember = this.siteMember;
+			siteMember.siteId = this.site.id;
+			
+			if (!siteMember.memberId) return Message("成员Id为空");
+
+			const result = await this.api.siteMembers.upsert(siteMember);
+			if (result.isErr()) return Message(result.getMessage());
+
+			this.getSiteMembers();
+		},
+
 		async clickSubmitBaseInfoBtn() {
 			const result = await this.api.sites.update(this.site);
 			if (result.isErr()) {
@@ -148,7 +214,7 @@ export default {
 		async clickSubmitSiteGroupBtn() {
 			const siteGroup = this.siteGroup;
 			siteGroup.siteId = this.site.id;
-			console.log(this.siteGroup);
+			//console.log(this.siteGroup);
 
 			const result = await this.api.siteGroups.upsert(siteGroup);
 			if (result.isErr()) {

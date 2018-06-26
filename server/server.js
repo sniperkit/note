@@ -28,6 +28,8 @@ const apiRouter = new Router({
 
 registerControllerRouter(apiRouter);
 
+global.app = {};
+
 export default (app, views) => {
 	app
 	.use(cors())
@@ -57,13 +59,13 @@ export default (app, views) => {
 		if (path.split("/").length < 3 || path.substring(path.lastIndexOf("/")).indexOf(".") < 0) {
 			return await next();
 		}
+
 		for (let i = 0; i < excludeList.length; i++) {
 			if (path.indexOf(excludeList[i]) == 0) {
 				return await next();
 			}
 		}
 
-		console.log(path);
 		const key = util.getKeyByPath(path.substring(1));
 		ctx.params = {id: encodeURIComponent(key)};
 		files.raw(ctx);

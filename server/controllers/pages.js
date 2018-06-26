@@ -12,6 +12,8 @@ import util from "@@/common/util.js";
 
 const storage = qiniu;
 
+const sitesModel = models["sites"];
+
 function writeGitFile(params) {
 	const path = params.key;
 	const options = {
@@ -37,6 +39,19 @@ export const Pages = class extends Controller {
 		super();
 	}
 
+	async isEditable(userId, key) {
+		const keyObj = util.parseKey(key);
+		if (!userId) return false;
+
+		let site = await sitesModel.getByName(keyObj.username, keyObj.sitename);
+		if (site.isErr()) return false;
+		site = site.getData();
+
+		if (site.userId == userId) return true;
+
+		return await sitesModel.isEditableByMemberId(site.id, userId);
+	}
+
 	async getByKey(ctx) {
 		const username = ctx.state.user.username;
 		const params = ctx.state.params;
@@ -54,6 +69,10 @@ export const Pages = class extends Controller {
 
 	async deleteByKey(ctx) {
 		const params = ctx.state.params;
+		const userId = ctx.state.user.userId;
+		const key = params.key;
+
+		if (!await this.isEditable(userId, key)) return ERR.ERR_NO_PERMISSION();
 
 		let result = await this.model.delete({where:{key}});
 
@@ -62,10 +81,10 @@ export const Pages = class extends Controller {
 
 	async upsert(ctx) {
 		const params = ctx.state.params;
+		const userId = ctx.state.user.userId;
 
-		if (!params.key) {
-			return ERR.ERR_PARAMS();
-		}
+		if (!params.key) return ERR.ERR_PARAMS();
+		if (!await this.isEditable(userId, params.key)) return ERR.ERR_NO_PERMISSION();
 
 		writeGitFile(params);
 		storage.upload(params.key, params.content);
@@ -85,6 +104,7 @@ export const Pages = class extends Controller {
 
 		return ERR.ERR_OK(list);	
 	}
+
 	async qiniuImport(ctx) {
 		const params = ctx.state.params;
 		let marker = undefined;
@@ -151,6 +171,7 @@ export const Pages = class extends Controller {
 			path:"deleteByKey",
 			action: "deleteByKey",
 			method: "DELETE",
+			authenticated: true,
 			validate: {
 				query: {
 					key: joi.string().required(),

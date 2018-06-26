@@ -22,6 +22,7 @@ class Model {
 
 	constructor() {
 		this.modelName = _.camelCase(this.constructor.name);
+		this.models = models;
 	}
 
 	get model() {

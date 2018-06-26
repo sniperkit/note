@@ -634,6 +634,7 @@ export default {
 	groups,
 	groupMembers,
 	siteGroups,
+	siteMembers,
 	favorites,
 	pages,
 	visitors,

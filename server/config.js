@@ -34,6 +34,23 @@ const defaultConfig = {
 		accessKey:"",
 		secretKey:"",
 	},
+
+	email: {
+		host: "smtp.exmail.qq.com",
+		port: 587,
+		user: "noreply@mail.keepwork.com",
+		pass: "xxx",
+		from: "noreply@mail.keepwork.com",
+	},
+
+	sms: {
+		serverIP: "app.cloopen.com",
+		serverPort: "8883",
+		softVersion: "2013-12-26",
+		appId: "8a216da85d158d1b015d5a30365c1bfe",
+		accountSid: "8a216da85cce7c54015ce86f168408f1",
+		accountToken: "",
+	}
 }
 
 //defaultConfig.baseURL = defaultConfig.baseURL || (defaultConfig.protocol + "://" + defaultConfig.host + ":" + defaultConfig.port + defaultConfig.apiPrefix);

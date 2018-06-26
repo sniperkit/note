@@ -94,10 +94,6 @@ export default {
 	methods: {
 		async clickSearchBtn() {
 			const self = this;
-			//let result = await this.api.groups.getMembers({
-				//id: this.search.groupId,
-				//memberId: this.search.memberId,
-			//})
 			let result = await this.api.groupMembers.get({
 				groupId: this.search.groupId,
 				memberId: this.search.memberId,
@@ -114,11 +110,7 @@ export default {
 			this.member.groupId = this.search.groupId;
 			this.isShowNewMember = true;
 		},
-		clickModifyBtn(data, index) {
-			const url = "/note/settings/groups/upsert?id=" + data.id;
 
-			this.$router.push(url);
-		},
 		async clickDeleteBtn(data, index) {
 			let result = await this.api.groupMembers.delete({
 				id: data.id,
@@ -130,6 +122,7 @@ export default {
 
 			this.members.splice(index, 1);
 		},
+
 		async clickNewMemberBtn() {
 			const memberId = parseInt(this.member.memberId);
 			if (!memberId) {

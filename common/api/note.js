@@ -146,6 +146,12 @@ export function SiteGroups(options) {
 	initHttpOptions(self, options, "siteGroups", "id");
 }
 
+export function SiteMembers(options) {
+	const self = this;
+
+	initHttpOptions(self, options, "SiteMembers", "id");
+}
+
 export function Notes(options = {}){
 	const self = this;
 	initHttpOptions(self, options);
@@ -159,6 +165,7 @@ export function Notes(options = {}){
 	self.groups = new Groups(self.options);
 	self.groupMembers = new GroupMembers(self.options);
 	self.siteGroups = new SiteGroups(self.options);
+	self.siteMembers = new SiteMembers(self.options);
 }
 
 export const options = {

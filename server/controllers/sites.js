@@ -57,29 +57,8 @@ export const Sites = class extends Controller {
 		const id = ctx.params.id;
 		const params = ctx.state.params;
 		const memberId = params.memberId;
-		
-		let data = await this.model.findOne({where:{id}});
-		if (!data) return ERR.ERR_PARAMS();
-		data = data.get({plain: true});
 
-		let level = USER_ACCESS_LEVEL_READ;
-		if (data.visibility == ENITY_VISIBILITY_PRIVATE) level = USER_ACCESS_LEVEL_NONE;
-
-		const sql = `select siteGroups.level 
-			from sites, siteGroups, groupMembers 
-			where sites.id = siteGroups.siteId and siteGroups.groupId = groupMembers.groupId 
-			and sites.id = :siteId and groupMembers.memberId = :memberId`;
-
-		const result = await this.model.query(sql, {
-			replacements: {
-				siteId: id,
-				memberId: memberId,
-			}
-		});
-
-		_.each(result, val => level = level < val.level ? val.level : level);
-
-		return ERR.ERR_OK(level);
+		return this.model.getMemberLevel({siteId:id, memberId:memberId});
 	}
 
 	async getJoinSites(ctx) {
