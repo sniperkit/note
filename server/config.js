@@ -7,7 +7,7 @@ const defaultConfig = {
 	secret: "keepwork",
 
 	host: "0.0.0.0",
-	port: 7654,
+	port: 3000,
 	protocol: "http",
 	origin: "http://0.0.0.0:3000",
 	baseUrl: "/api/v0/",
