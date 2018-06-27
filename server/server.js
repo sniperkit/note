@@ -20,15 +20,17 @@ import util from "../common/util.js";
 
 const files = new Files();
 
-api.options.baseURL = config.baseURL;
+api.options.baseURL = config.baseUrl;
 
 const apiRouter = new Router({
-	prefix: config.apiUrlPrefix,
+	prefix: config.baseUrl,
 });
 
 registerControllerRouter(apiRouter);
 
-global.app = {};
+global.app = {
+	models,
+};
 
 export default (app, views) => {
 	app

@@ -10,7 +10,7 @@ import "@/components/bases";
 import "@/components/complex";
 import {registerModTag} from  "@/components/mods";
 
-console.log(process.client);
+//console.log(process.client);
 let Cookies;
 
 if (process.client) {
@@ -89,7 +89,7 @@ export const isAuthenticated = () => {
 }
 
 if (isAuthenticated()) {
-	api.options.baseURL = config.baseURL;
+	api.options.baseURL = config.origin + config.baseUrl;
 	api.options.headers['Authorization'] = "Bearer " + user.token;
 } else {
 	logout();

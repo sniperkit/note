@@ -1,7 +1,6 @@
 
 const defaultConfig = {
 	urlPrefix: "note",
-	apiUrlPrefix: "/api/v0/",
 	pageSuffix:".md",
 	tagModsPath: "keepwork_data/tag_mods.json",
 
@@ -9,18 +8,7 @@ const defaultConfig = {
 	port: 3000,
 	origin: "http://wxaxiaoyao.cn",
 
-	baseURL: "/api/v0/",
-	proxyBaseURL: "http://47.52.20.34:7654/api/v0/",
-
-	keepwork: {
-		baseURL: "http://stage.keepwork.com/api/wiki/models/",
-		proxyBaseURL: "http://47.52.20.34:7654/api/v0/",
-		//proxyBaseURL: "http://wxaxiaoyao.cn/api/v0/",
-	},
-
-	ESService: {
-		baseURL: "http://47.52.20.34:8088/api/v0/",
-	},
+	baseUrl: "/api/v0/",
 
 	QiniuService: {
 		baseURL: "http://47.52.20.34:8088/api/v0/",
@@ -33,7 +21,15 @@ const defaultConfig = {
 	oauths: {
 		github: {
 			clientId: "5cc0cf681e677a56771b",
-			redirectUri: 'http://localhost:3000/api/v0/oauthUsers/github',
+		},
+		qq: {
+			clientId:"101403344",
+		},
+		weixin: {
+			clientId: "wxc97e44ce7c18725e",
+		},
+		xinlang: {
+			clientId: "2411934420",
 		},
 		facebook: {
 			clientId: "1942795522419535",

@@ -7,7 +7,6 @@ import consts from "@/lib/consts.js";
 import storage from "@/lib/storage.js";
 import indexedDB from "@/lib/indexedDB.js";
 import events from "@/lib/events.js";
-import noteEndpoint from "@@/common/api/note.js";
 
 //import 'vue-easytable/libs/themes-base/index.css'
 //import {VTable,VPagination} from 'vue-easytable';
@@ -15,9 +14,7 @@ import noteEndpoint from "@@/common/api/note.js";
 //vue.component(VPagination.name, VPagination);
 
 
-config.baseURL = window.location.origin + config.apiUrlPrefix;
 
-noteEndpoint.options.baseURL = config.baseURL;
 
 const app = {
 	isSmallScreen: window.innerWidth < 768,

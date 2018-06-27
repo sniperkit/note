@@ -1,5 +1,8 @@
 <template>
 	<div>
+		<button @click="click('xinlang')">xinlang</button>
+		<button @click="click('weixin')">weixin</button>
+		<button @click="click('qq')">qq</button>
 		<button @click="click('github')">github</button>
 		<button @click="click('facebook')">facebook</button>
 	</div>
@@ -25,6 +28,8 @@ export default {
 		click(name) {
 			this.$auth.authenticate(name).then(function(data) {
 				console.log(data);
+			}).catch(function(e) {
+				console.log(e);
 			})
 		}
 	},

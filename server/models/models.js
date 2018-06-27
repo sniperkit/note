@@ -640,7 +640,6 @@ export const oauthUsers = sequelize.define("oauthUsers", {
 	
 	userId: {  // 文件所属者
 		type: Sequelize.BIGINT,
-		allowNull: false,
 	},
 
 	externalId: {
@@ -658,10 +657,6 @@ export const oauthUsers = sequelize.define("oauthUsers", {
 	charset: "utf8mb4",
 	collate: 'utf8mb4_bin',
 	indexes: [
-	{
-		unique: true,
-		fields: ["userId", "type"],
-	},
 	{
 		unique: true,
 		fields: ["externalId", "type"],

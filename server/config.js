@@ -7,10 +7,10 @@ const defaultConfig = {
 	secret: "keepwork",
 
 	host: "0.0.0.0",
-	port: 3000,
+	port: 7654,
 	protocol: "http",
 	origin: "http://0.0.0.0:3000",
-	baseURL: "/api/v0/",
+	baseUrl: "/api/v0/",
 
 	database: {
 		//port:3306,
@@ -19,6 +19,25 @@ const defaultConfig = {
 		database: "note", // 数据库名
 		username: "wuxiangan",
 		password: "", 
+	},
+
+	oauths: {
+		github: {
+			clientId: "5cc0cf681e677a56771b",
+			clientSecret: "",
+		},
+		qq: {
+			clientId: "101403344",
+			clientSecret:"",
+		},
+		weixin: {
+			clientId: "wxc97e44ce7c18725e",
+			clientSecret: "",
+		},
+		xinlang: {
+			clientId: "2411934420",
+			clientSecret: "",
+		},
 	},
 
 	elasticsearch: {
@@ -52,12 +71,6 @@ const defaultConfig = {
 		accountToken: "",
 	},
 
-	oauths: {
-		github: {
-			clientId: "5cc0cf681e677a56771b",
-			clientSecret: "",
-		},
-	}
 }
 
 //defaultConfig.baseURL = defaultConfig.baseURL || (defaultConfig.protocol + "://" + defaultConfig.host + ":" + defaultConfig.port + defaultConfig.apiPrefix);
