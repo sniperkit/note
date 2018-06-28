@@ -1,32 +1,31 @@
 import _ from "lodash";
 
-import commonConfig from "@@/common/config.js";
+import commonConfigs from "@@/common/config.js";
+const ENV = process.env.ENV || process.env.NODE_ENV;
+
+const commonConfig = commonConfigs[ENV];
 
 const defaultConfig = {
 	tagModsPath: "note/note/mods.md",
-	origin: "http://wxaxiaoyao.cn",
 }
 
 const productionConfig = {
 }
 
 const developmentConfig = {
-	origin: "http://localhost:3000",
-	ESService: {
-		baseURL: "http://es.keepwork.com/api/v0/",
-	},
+}
 
-	QiniuService: {
-		baseURL: "http://es.keepwork.com/api/v0/",
-	},
+const localConfig = {
+
 }
 
 const configs = {
 	"production": _.merge({}, commonConfig, defaultConfig, productionConfig),
 	"development": _.merge({}, commonConfig, defaultConfig, developmentConfig),
+	"local": _.merge({}, commonConfig, defaultConfig, localConfig),
 }
 
-console.log(process.env.NODE_ENV);
+console.log(ENV);
 
-export default configs[process.env.NODE_ENV];
+export default configs[ENV];
 

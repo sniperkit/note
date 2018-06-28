@@ -1,8 +1,8 @@
 const path = require("path");
 const webpack = require("webpack");
+const config = require("./server/.config.js");
 
 const rootdir = path.resolve(".");
-
 //console.log(path.resolve(__dirname, "client/pages/note/userpage.vue"));
 
 const pagepath = "client/pages/";
@@ -14,8 +14,7 @@ module.exports = {
 	srcDir: "client/",
 
 	env: {
-		ENV: process.env.ENV,
-		rootdir,
+		ENV:config.ENV || process.env.NODE_ENV,
 	},
 
 	router: {
@@ -60,7 +59,7 @@ module.exports = {
 			
 		],
   	  	link: [
-			{ rel: "stylesheet", href: "http://at.alicdn.com/t/font_654450_maay59ol039.css"},
+			{ rel: "stylesheet", href: "http://at.alicdn.com/t/font_654450_vfehhtiqe3i.css"},
 			{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
   	  	],
   	},

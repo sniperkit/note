@@ -74,6 +74,11 @@ export const logout = () => {
 	}
 }
 
+export const setUser = (usr) => {
+	_.merge(user, usr);
+	if (process.client) localStorageSetUser(user);
+}
+
 export const isAuthenticated = () => {
 	if (!user.token) return false;
 	const payload = jwt.decode(user.token, null, true);
@@ -122,6 +127,9 @@ export const component = {
 		},
 		logout() {
 			logout();
+		},
+		setUser(usr) {
+			setUser(usr);
 		},
 		isAuthenticated() {
 			return isAuthenticated();

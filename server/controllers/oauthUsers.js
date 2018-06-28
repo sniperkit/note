@@ -4,7 +4,7 @@ import joi from "joi";
 import memoryCache from "memory-cache";
 
 import config from "@/config.js";
-
+import models from "@/models";
 import Controller from "@/controllers/controller.js";
 import ERR from "@@/common/error.js";
 import {
@@ -15,8 +15,7 @@ import {
 } from "@@/common/consts.js";
 import util from "@@/common/util.js";
 
-//const baseUrl = config.origin + config.baseUrl + "oauthUsers/";
-const baseUrl = "http://47.52.20.34:7654" + config.baseUrl + "oauthUsers/";
+const baseUrl = config.origin + config.baseUrl + "oauthUsers/";
 
 export const OauthUsers = class extends Controller {
 	constructor() {
@@ -107,15 +106,18 @@ export const OauthUsers = class extends Controller {
 		const userApiUrl = 'https://api.github.com/user';
 		const params = ctx.state.params;
 		const userId = ctx.state.user.userId;
-		//console.log(params);
+		//console.log("==================userId=============", userId);
 		params.client_id = params.client_id || config.oauths.github.clientId;
 		params.client_secret = params.client_secret || config.oauths.github.clientSecret;
 		params.redirect_uri = params.redirect_uri || (baseUrl + "github");
+		console.log(params);
 		
 		const queryStr = await axios.get(accessTokenApiUrl, {params}).then(res => res.data);
+		console.log(queryStr);
 		const data = wurl("?", "http://localhost/index?" + queryStr);
-		if (!data.access_token) return ERR.ERR();
+		if (!data.access_token) return ERR.ERR().setMessage("获取token失败");
 		const access_token = data.access_token;
+		console.log(data);
 
 		const userinfo = await axios.get(userApiUrl, {params:{access_token}}).then(res => res.data);
 		const externalId = userinfo.id;
@@ -125,7 +127,7 @@ export const OauthUsers = class extends Controller {
 		await this.model.upsert({externalId, externalUsername, type, userId});
 
 		let oauthUser = await this.model.findOne({where: {externalId, type}});
-		if (!oauthUser) return ERR.ERR();
+		if (!oauthUser) return ERR.ERR("记录不存在");
 		oauthUser = oauthUser.get({plain:true});
 
 		const key = params.code + params.client_id;
@@ -175,12 +177,13 @@ export const OauthUsers = class extends Controller {
 		const params = ctx.state.params;
 		const key = params.code + params.clientId;
 		const oauthUser = memoryCache.get(key);
+		const userId = ctx.state.user.userId;
 
 		if (!oauthUser) return ERR.ERR();
 		
 		let user = undefined;
 		if (oauthUser.userId) {
-			const usersModel = app.models["users"];
+			const usersModel = models["users"];
 			user = await usersModel.findOne({where:{id:oauthUser.userId}});
 			if (user) user = user.get({plain: true});
 		}

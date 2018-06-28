@@ -2,12 +2,15 @@ import _ from "lodash";
 import joi from "joi";
 import cache from 'memory-cache';
 import md5 from "blueimp-md5";
+import memoryCache from "memory-cache";
 
 import models from "@/models";
 import Controller from "@/controllers/controller.js";
 
 import util from "@@/common/util.js";
 import ERR from "@@/common/error.js";
+import sendSms from "@@/common/sms.js";
+import {sendEmail} from "@@/common/email.js";
 import config from "@/config.js";
 
 const userModel = models["users"];
@@ -147,10 +150,128 @@ export const Users = class extends Controller {
 		return ERR.ERR_OK(result);
 	}
 
+	// 手机验证第一步
+	async cellphoneVerifyOne(ctx) {
+		const userId = ctx.state.user.userId;
+		const params = ctx.state.params;
+		const cellphone = params.cellphone;
+		const captcha = _.times(4, () =>  _.random(0,9,false)).join("");
+
+		const ok = await sendSms(cellphone, [captcha, "3分钟"]);
+		//console.log(captcha, userId, ok);
+		memoryCache.put(cellphone, {captcha,userId}, 1000 * 60 * 3); // 10分钟有效期
+
+		return ERR.ERR_OK();
+	}
+	
+	// 手机验证第二步  ==> 手机绑定
+	async cellphoneVerifyTwo(ctx) {
+		const userId = ctx.state.user.userId;
+		const params = ctx.state.params;
+		const cellphone = params.cellphone;
+		const captcha = params.captcha;
+		
+		const cache = memoryCache.get(cellphone);
+		//console.log(cache, cellphone, captcha, userId);
+		if (!cache || cache.captcha != captcha || userId != cache.userId) {
+			return ERR.ERR({
+				captcha,
+				params,
+				userId,
+			}).setMessage("验证码过期");
+		}
+		
+		const result = await this.model.update({cellphone}, {where:{id:userId}});
+
+		return ERR.ERR_OK(result);
+	}
+
+	// 邮箱验证第一步
+	async emailVerifyOne(ctx) {
+		const userId = ctx.state.user.userId;
+		const params = ctx.state.params;
+		const email = params.email;
+		const captcha = _.times(4, () =>  _.random(0,9,false)).join("");
+
+		const body = `<h3>尊敬的Note用户:</h3><p>您好: 您的邮箱验证码为${captcha}, 请在10分钟内完成邮箱验证。谢谢</p>`;
+		const ok = await sendEmail(email, "Note 邮箱绑定验证", body);
+		console.log(captcha, userId);
+		memoryCache.put(email, {captcha,userId}, 1000 * 60 * 10); // 10分钟有效期
+
+		return ERR.ERR_OK();
+	}
+	
+	// 邮箱验证第二步  ==> 手机绑定
+	async emailVerifyTwo(ctx) {
+		const userId = ctx.state.user.userId;
+		const params = ctx.state.params;
+		const email = params.email;
+		const captcha = params.captcha;
+		
+		const cache = memoryCache.get(email);
+		console.log(cache, email, captcha, userId);
+		if (!cache || cache.captcha != captcha || userId != cache.userId) {
+			return ERR.ERR({
+				captcha,
+				params,
+				userId,
+			}).setMessage("验证码过期");
+		}
+		
+		const result = await this.model.update({email}, {where:{id:userId}});
+
+		return ERR.ERR_OK(result);
+	}
 	static getRoutes() {
 		this.pathPrefix = "users";
 
 		const routes = [
+		{
+			path: "cellphoneVerifyOne",
+			method: "GET",
+			action: "cellphoneVerifyOne",
+			authenticated: true,
+			validate: {
+				query: {
+					cellphone: joi.string().required(),
+				},
+			}
+		},
+		{
+			path: "cellphoneVerifyTwo",
+			method: "POST",
+			action: "cellphoneVerifyTwo",
+			authenticated: true,
+			validate: {
+				body: {
+					cellphone: joi.string().required(),
+					captcha: joi.string().required(),
+				},
+			}
+		},
+		{
+			path: "emailVerifyOne",
+			method: "GET",
+			action: "emailVerifyOne",
+			authenticated: true,
+			validate: {
+				query: {
+					email: joi.string().required(),
+				},
+			}
+		},
+		{
+			path: "emailVerifyTwo",
+			method: "POST",
+			action: "emailVerifyTwo",
+			authenticated: true,
+			validate: {
+				body: {
+					email: joi.string().required(),
+					captcha: joi.string().required(),
+				},
+			}
+		},
 		{
 			path: "test",
 			method: "GET",

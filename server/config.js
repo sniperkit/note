@@ -1,17 +1,13 @@
 import _ from "lodash";
 
-import commonConfig from "@@/common/config.js";
+import commonConfigs from "@@/common/config.js";
 import secretConfig from "@/.config.js";
 
+const ENV = secretConfig.ENV || process.env.NODE_ENV;
+
+const commonConfig = commonConfigs[ENV];
+
 const defaultConfig = {
-	secret: "keepwork",
-
-	host: "0.0.0.0",
-	port: 3000,
-	protocol: "http",
-	origin: "http://0.0.0.0:3000",
-	baseUrl: "/api/v0/",
-
 	database: {
 		//port:3306,
 		host: '39.106.11.114',
@@ -21,30 +17,6 @@ const defaultConfig = {
 		password: "", 
 	},
 
-	oauths: {
-		github: {
-			clientId: "5cc0cf681e677a56771b",
-			clientSecret: "",
-		},
-		qq: {
-			clientId: "101403344",
-			clientSecret:"",
-		},
-		weixin: {
-			clientId: "wxc97e44ce7c18725e",
-			clientSecret: "",
-		},
-		xinlang: {
-			clientId: "2411934420",
-			clientSecret: "",
-		},
-	},
-
-	elasticsearch: {
-		baseURL: "http://10.28.18.7:9200", 
-	},
-
-
 	gitlab: {
 		token: "",
 	},
@@ -52,6 +24,11 @@ const defaultConfig = {
 	qiniu: {
 		accessKey:"",
 		secretKey:"",
+		bucketName: "note",
+		bucketDomian: "http://qiniu.wxaxiaoyao.cn",
+		// keepwork-dev
+		//bucketName: "keepwork-dev",
+		//bucketDomian: "http://oy41aju0m.bkt.clouddn.com",
 	},
 
 	email: {
@@ -73,23 +50,27 @@ const defaultConfig = {
 
 }
 
-//defaultConfig.baseURL = defaultConfig.baseURL || (defaultConfig.protocol + "://" + defaultConfig.host + ":" + defaultConfig.port + defaultConfig.apiPrefix);
-
 const productionConfig = {
 }
 
 const developmentConfig = {
 }
 
+const localConfig = {
+	
+}
+
 const testConfig = {
 
 }
+
 const configs = {
 	"production": _.merge({}, commonConfig, defaultConfig, productionConfig, secretConfig),
 	"development": _.merge({}, commonConfig, defaultConfig, developmentConfig, secretConfig),
+	"local": _.merge({}, commonConfig, defaultConfig, localConfig, secretConfig),
 	"test": _.merge({}, commonConfig, defaultConfig, testConfig, secretConfig),
 }
 
-//console.log(process.env.NODE_ENV);
+console.log(ENV);
 
-export default configs[secretConfig.NODE_ENV || process.env.NODE_ENV];
+export default configs[ENV];

@@ -25,8 +25,7 @@ const qiniuUpload = async (key, file, token, params = {}, observer = {}) => {
 		putExtra: {
 			mimeType: null,
 			params: {
-				"x:public": params.public || false,
-				"x:content": content,
+				//"x:varname":"x"
 			},
 		},
 		config: {

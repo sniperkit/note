@@ -28,7 +28,7 @@ const apiRouter = new Router({
 
 registerControllerRouter(apiRouter);
 
-global.app = {
+global.g_app = {
 	models,
 };
 
@@ -73,5 +73,4 @@ export default (app, views) => {
 		files.raw(ctx);
 	});
 }
-
 

@@ -81,13 +81,13 @@ export function Users(options) {
 
 	initHttpOptions(self, options, "users", "id");
 
-	const apiRequest = (method, url) => (data, config) => httpRequest(method || "get", url, data, Object.assign(self.options, config));
-
-
-	self.login = apiRequest("post", "users/login");
-	self.register = apiRequest("post", "users/register");
-	self.changepwd = apiRequest("put", "users/changepwd");
-	self.isLogin = apiRequest("get", "users/isLogin");
+	self.login = self.apiRequest("post", "login");
+	self.register = self.apiRequest("post", "register");
+	self.changepwd = self.apiRequest("put", "changepwd");
+	self.cellphoneVerifyOne = self.apiRequest("get", "cellphoneVerifyOne");
+	self.cellphoneVerifyTwo = self.apiRequest("post", "cellphoneVerifyTwo");
+	self.emailVerifyOne = self.apiRequest("get", "emailVerifyOne");
+	self.emailVerifyTwo = self.apiRequest("post", "emailVerifyTwo");
 }
 
 

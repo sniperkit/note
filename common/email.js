@@ -24,7 +24,7 @@ const from = config.email.from || config.email.user;
 //})
 
 
-export const sendMail = async function(to, subject, html, from) {
+export const sendEmail = async function(to, subject, html, from) {
 	from = from || config.email.from || config.email.user;
 
 	const ok = await new Promise((resolve, reject) => {

@@ -5,9 +5,7 @@ import axios from "axios";
 
 import config from "@/config.js";
 
-//const baseUrl = config.origin + config.baseUrl + "oauthUsers/";
-const baseUrl = "http://47.52.20.34:7654" + config.baseUrl + "oauthUsers/";
-
+const baseUrl = config.origin + config.baseUrl + "oauthUsers/";
 console.log(baseUrl);
 
 vue.use(vueAxios, axios);
