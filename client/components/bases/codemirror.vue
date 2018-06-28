@@ -111,7 +111,10 @@ export default {
 	},
 	watch: {
 		"value": function(val) {
-			this.codemirror && this.swapDoc(val.filename, val.text);	
+			if (this.codemirror) {
+				this.swapDoc(val.filename, val.text);	
+				val.cursor && this.codemirror.setCursor(val.cursor);
+			}
 		},
 	},
 	methods: {

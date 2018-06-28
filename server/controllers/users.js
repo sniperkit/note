@@ -177,7 +177,7 @@ export const Users = class extends Controller {
 		const cellphone = params.cellphone;
 		const captcha = _.times(4, () =>  _.random(0,9,false)).join("");
 
-		//const ok = await sendSms(cellphone, [captcha, "3分钟"]);
+		const ok = await sendSms(cellphone, [captcha, "3分钟"]);
 		console.log(captcha, userId);
 		memoryCache.put(cellphone, {captcha,userId}, 1000 * 60 * 3); // 10分钟有效期
 

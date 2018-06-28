@@ -14,6 +14,9 @@
 					</el-form-item>
 				</el-form>
 			</el-col>
+			<el-col :span="8" :offset="10" :xs="{span:21, offset:3}">
+				<OauthLogin></OauthLogin>
+			</el-col>
 		</el-row>
 	</div>
 </template>
@@ -29,6 +32,7 @@ import {
 	Message,
 } from "element-ui";
 import {mapActions, mapGetters} from "vuex";
+import OauthLogin from "@/components/views/oauthLogin.vue";
 
 export default {
 	components: {
@@ -38,6 +42,7 @@ export default {
 		[Form.name]: Form,
 		[FormItem.name]: FormItem,
 		[Input.name]: Input,
+		OauthLogin,
 	},
 
 	data:function(){
@@ -77,7 +82,6 @@ export default {
 			}
 
 			const user = result.getData();
-			const token = user.token;
 			self.login(user);
 			self.$router.push({name:g_app.getRouteName("home")});
 		}

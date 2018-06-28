@@ -8,12 +8,15 @@
 </template>
 
 <script>
-
 export default {
 	methods: {
 		async clickOauthLoginBtn(type) {
-			const data = await this.$auth.authenticate(type, {state:"login"});
-			console.log(data);
+			const data = await this.$auth.authenticate(type, {state:"login"}).then(res => res.data);
+			if (!data.id)  {
+				return this.$message("账号未绑定");
+			}
+			this.login(data);
+			this.$router.push({name:g_app.getRouteName("home")});
 		}
 	}
 }

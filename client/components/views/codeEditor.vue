@@ -197,6 +197,7 @@ export default {
 			self.value =  {
 				filename: page.path,
 				text: page.content || "",
+				cursor: page.cursor,
 			}
 			self.savePageToDB();
 		});

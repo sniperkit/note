@@ -87,7 +87,6 @@ import {
 import vue from "vue";
 import _ from "lodash";
 import config from "@/config.js";
-import api from "@@/common/api/note.js";
 import util from "@@/common/util.js";
 
 vue.use(Loading.directive);
@@ -142,7 +141,7 @@ export default {
 
 		async getSites() {
 			const self = this;
-			let result = await api.sites.get({owned: true});
+			let result = await this.api.sites.get({owned: true});
 			const sites = result.getData() || [];
 			sites.forEach(site => {
 				site.name = site.sitename;
@@ -250,7 +249,7 @@ export default {
 			const self = this;
 			let _loadPageFromServer = async function() {
 				console.log("服务器最新");
-				const result = await api.pages.getByKey({key:page.key});
+				const result = await self.api.pages.getByKey({key:page.key});
 				const file = result.getData();
 				if (!file && result.isErr()) {
 					Message(result.getMessage());
@@ -388,7 +387,7 @@ export default {
 			const path = data.path;
 			const page = this.getPageByPath(path);
 			page.setRefresh(true);
-			const result = await api.pages.deleteByKey({key:page.key});
+			const result = await this.api.pages.deleteByKey({key:page.key});
 			if (result.isErr()) {
 				Message(result.getMessage());
 			}
