@@ -93,8 +93,9 @@ export const isAuthenticated = () => {
 	return true;
 }
 
+// API config初始化
+api.options.baseURL = config.origin + config.baseUrl;
 if (isAuthenticated()) {
-	api.options.baseURL = config.origin + config.baseUrl;
 	api.options.headers['Authorization'] = "Bearer " + user.token;
 } else {
 	logout();

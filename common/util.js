@@ -53,9 +53,9 @@ const filetypes = {
 	//unknow: "files",
 }
 
-util.jwt_encode = function(payload, key, expire) {
+util.jwt_encode = function(payload, key, expire = 3600 * 24 * 100) {
 	payload = payload || {};
-	payload.exp = Date.now() / 1000 + (expire || 3600 * 24 * 100);
+	payload.exp = Date.now() / 1000 + expire;
 
 	return jwt.encode(payload, key);
 }

@@ -12,7 +12,7 @@
 export default {
 	methods: {
 		async clickOauthLoginBtn(type) {
-			const data = await this.$auth.authenticate(type);
+			const data = await this.$auth.authenticate(type, {state:"login"});
 			console.log(data);
 		}
 	}

@@ -8,6 +8,7 @@ const ENV = secretConfig.ENV || process.env.NODE_ENV;
 const commonConfig = commonConfigs[ENV];
 
 const defaultConfig = {
+	tokenExpire: 3600 * 24 * 100,
 	database: {
 		//port:3306,
 		host: '39.106.11.114',

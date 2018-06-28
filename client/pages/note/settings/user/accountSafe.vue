@@ -41,9 +41,17 @@
 					</div>
 				</el-dialog>
 
-				<span>手机号</span>
-				<span>{{cellphoneModel.cellphone}}</span>
-				<el-button @click="isShowCellphoneCaptchaDialog = true">{{cellphoneModel.isBind ? "解绑" : "绑定"}}</el-button>
+				<el-row>
+					<el-col :span="2">
+						<span>手机号</span>
+					</el-col>
+					<el-col :span="8">
+						<span>{{cellphoneModel.cellphone}}</span>
+					</el-col>
+					<el-col :span="2">
+						<el-button @click="isShowCellphoneCaptchaDialog = true">{{cellphoneModel.isBind ? "解绑" : "绑定"}}</el-button>
+					</el-col>
+				</el-row>
 			</div>
 			<div>
 				<el-dialog :visible.sync="isShowEmailCaptchaDialog" title="邮箱验证码" width="450px">
@@ -68,9 +76,30 @@
 					</div>
 				</el-dialog>
 
-				<span>邮箱</span>
-				<span>{{emailModel.email}}</span>
-				<el-button @click="isShowEmailCaptchaDialog = true">{{emailModel.isBind ? "解绑" : "绑定"}}</el-button>
+				<el-row>
+					<el-col :span="2">
+						<span>邮箱</span>
+					</el-col>
+					<el-col :span="8">
+						<span>{{emailModel.email}}</span>
+					</el-col>
+					<el-col :span="2">
+						<el-button @click="isShowEmailCaptchaDialog = true">{{emailModel.isBind ? "解绑" : "绑定"}}</el-button>
+					</el-col>
+				</el-row>
+			</div>
+			<div v-for="(x, key) in oauthUsers" :key="key">
+				<el-row>
+					<el-col :span="2">
+						<span>{{x.name}}</span>
+					</el-col>
+					<el-col :span="8">
+						<span>{{x.nickname}}</span>
+					</el-col>
+					<el-col :span="2">
+						<el-button @click="clickBindOauthUserBtn(x)">{{x.isBind ? "解绑" : "绑定"}}</el-button>
+					</el-col>
+				</el-row>
 			</div>
 		</el-tab-pane>
 	</el-tabs>
@@ -90,8 +119,14 @@ import {
 	Radio,
 	Message,
 } from "element-ui";
+import _ from "lodash";
 
-import api from "@@/common/api/note.js";
+import {
+	OAUTH_SERVICE_TYPE_QQ,
+	OAUTH_SERVICE_TYPE_WEIXIN,
+	OAUTH_SERVICE_TYPE_GITHUB,
+	OAUTH_SERVICE_TYPE_XINLANG,
+} from "@@/common/consts.js";
 
 export default {
 	components: {
@@ -122,6 +157,32 @@ export default {
 				captcha: "",
 				isBind: false,
 			},
+			oauthUsers: {
+				qq: {
+					type:'qq',
+					name:"QQ",
+					nickname:null,
+					isBind: false,
+				},
+				weixin: {
+					type:'weixin',
+					name:"微信",
+					nickname:null,
+					isBind: false,
+				},
+				github: {
+					type:'github',
+					name: "GITHUB",
+					nickname: null,
+					isBind: false,
+				},
+				xinlang: {
+					type:'xinlang',
+					name:"新浪",
+					nickname: null,
+					isBind: false,
+				},
+			},
 		}
 	},
 
@@ -146,17 +207,27 @@ export default {
 
 		async clickSubmitBindCellphoneBtn() {
 			const reg = /^1\d{10}$/;
-			const cellphone = this.cellphoneModel.cellphone || "";
+			let cellphone = this.cellphoneModel.cellphone || "";
 			if (!reg.test(cellphone)) return Message("手机号格式错误");
+			this.cellphoneModel.isBind = !this.cellphoneModel.isBind;
 			const result = await this.api.users.cellphoneVerifyTwo(this.cellphoneModel);
 
 			this.isShowCellphoneCaptchaDialog = false;
 
-			if (result.isErr()) return Message(result.getMessage());
+			if (result.isErr()){
+				this.cellphoneModel.isBind = !this.cellphoneModel.isBind;
+				return Message(result.getMessage());
+			} 
 
-			Message("手机绑定成功");
-			this.setUser({cellphone});
-			this.cellphoneModel.isBind = true;
+			if (this.cellphoneModel.isBind){
+				Message("手机绑定成功");
+			} else {
+				this.cellphoneModel.cellphone = "";
+				Message("手机解绑成功");
+			}
+			this.timeout = 0;
+			this.cellphoneModel.captcha = "";
+			this.setUser({cellphone:this.cellphoneModel.cellphone});
 		},
 
 		async clickSendEmailCaptchaBtn() {
@@ -169,17 +240,27 @@ export default {
 
 		async clickSubmitBindEmailBtn() {
 			const reg = /^(\w-*\.*)+@(\w-?)+(\.\w{2,})+$/;
-			const email = this.emailModel.email || "";
+			let email = this.emailModel.email || "";
 			if (!reg.test(email)) return Message("邮箱格式错误");
 
+			this.emailModel.isBind = !this.emailModel.isBind;
 			const result = await this.api.users.emailVerifyTwo(this.emailModel);
 			this.isShowEmailCaptchaDialog = false;
 
-			if (result.isErr()) return Message(result.getMessage());
+			if (result.isErr()){
+				this.emailModel.isBind = !this.emailModel.isBind;
+				return Message(result.getMessage());
+			}
 
-			Message("邮箱绑定成功");
-			this.setUser({email});
-			this.emailModel.isBind = true;
+			if (this.emailModel.isBind){
+				Message("邮箱绑定成功");
+			} else {
+				this.emailModel.email = "";
+				Message("邮箱解绑成功");
+			}
+			this.timeout = 0;
+			this.cellphoneModel.captcha = "";
+			this.setUser({email:this.emailModel.email});
 		},
 
 		async clickSubmitBtn() {
@@ -197,15 +278,51 @@ export default {
 			}
 
 			Message("密码修改成功");
+		},
+
+		async clickBindOauthUserBtn(oauthUser) {
+			// 已经绑定 进行解绑
+			if (oauthUser.isBind) {
+				const result = await this.api.oauthUsers.delete({id:oauthUser.id});
+				if (result.isErr()) return Message(result.getMessage());
+				oauthUser.nickname = "";
+				oauthUser.isBind = false;
+				Message("帐号解绑成功");
+				return;
+			}
+			
+			const data = await this.$auth.authenticate(oauthUser.type, {state:"bind"}).then(res => res.data);
+			oauthUser.nickname = data.externalUsername;
+			oauthUser.isBind = true;
+			Message("帐号绑定成功");
+			//console.log(data);
 		}
 	},
 
-	mounted() {
+	async mounted() {
 		this.cellphoneModel.cellphone = this.user.cellphone;
 		this.cellphoneModel.isBind = this.user.cellphone ? true : false;
 
 		this.emailModel.email = this.user.email;
 		this.emailModel.isBind = this.user.email ? true : false;
+
+		let oauthUsers = await this.api.oauthUsers.find();
+		oauthUsers = oauthUsers.getData();
+
+		const self = this;
+		const typeMap = {
+			[OAUTH_SERVICE_TYPE_QQ]: "qq",
+			[OAUTH_SERVICE_TYPE_WEIXIN]: "weixin",
+			[OAUTH_SERVICE_TYPE_GITHUB]: "github",
+			[OAUTH_SERVICE_TYPE_XINLANG]: "xinlang",
+		}
+		_.each(oauthUsers, obj => {
+			//console.log(typeMap[obj.type], obj.type, typeMap);
+			self.oauthUsers[typeMap[obj.type]].nickname = obj.externalUsername;
+			self.oauthUsers[typeMap[obj.type]].isBind = true;
+			self.oauthUsers[typeMap[obj.type]].id = obj.id;
+
+		});
 	}
 }
 </script>

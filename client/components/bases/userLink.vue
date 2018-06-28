@@ -48,6 +48,7 @@ export default {
 			if (cmd == "logout") {
 				this.logout();
 				this.pushName("login");
+				this.api.users.logout();
 				return;
 			}
 			

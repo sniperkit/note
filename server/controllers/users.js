@@ -65,9 +65,14 @@ export const Users = class extends Controller {
 		const token = util.jwt_encode({
 			userId: user.id, 
 			username: user.username
-		}, config.secret);
+		}, config.secret, config.tokenExpire);
 
 		user.token = token;
+		ctx.cookies.set("token", token, {
+			maxAge: config.tokenExpire * 1000,
+			overwrite: true,
+			domain: "." + config.domain,
+		});
 
 		return ERR.ERR_OK().setData(user);
 	}
@@ -90,11 +95,26 @@ export const Users = class extends Controller {
 		const token = util.jwt_encode({
 			userId: user.id, 
 			username: user.username
-		}, config.secret);
+		}, config.secret, config.tokenExpire);
 
 		user.token = token;
+		ctx.cookies.set("token", token, {
+			maxAge: config.tokenExpire * 1000,
+			overwrite: true,
+			domain: "." + config.domain,
+		});
 
 		return ERR.ERR_OK().setData(user);
+	}
+
+	logout(ctx) {
+		ctx.cookies.set("token", "", {
+			maxAge: 0,
+			overwrite: true,
+			domain: "." + config.domain,
+		});
+
+		return ERR.ERR_OK();
 	}
 
 	async changepwd(ctx) {
@@ -157,8 +177,8 @@ export const Users = class extends Controller {
 		const cellphone = params.cellphone;
 		const captcha = _.times(4, () =>  _.random(0,9,false)).join("");
 
-		const ok = await sendSms(cellphone, [captcha, "3分钟"]);
-		//console.log(captcha, userId, ok);
+		//const ok = await sendSms(cellphone, [captcha, "3分钟"]);
+		console.log(captcha, userId);
 		memoryCache.put(cellphone, {captcha,userId}, 1000 * 60 * 3); // 10分钟有效期
 
 		return ERR.ERR_OK();
@@ -168,8 +188,8 @@ export const Users = class extends Controller {
 	async cellphoneVerifyTwo(ctx) {
 		const userId = ctx.state.user.userId;
 		const params = ctx.state.params;
-		const cellphone = params.cellphone;
 		const captcha = params.captcha;
+		let cellphone = params.cellphone;
 		
 		const cache = memoryCache.get(cellphone);
 		//console.log(cache, cellphone, captcha, userId);
@@ -181,6 +201,8 @@ export const Users = class extends Controller {
 			}).setMessage("验证码过期");
 		}
 		
+		if (!params.isBind) cellphone = "";
+
 		const result = await this.model.update({cellphone}, {where:{id:userId}});
 
 		return ERR.ERR_OK(result);
@@ -205,8 +227,8 @@ export const Users = class extends Controller {
 	async emailVerifyTwo(ctx) {
 		const userId = ctx.state.user.userId;
 		const params = ctx.state.params;
-		const email = params.email;
 		const captcha = params.captcha;
+		let email = params.email;
 		
 		const cache = memoryCache.get(email);
 		console.log(cache, email, captcha, userId);
@@ -218,6 +240,8 @@ export const Users = class extends Controller {
 			}).setMessage("验证码过期");
 		}
 		
+		if (!params.isBind) email = "";
+
 		const result = await this.model.update({email}, {where:{id:userId}});
 
 		return ERR.ERR_OK(result);
@@ -283,27 +307,6 @@ export const Users = class extends Controller {
 			action: "search",
 		},
 		{
-			path: ":id",
-			method: "GET",
-			action: "findById",
-			validate: {
-				params: {
-					id: joi.number().required(),
-				},
-			}
-		},
-		{
-			path: ":id",
-			method: "PUT",
-			action: "update",
-			authenticated: true,
-			validate: {
-				params: {
-					id: joi.number().required(),
-				},
-			}
-		},
-		{
 			path: ":id/changepwd",
 			method: ["POST", "PUT"],
 			action: "changepwd",
@@ -328,6 +331,33 @@ export const Users = class extends Controller {
 				body: {
 					username: joi.string().min(4).max(48).required(),
 					password: joi.string().min(4).max(48).required(),
+				},
+			}
+		},
+		{
+			path: "logout",
+			method: "post",
+			action: "logout",
+			authenticated: true,
+		},
+		{
+			path: ":id",
+			method: "GET",
+			action: "findById",
+			validate: {
+				params: {
+					id: joi.number().required(),
+				},
+			}
+		},
+		{
+			path: ":id",
+			method: "PUT",
+			action: "update",
+			authenticated: true,
+			validate: {
+				params: {
+					id: joi.number().required(),
 				},
 			}
 		},

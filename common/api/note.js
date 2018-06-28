@@ -46,6 +46,7 @@ function initHttpOptions(self, options = {}, prefix, key = "id") {
 	self.update = self.restRequest("put");
 	self.delete = self.restRequest("delete");
 	self.get = self.restRequest("get");
+	self.find = self.restRequest("get");
 }
 
 export function DataSource(options) {
@@ -82,6 +83,7 @@ export function Users(options) {
 	initHttpOptions(self, options, "users", "id");
 
 	self.login = self.apiRequest("post", "login");
+	self.logout = self.apiRequest("post", "logout");
 	self.register = self.apiRequest("post", "register");
 	self.changepwd = self.apiRequest("put", "changepwd");
 	self.cellphoneVerifyOne = self.apiRequest("get", "cellphoneVerifyOne");
@@ -149,7 +151,13 @@ export function SiteGroups(options) {
 export function SiteMembers(options) {
 	const self = this;
 
-	initHttpOptions(self, options, "SiteMembers", "id");
+	initHttpOptions(self, options, "siteMembers", "id");
+}
+
+export function OauthUsers(options) {
+	const self = this;
+
+	initHttpOptions(self, options, "oauthUsers", "id");
 }
 
 export function Notes(options = {}){
@@ -166,6 +174,7 @@ export function Notes(options = {}){
 	self.groupMembers = new GroupMembers(self.options);
 	self.siteGroups = new SiteGroups(self.options);
 	self.siteMembers = new SiteMembers(self.options);
+	self.oauthUsers = new OauthUsers(self.options);
 }
 
 export const options = {

@@ -28,7 +28,6 @@ import {
 	Button,
 	Message,
 } from "element-ui";
-import api from "@@/common/api/note.js";
 
 export default {
 	components: {
@@ -66,7 +65,7 @@ export default {
 			});
 			if (!ret) return;
 
-			const result = await api.users.register({
+			const result = await self.api.users.register({
 				username:self.registerForm.username,
 				password:self.registerForm.password,
 			});

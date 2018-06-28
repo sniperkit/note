@@ -6,6 +6,7 @@ const defaultConfig = {
 
 	host: "0.0.0.0",
 	port: 3000,
+	domain: "wxaxiaoyao.cn",
 	origin: "http://wxaxiaoyao.cn",
 	baseUrl: "/api/v0/",
 
@@ -34,6 +35,7 @@ const defaultConfig = {
 const productionConfig = {
 	host: "0.0.0.0",
 	port: 3000,
+	domain: "wxaxiaoyao.cn",
 	origin: "http://wxaxiaoyao.cn",
 	baseUrl: "/api/v0/",
 }
@@ -44,6 +46,7 @@ const developmentConfig = {
 const localConfig = {
 	host: "0.0.0.0",
 	port: 3000,
+	domain: "localhost",
 	origin: "http://localhost:3000",
 	baseUrl: "/api/v0/",
 }

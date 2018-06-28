@@ -83,7 +83,6 @@ module.exports = {
 		vendor: [
 			"lodash",
 			"axios",
-			"vuex-persistedstate",
 		],
 		babel: {
 			//presets:[
@@ -112,7 +111,7 @@ module.exports = {
 			}
 
 			config.entry["vendor1"] = ["~/plugins/codemirror", "qiniu-js"];
-			config.entry["vendor2"] = ["~/plugins/element-ui", "js-yaml"];
+			config.entry["vendor2"] = ["~/plugins/element-ui"];
 			config.plugins[0] = new webpack.optimize.CommonsChunkPlugin({
 				names: ["vendor2" ,"vendor1", "vendor"],
 				minChunks: Infinity,

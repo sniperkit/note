@@ -181,18 +181,32 @@ export const OauthUsers = class extends Controller {
 
 		if (!oauthUser) return ERR.ERR();
 		
+		if (params.state == "bind") {
+			oauthUser.token = "oauth user token";
+			return  oauthUser;
+		}
+
+		// params.state == "login"  登录
 		let user = undefined;
 		if (oauthUser.userId) {
 			const usersModel = models["users"];
 			user = await usersModel.findOne({where:{id:oauthUser.userId}});
 			if (user) user = user.get({plain: true});
 		}
+		
 		user = user || {};	
-		user.token = util.jwt_encode({
+		const token = util.jwt_encode({
 			userId: user.id || oauthUser.userId,
 			username: user.username,
 			oauthUserId: oauthUser.id,
-		}, config.secret);
+		}, config.secret, config.tokenExpire);
+
+		user.token = token;
+		ctx.cookies.set("token", user.token, {
+			maxAge: config.tokenExpire * 1000,
+			overwrite: true,
+			domain: "." + config.domain,
+		});
 
 		return user;
 	}
