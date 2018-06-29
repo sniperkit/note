@@ -1,6 +1,5 @@
 import vue from "vue";
 import _ from "lodash";
-import yaml from "js-yaml";
 import jwt from "jwt-simple";
 import config from "@/config.js";
 import consts from "@/lib/consts.js";
@@ -8,18 +7,9 @@ import storage from "@/lib/storage.js";
 import indexedDB from "@/lib/indexedDB.js";
 import events from "@/lib/events.js";
 
-//import 'vue-easytable/libs/themes-base/index.css'
-//import {VTable,VPagination} from 'vue-easytable';
-//vue.component(VTable.name, VTable);
-//vue.component(VPagination.name, VPagination);
-
-
-
-
 const app = {
 	isSmallScreen: window.innerWidth < 768,
 	object:{},
-	yaml,
 	events,
 	vue: new vue(),
 	config: config,
