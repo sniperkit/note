@@ -14,8 +14,12 @@
 					</el-form-item>
 				</el-form>
 			</el-col>
-			<el-col :span="8" :offset="10" :xs="{span:21, offset:3}">
-				<OauthLogin></OauthLogin>
+		</el-row>
+		<el-row>
+			<el-col :span="8" :offset="8" :xs="{span:22, offset:1}">
+				<div style="display:flex; justify-content:center">
+					<OauthLogin></OauthLogin>
+				</div>
 			</el-col>
 		</el-row>
 	</div>

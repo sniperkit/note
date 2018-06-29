@@ -1,4 +1,4 @@
-import yaml from "js-yaml";
+//import yaml from "js-yaml";
 import markdown from "./markdown.js";
 
 // md 构造函数
@@ -48,7 +48,8 @@ export const markdownEx = function(options) {
 			var styleName = (cmdName.match(wikiStyleNameRE) || [])[1];
 			var modParams = undefined;
 			try {
-				modParams = yaml.load(content)
+				//modParams = yaml.load(content);
+				modParams = JSON.parse(content);
 			}
 			catch (e) {
 				modParams = content;
