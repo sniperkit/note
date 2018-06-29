@@ -1,5 +1,5 @@
 import vue from "vue";
-import yaml from "js-yaml";
+//import yaml from "js-yaml";
 import _ from "lodash";
 
 import {tags} from "@/lib/tags";
@@ -7,7 +7,8 @@ import template from "./template";
 import title from "./title";
 import tagmodstr from "./mods.yml";
 
-export const tagMods = yaml.load(tagmodstr);
+//export const tagMods = yaml.load(tagmodstr);
+export const tagMods = {};
 
 const getTagFactoryByTag = (tag) => () => tags.getTagByTag(tag);
 _.each(tagMods, mod => {
