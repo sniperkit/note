@@ -1,3 +1,4 @@
+import _ from "lodash";
 import axios from "axios";
 import qiniu from "qiniu";
 
@@ -125,15 +126,10 @@ Qiniu.move = async function(srcKey, dstKey) {
 	return result;
 }
 
-Qiniu.batchMove = async function(list) {
+Qiniu.batch = async function(ops) {
 	const bucketManager = getBucketManager();
-	const moveOperations = [];
-	for (var i = 0; i < list.length; i++) {
-		moveOperations.push(qiniu.rs.moveOp(bucketName, list[i].srcKey, bucketName, list[i].dstKey));
-	}
-
 	const result = await new Promise((resolve, reject) => {
-		bucketManager.batch(moveOperations, function(respErr, respBody, respInfo){
+		bucketManager.batch(ops, function(respErr, respBody, respInfo){
 			if (respErr || respInfo.statusCode != 200) {
 				//console.log(respErr, respInfo.statusCode, respBody);
 				//return resolve(false);
@@ -146,6 +142,23 @@ Qiniu.batchMove = async function(list) {
 	});
 
 	return result;
+}
+Qiniu.batchMove = async function(list) {
+	const moveOperations = [];
+	for (var i = 0; i < list.length; i++) {
+		moveOperations.push(qiniu.rs.moveOp(bucketName, list[i].srcKey, bucketName, list[i].dstKey));
+	}
+
+	return await this.batch(moveOperations);
+}
+
+Qiniu.batchDelete = async function(list) {
+	const bucketManager = getBucketManager();
+	const deleteOps = [];
+	
+	_.each(list, item => deleteOps.push(qiniu.rs.deleteOp(bucketName, item.key)));
+	
+	return await this.batch(deleteOps);
 }
 
 Qiniu.get = async function(key) {

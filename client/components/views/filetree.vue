@@ -50,6 +50,7 @@
 						<span>{{data.label}}</span>
 					</span>
 					<span v-if="node.level != 1">
+						<i v-if="node.loaded && node.childNodes.length == 0"class="iconfont icon-delete" @click.stop="clickDeleteBtn(data, node)"></i> 
 						<i class="iconfont icon-plus" @click.stop="clickNewFileBtn(data, node)"></i> 
 					</span>
 				</span>
@@ -387,6 +388,10 @@ export default {
 			const path = data.path;
 			const page = this.getPageByPath(path);
 			page.setRefresh(true);
+			//if (page.type == "folders") {
+				//console.log(node);
+				//return ;
+			//}
 			const result = await this.api.pages.deleteByKey({key:page.key});
 			if (result.isErr()) {
 				Message(result.getMessage());
