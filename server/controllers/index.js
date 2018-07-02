@@ -1,7 +1,7 @@
 import _ from "lodash";
-import {validate} from "../middlewares/index.js";
+import middlewares from "@/middlewares/index.js";
 
-import {ERR_UNATUH, ERR_OK, ERR_PARAMS} from "../../common/error.js";
+import {ERR_UNATUH, ERR_OK, ERR_PARAMS} from "@@/common/error.js";
 
 import tests from "./tests.js";
 import code from "./code.js";
@@ -19,6 +19,9 @@ import groupMembers from "./groupMembers.js";
 import domains from "./domains.js";
 import pages from "./pages.js";
 import oauthUsers from "./oauthUsers.js";
+import favorites from "./favorites.js";
+
+const {validate, validated, pagination} = middlewares;
 
 export const controllers = {
 	tests,
@@ -37,6 +40,7 @@ export const controllers = {
 	domains,
 	pages,
 	oauthUsers,
+	favorites,
 }
 
 const getParams = (ctx) => {
@@ -65,9 +69,13 @@ export const registerControllerRouter = function(router) {
 				const path = (Ctrl.pathPrefix || "") + "/" + (route.path || "");
 				
 				//console.log(path, method);
-				router[method](path, validate(route.validate), async (ctx, next) => {
+				router[method](path, 
+						pagination, 
+						validated(route.validated), 
+						validate(route.validate), 
+						async (ctx, next) => {
 					// 认证中间件
-					if (route.authentated && !ctx.state.user) {
+					if (route.authenticated && !ctx.state.user) {
 						ctx.body = ERR_UNATUH();
 						return;
 					}

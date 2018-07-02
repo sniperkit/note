@@ -9,11 +9,14 @@ export const Users = class extends Model {
 	}
 
 	async getByUsername(username) {
-		const result = await this.model.findOne({where: {username}});
+		const result = await this.model.findOne({
+			where: {username},
+			exclude: ["password"],
+		});
 
 		if (!result) return ERR.ERR_PARAMS();
 
-		return ERR.ERR_OK(result);
+		return ERR.ERR_OK(result.get({plain:true}));
 	}
 }
 

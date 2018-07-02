@@ -32,6 +32,28 @@ export const Users = class extends Controller {
 		return await this.model.update(params, {where:{id:userId}});
 	}
 
+	async getDetailByUsername(ctx) {
+		const params = ctx.state.params;
+		const result = await this.model.getByUsername(params.username);
+		const userinfo = result.getData();
+
+		if (!userinfo) return result;
+
+		const favoriteModel = models["favorites"];
+		const statistics = await favoriteModel.getStatistics(userinfo.id);
+		_.merge(userinfo, statistics);
+
+		return ERR.ERR_OK(userinfo);
+	}
+
+	async getByUsername(ctx) {
+		const params = ctx.state.params;
+
+		const data = await this.model.getByUsername(params.username);
+
+		return data;
+	}
+
 	async findById(ctx) {
 		const id = ctx.params.id;
 		
@@ -159,15 +181,12 @@ export const Users = class extends Controller {
 
 	async test(ctx) {
 		const params = ctx.state.params;
+		const pagination = ctx.state.pagination;
 		const where = {};
-		let sql = `select * from users where username = :username`;
-		let result = await this.model.query(sql, {
-			replacements: {
-				username:"'xiaoyao' or 1 = 1",
-			}
-		});
 	
-		return ERR.ERR_OK(result);
+		pagination.total = 1;
+		
+		return ERR.ERR_OK(pagination);
 	}
 
 	// 手机验证第一步
@@ -246,10 +265,36 @@ export const Users = class extends Controller {
 
 		return ERR.ERR_OK(result);
 	}
+
 	static getRoutes() {
 		this.pathPrefix = "users";
 
 		const routes = [
+		{
+			path: "test",
+			method: "GET",
+			action: "test",
+		},
+		{
+			path:"getDetailByUsername",
+			method: "GET",
+			action:"getDetailByUsername",
+			validate: {
+				query: {
+					username: joi.string().required(),
+				}
+			}
+		},
+		{
+			path:"getByUsername",
+			method: "GET",
+			action:"getByUsername",
+			validate: {
+				query: {
+					username: joi.string().required(),
+				}
+			}
+		},
 		{
 			path: "cellphoneVerifyOne",
 			method: "GET",
@@ -295,11 +340,6 @@ export const Users = class extends Controller {
 					captcha: joi.string().required(),
 				},
 			}
-		},
-		{
-			path: "test",
-			method: "GET",
-			action: "test",
 		},
 		{
 			path: "search",

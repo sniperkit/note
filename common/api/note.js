@@ -90,6 +90,8 @@ export function Users(options) {
 	self.cellphoneVerifyTwo = self.apiRequest("post", "cellphoneVerifyTwo");
 	self.emailVerifyOne = self.apiRequest("get", "emailVerifyOne");
 	self.emailVerifyTwo = self.apiRequest("post", "emailVerifyTwo");
+	self.getByUsername = self.apiRequest("get", "getByUsername");
+	self.getDetailByUsername = self.apiRequest("get", "getDetailByUsername");
 }
 
 
@@ -160,6 +162,16 @@ export function OauthUsers(options) {
 	initHttpOptions(self, options, "oauthUsers", "id");
 }
 
+export function Favorites(options) {
+	const self = this;
+
+	initHttpOptions(self, options, "favorites", "id");
+
+	self.isFollowing = self.apiRequest("get", "isFollowing");
+	self.following = self.apiRequest("post", "following");
+	self.unFollowing = self.apiRequest("post", "unFollowing");
+}
+
 export function Notes(options = {}){
 	const self = this;
 	initHttpOptions(self, options);
@@ -175,6 +187,7 @@ export function Notes(options = {}){
 	self.siteGroups = new SiteGroups(self.options);
 	self.siteMembers = new SiteMembers(self.options);
 	self.oauthUsers = new OauthUsers(self.options);
+	self.favorites = new Favorites(self.options);
 }
 
 export const options = {
