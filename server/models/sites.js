@@ -2,8 +2,8 @@ import Model from "./model.js";
 import _ from "lodash";
 
 import {
-	ENITY_VISIBILITY_PUBLIC,
-	ENITY_VISIBILITY_PRIVATE,
+	ENTITY_VISIBILITY_PUBLIC,
+	ENTITY_VISIBILITY_PRIVATE,
 
 	USER_ACCESS_LEVEL_NONE,
 	USER_ACCESS_LEVEL_READ,
@@ -59,7 +59,7 @@ export const Sites = class extends Model {
 		if (siteId.userId == memberId) return ERR.ERR_OK(USER_ACCESS_LEVEL_WRITE);
 
 		let level = USER_ACCESS_LEVEL_READ;
-		if (site.visibility == ENITY_VISIBILITY_PRIVATE) level = USER_ACCESS_LEVEL_NONE;
+		if (site.visibility == ENTITY_VISIBILITY_PRIVATE) level = USER_ACCESS_LEVEL_NONE;
 
 		let sql = `select level 
 			from siteMembers

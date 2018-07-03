@@ -2,9 +2,9 @@ import joi from "joi";
 
 import Controller from "@/controllers/controller.js";
 import {
-	ENITY_TYPE_USER,
-	ENITY_TYPE_SITE,
-	ENITY_TYPE_PAGE,
+	ENTITY_TYPE_USER,
+	ENTITY_TYPE_SITE,
+	ENTITY_TYPE_PAGE,
 } from "@@/common/consts.js";
 import ERR from "@@/common/error.js";
 
@@ -39,7 +39,7 @@ export const Favorites = class extends Controller {
 		const params = ctx.state.params;
 
 		params.userId = userId;
-		params.type = ENITY_TYPE_USER;
+		params.type = ENTITY_TYPE_USER;
 
 		const result = await this.model.findOne({where:params});
 
@@ -52,7 +52,7 @@ export const Favorites = class extends Controller {
 		const params = ctx.state.params;
 
 		params.userId = userId;
-		params.type = ENITY_TYPE_USER;
+		params.type = ENTITY_TYPE_USER;
 
 		const result = await this.model.destroy({where:params});
 
@@ -65,7 +65,7 @@ export const Favorites = class extends Controller {
 		const params = ctx.state.params;
 
 		params.userId = userId;
-		params.type = ENITY_TYPE_USER;
+		params.type = ENTITY_TYPE_USER;
 
 		console.log(params, ctx.state.user);
 
@@ -79,7 +79,7 @@ export const Favorites = class extends Controller {
 		const params = ctx.state.params;
 
 		params.userId = userId;
-		params.type = ENITY_TYPE_SITE;
+		params.type = ENTITY_TYPE_SITE;
 
 		const result = await this.model.create(params);
 
@@ -91,7 +91,7 @@ export const Favorites = class extends Controller {
 		const params = ctx.state.params;
 
 		params.userId = userId;
-		params.type = ENITY_TYPE_SITE;
+		params.type = ENTITY_TYPE_SITE;
 
 		const result = await this.model.destroy({where:params});
 
@@ -103,7 +103,7 @@ export const Favorites = class extends Controller {
 		const params = ctx.state.params;
 
 		params.userId = userId;
-		params.type = ENITY_TYPE_PAGE;
+		params.type = ENTITY_TYPE_PAGE;
 
 		const result = await this.model.create(params);
 
@@ -115,7 +115,7 @@ export const Favorites = class extends Controller {
 		const params = ctx.state.params;
 
 		params.userId = userId;
-		params.type = ENITY_TYPE_PAGE;
+		params.type = ENTITY_TYPE_PAGE;
 
 		const result = await this.model.destroy({where:params});
 

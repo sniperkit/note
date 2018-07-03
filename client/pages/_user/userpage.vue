@@ -22,6 +22,7 @@ export default {
 
 	data: function() {
 		return {
+			key: null,
 			content: "",
 		}
 	},
@@ -31,34 +32,45 @@ export default {
 	
 		const path = req.ctx.request.path;
 		const key = util.getKeyByPath(path.substring(1) + config.pageSuffix);
-		const result = await api.files.get({key:key});
+		const result = await api.pages.getByKey({key:key});
 		if (!result || result.isErr()) {
-			//Message(result.getMessage());
+			console.log(result);
 			return;
 		}
 
 		const content = result.getData().content;
 		return {
-			content: content
+			content: content,
+			key: key,
 		};
+	},
+
+	methods: {
+		async visitPage() {
+			await this.api.pages.visitByKey({key: this.key});
+		}
+
 	},
 
 	created() {
 		//console.log(this.content);
 	},
 
-	//async mounted() {
-	//	const url = this.$route.path;
-	//	const path = url.substring(1) + config.pageSuffix;
-	//	const key = util.getKeyByPath(path);
-	//	const result = await api.files.get({key:key});
-	//	if (!result || result.isErr()) {
-	//		//Message(result.getMessage());
-	//		console.log(result);
-	//		return;
-	//	}
+	async mounted() {
+		//const url = this.$route.path;
+		//const path = url.substring(1) + config.pageSuffix;
+		//const key = util.getKeyByPath(path);
+		//const result = await api.pages.get({key:key});
+		//if (!result || result.isErr()) {
+			////Message(result.getMessage());
+			//console.log(result);
+			//return;
+		//}
 
-	//	this.content = result.getData().content;
-	//}
+		//this.key = key;
+		//this.content = result.getData().content;
+
+		this.visitPage();
+	}
 }
 </script>

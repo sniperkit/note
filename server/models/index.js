@@ -12,6 +12,7 @@ import siteMembers from "./siteMembers.js";
 import domains from "./domains.js";
 import favorites from "./favorites.js";
 import oauthUsers from "./oauthUsers.js";
+import visitors from "./visitors.js";
 
 export default {
 	models,
@@ -27,4 +28,5 @@ export default {
 	domains,
 	favorites,
 	oauthUsers,
+	visitors,
 }

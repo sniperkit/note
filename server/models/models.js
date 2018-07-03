@@ -432,10 +432,9 @@ export const visitors = sequelize.define("visitors", {
 
 	userId: {
 		type: Sequelize.BIGINT,
-		allowNull: false,
 	},
 
-	visitorId: {
+	entityId: {
 		type: Sequelize.BIGINT,
 		allowNull: false,
 	},
@@ -449,6 +448,10 @@ export const visitors = sequelize.define("visitors", {
 		type: Sequelize.INTEGER,
 		defaultValue: 0,
 	},
+
+	visitors: {
+		type: Sequelize.TEXT,
+	},
 }, {
 	charset: "utf8mb4",
 	collate: 'utf8mb4_bin',
@@ -456,7 +459,7 @@ export const visitors = sequelize.define("visitors", {
 	indexes: [
 	{
 		unique: true,
-		fields: ["userId", "visitorId", "type"],
+		fields: ["entityId", "type"],
 	},
 	],
 });

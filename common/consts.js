@@ -22,21 +22,21 @@ export const QINIU_AUDIT_STATE = {
 }
 
 // 实体类型
-export const ENITY_TYPE_USER = 0; // 用户类型
-export const ENITY_TYPE_SITE = 1; // 站点类型
-export const ENITY_TYPE_PAGE = 2; // 页面类型
-export const ENITY_TYPE = {
-	ENITY_TYPE_USER,
-	ENITY_TYPE_SITE,
-	ENITY_TYPE_PAGE,
+export const ENTITY_TYPE_USER = 0; // 用户类型
+export const ENTITY_TYPE_SITE = 1; // 站点类型
+export const ENTITY_TYPE_PAGE = 2; // 页面类型
+export const ENTITY_TYPE = {
+	ENTITY_TYPE_USER,
+	ENTITY_TYPE_SITE,
+	ENTITY_TYPE_PAGE,
 }
 
 // 站点可见性
-export const ENITY_VISIBILITY_PUBLIC = 0; // 公开
-export const ENITY_VISIBILITY_PRIVATE = 1; // 私有
-export const ENITY_VISIBILITY = {
-	ENITY_VISIBILITY_PUBLIC,
-	ENITY_VISIBILITY_PRIVATE,
+export const ENTITY_VISIBILITY_PUBLIC = 0; // 公开
+export const ENTITY_VISIBILITY_PRIVATE = 1; // 私有
+export const ENTITY_VISIBILITY = {
+	ENTITY_VISIBILITY_PUBLIC,
+	ENTITY_VISIBILITY_PRIVATE,
 }
 
 // OAUTH_SERVICE_TYPE
@@ -55,6 +55,6 @@ export const OAUTH_SERVICE_TYPE = {
 export default {
 	USER_ACCESS_LEVEL,
 	QINIU_AUDIT_STATE,
-	ENITY_TYPE,
-	ENITY_VISIBILITY,
+	ENTITY_TYPE,
+	ENTITY_VISIBILITY,
 }

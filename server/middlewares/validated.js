@@ -8,10 +8,9 @@ export const validated = (schema = {}, options = {}) => {
 
   	return async (ctx, next) => {
     	const defaultValidateKeys = ['body', 'query', 'params'];
-    	const needValidateKeys = _.intersection(defaultValidateKeys, Object.keys(schema));
 
 		const toValidateObj = {};
-    	needValidateKeys.find((item) => {
+    	defaultValidateKeys.find((item) => {
       		const validateObj = item === 'body' ? ctx.request.body : ctx[item];
 			_.merge(toValidateObj, validateObj);
     	});

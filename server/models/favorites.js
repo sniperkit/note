@@ -1,8 +1,8 @@
 import Model from "./model.js";
 import {
-	ENITY_TYPE_USER,
-	ENITY_TYPE_SITE,
-	ENITY_TYPE_PAGE,
+	ENTITY_TYPE_USER,
+	ENTITY_TYPE_SITE,
+	ENTITY_TYPE_PAGE,
 } from "@@/common/consts.js";
 import ERR from "@@/common/error.js";
 
@@ -13,13 +13,13 @@ export const Favorites = class extends Model {
 
 	// 获取粉丝
 	async getFollows(userId) {
-		const sql = `select users.id, users.useranme, users.nickname, users.portrait 
+		const sql = `select users.id, users.username, users.nickname, users.portrait 
 			from favorites, users
 			where favorites.userId = users.id and type = :type and favorites.favoriteId = :favoriteId`;
 
 		const result = await this.query(sql, {
 			replacements: {
-				type: ENITY_TYPE_USER,
+				type: ENTITY_TYPE_USER,
 				favoriteId: userId,
 			}
 		});
@@ -29,13 +29,13 @@ export const Favorites = class extends Model {
 
 	// 关注
 	async getFollowing(userId) {
-		const sql = `select users.id, users.useranme, users.nickname, users.portrait 
+		const sql = `select users.id, users.username, users.nickname, users.portrait 
 			from favorites, users
 			where favorites.favoriteId = users.id and type = :type and favorites.userId = :userId`;
 
 		const result = await this.query(sql, {
 			replacements: {
-				type: ENITY_TYPE_USER,
+				type: ENTITY_TYPE_USER,
 				userId: userId,
 			}
 		});
@@ -51,7 +51,7 @@ export const Favorites = class extends Model {
 
 		const result = await this.query(sql, {
 			replacements: {
-				type: ENITY_TYPE_SITE,
+				type: ENTITY_TYPE_SITE,
 				userId: userId,
 			}
 		});
@@ -67,7 +67,7 @@ export const Favorites = class extends Model {
 
 		const result = await this.query(sql, {
 			replacements: {
-				type: ENITY_TYPE_PAGE,
+				type: ENTITY_TYPE_PAGE,
 				userId: userId,
 			}
 		});
@@ -79,25 +79,25 @@ export const Favorites = class extends Model {
 		// 粉丝
 		const followsCount = await this.model.count({where:{
 			favoriteId:userId,
-			type:ENITY_TYPE_USER,
+			type:ENTITY_TYPE_USER,
 		}});
 
 		// 关注
 		const followingCount = await this.model.count({where:{
 			userId,
-			type:ENITY_TYPE_USER,
+			type:ENTITY_TYPE_USER,
 		}});
 
 		// 站点
 		const siteFavoriteCount = await this.model.count({where:{
 			userId,
-			type:ENITY_TYPE_SITE,
+			type:ENTITY_TYPE_SITE,
 		}});
 		
 		// 页面
 		const pageFavoriteCount = await this.model.count({where:{
 			userId,
-			type:ENITY_TYPE_PAGE,
+			type:ENTITY_TYPE_PAGE,
 		}});
 
 		// 返回统计信息

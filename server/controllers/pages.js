@@ -105,6 +105,29 @@ export const Pages = class extends Controller {
 		return ERR.ERR_OK(list);	
 	}
 
+	async visitByKey(ctx) {
+		const params = ctx.state.params;
+		const userId = ctx.state.user.userId;
+		const key = params.key;
+		const keyObj = util.parseKey(key);
+
+		let page = await this.model.getByKey(key);
+		if (page.isErr()) return page;
+
+		page = page.getData();
+
+		const usersModel = models["users"];
+		const visitorsModel = models["visitors"];
+
+		let userinfo = await usersModel.getByUsername(keyObj.username);
+		if (userinfo.isErr()) return userinfo;
+		userinfo = userinfo.getData();
+
+		visitorsModel.addPageVisitorCount(page.id, userinfo.id, userId);
+
+		return ERR.ERR_OK({page, userinfo});
+	}
+
 	async qiniuImport(ctx) {
 		const params = ctx.state.params;
 		let marker = undefined;
@@ -152,6 +175,14 @@ export const Pages = class extends Controller {
 		const baseRoutes = super.getRoutes();
 
 		const routes = [
+		{
+			path: "visitByKey",
+			method: ["GET", "POST"],
+			action: "visitByKey",
+			validated: {
+				key: joi.string().required(),
+			}
+		},
 		{
 			path: "qiniuImport",
 			method: "get",

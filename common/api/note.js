@@ -130,6 +130,7 @@ export function Pages(options) {
 	self.getByKey = self.apiRequest("get", "getByKey");
 	self.deleteByKey = self.apiRequest("delete", "deleteByKey");
 	self.search = self.apiRequest("post", "search");
+	self.visitByKey = self.apiRequest("post", "visitByKey");
 }
 
 export function Groups(options) {
@@ -171,6 +172,12 @@ export function Favorites(options) {
 	self.isFollowing = self.apiRequest("get", "isFollowing");
 	self.following = self.apiRequest("post", "following");
 	self.unFollowing = self.apiRequest("post", "unFollowing");
+	self.favoriteSite = self.apiRequest("post", "favoriteSite");
+	self.favoritePages = self.apiRequest("post", "favoritePages");
+	self.getFollows = self.apiRequest("get", "getFollows");
+	self.getFollowing = self.apiRequest("get", "getFollowing");
+	self.getFavoriteSites = self.apiRequest("get", "getFavoriteSites");
+	self.getFavoritePages = self.apiRequest("get", "getFavoritePages");
 }
 
 export function Notes(options = {}){

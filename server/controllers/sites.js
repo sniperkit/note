@@ -4,8 +4,8 @@ import _ from "lodash";
 import Controller from "@/controllers/controller.js";
 import ERR from "@@/common/error.js";
 import {
-	ENITY_VISIBILITY_PUBLIC,
-	ENITY_VISIBILITY_PRIVATE,
+	ENTITY_VISIBILITY_PUBLIC,
+	ENTITY_VISIBILITY_PRIVATE,
 
 	USER_ACCESS_LEVEL_NONE,
 	USER_ACCESS_LEVEL_READ,
@@ -21,7 +21,7 @@ export const Sites = class extends Controller {
 		const params = ctx.state.params;
 		const userId = ctx.state.user.userId;
 		params.userId = userId;
-		params.visibility = ENITY_VISIBILITY_PUBLIC;
+		params.visibility = ENTITY_VISIBILITY_PUBLIC;
 
 		let data = await this.model.findOne({
 			where: {
@@ -84,11 +84,13 @@ export const Sites = class extends Controller {
 	async search(ctx) {
 		const userId = ctx.state.user.userId;
 		const params = ctx.state.params;
-		const where = {visibility:ENITY_VISIBILITY_PUBLIC};
+		const where = {visibility:ENTITY_VISIBILITY_PUBLIC};
 
 		// 用户ID过滤
-		if (params.userId && params.userId == userId){
-			delete where.visibility;
+		if (params.userId){
+			if (params.userId == userId) {
+				delete where.visibility;
+			}
 			where.userId = userId;
 		} 
 
@@ -107,6 +109,9 @@ export const Sites = class extends Controller {
 			path:"search",
 			method:"GET",
 			action:"search",
+			validated: {
+				userId: joi.number(),
+		   	}
 		}, 
 		{
 			path:"getJoinSites",
