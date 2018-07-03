@@ -81,10 +81,33 @@ export const Sites = class extends Controller {
 		return ERR.ERR_OK(result);
 	}
 
+	async search(ctx) {
+		const userId = ctx.state.user.userId;
+		const params = ctx.state.params;
+		const where = {visibility:ENITY_VISIBILITY_PUBLIC};
+
+		// 用户ID过滤
+		if (params.userId && params.userId == userId){
+			delete where.visibility;
+			where.userId = userId;
+		} 
+
+		if (params.sitename) where.sitename = sitename;
+
+		const list = await this.model.findAll({where});
+
+		return ERR.ERR_OK(list);
+	}
+
 	static getRoutes() {
 		this.pathPrefix = "sites";
 		const baseRoutes = super.getRoutes();
 		const routes = [
+		{
+			path:"search",
+			method:"GET",
+			action:"search",
+		}, 
 		{
 			path:"getJoinSites",
 			method:"GET",

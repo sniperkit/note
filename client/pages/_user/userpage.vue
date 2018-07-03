@@ -27,7 +27,7 @@ export default {
 	},
 
 	async asyncData({req}) {
-		api.options.baseURL = config.origin + config.baseURL;		
+		api.options.baseURL = config.origin + config.baseUrl;		
 	
 		const path = req.ctx.request.path;
 		const key = util.getKeyByPath(path.substring(1) + config.pageSuffix);

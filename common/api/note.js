@@ -119,6 +119,7 @@ export function Sites(options) {
 	initHttpOptions(self, options, "sites", "id");
 
 	self.getJoinSites = self.apiRequest("get", "getJoinSites");
+	self.search = self.apiRequest("get", "search");
 }
 
 export function Pages(options) {
