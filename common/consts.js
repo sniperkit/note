@@ -51,6 +51,20 @@ export const OAUTH_SERVICE_TYPE = {
 	OAUTH_SERVICE_TYPE_XINLANG,
 }
 
+// USER_ROLE
+export const USER_ROLE_EXCEPTION = 1;
+export const USER_ROLE_NORMAL = 2;
+export const USER_ROLE_VIP = 4;
+export const USER_ROLE_MANAGER = 64;
+export const USER_ROLE_ADMIN = 128;
+export const USER_ROLE = {
+	USER_ROLE_EXCEPTION,
+	USER_ROLE_NORMAL,
+	USER_ROLE_VIP,
+	USER_ROLE_MANAGER,
+	USER_ROLE_ADMIN,
+};
+
 
 export default {
 	USER_ACCESS_LEVEL,

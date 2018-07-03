@@ -127,7 +127,7 @@ export default {
 	},
 
 	async mounted() {
-		axios.get("http://localhost:3000/api/v0/users/2");
+		axios.get("http://stage-storage.keepwork.com/api/v0/files/abc/token");
 		// 获取访问用户信息
 		const username = this.$route.params.user;
 		let result = await this.api.users.getDetailByUsername({username});
