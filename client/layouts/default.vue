@@ -28,6 +28,7 @@ export default {
 }
 
 .mainContainer {
+	margin-top:1px;
 	position: absolute;
 	left: 0px;
 	right: 0px;

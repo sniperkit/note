@@ -33,13 +33,13 @@ module.exports = {
 	},
 
 	plugins: [
+	{src:"~/plugins/init"},
 	{src:"~/plugins/app", ssr: false},
 	{src:"~/plugins/authenticate", ssr: false},
 	{src:"~/plugins/persistedstate", ssr: false},
 	{src:"~/plugins/codemirror", ssr: false},
 	{src:"~/plugins/vueImgInputer", ssr: false},
 	{src:"~/plugins/element-ui"},
-	//{src:"~/plugins/components", ssr: false},
 	{src:"~/plugins/components"},
 	//{src:"~/plugins/mxgraph", ssr: false},
 	//{src:"~/plugins/test", ssr: false},

@@ -14,6 +14,7 @@ import {sendEmail} from "@@/common/email.js";
 import config from "@/config.js";
 
 const userModel = models["users"];
+const rolesModel = models["roles"];
 
 export const Users = class extends Controller {
 	constructor() {
@@ -84,12 +85,15 @@ export const Users = class extends Controller {
 		if (!user) return ERR.ERR();
 		user = user.get({plain:true});
 
+		const roleId = rolesModel.getRoleIdByUserId(user.id);
 		const token = util.jwt_encode({
 			userId: user.id, 
-			username: user.username
+			username: user.username,
+			roleId: roleId,
 		}, config.secret, config.tokenExpire);
 
 		user.token = token;
+		user.roleId = roleId;
 		ctx.cookies.set("token", token, {
 			maxAge: config.tokenExpire * 1000,
 			overwrite: true,
@@ -114,12 +118,17 @@ export const Users = class extends Controller {
 
 		user = user.get({plain:true});
 
+		const roleId = rolesModel.getRoleIdByUserId(user.id);
+		if (rolesModel.isExceptionUser(roleId)) {
+			return ERR.ERR_USER_EXCEPTION();
+		}
 		const token = util.jwt_encode({
 			userId: user.id, 
 			username: user.username
 		}, config.secret, config.tokenExpire);
 
 		user.token = token;
+		user.roleId = roleId;
 		ctx.cookies.set("token", token, {
 			maxAge: config.tokenExpire * 1000,
 			overwrite: true,

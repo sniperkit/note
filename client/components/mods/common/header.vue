@@ -31,7 +31,7 @@ export default {
 
 <style scoped>
 .headerContainer {
-	background-color: rgb(248,248,248);
+	border-bottom: 1px solid rgb(221,221,221);
 	height:100%;
 }
 .flex-col {

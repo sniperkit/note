@@ -30,6 +30,11 @@ export const Sites = class extends Model {
 		return false;
 	}
 
+	async getBySiteId(siteId) {
+		let site = await this.model.findOne({where:{id:siteId}});
+		return ERR.ERR_OK(site);
+	}
+
 	async getByName(username, sitename) {
 		const sql = `select sites.*, users.username
 			from users, sites

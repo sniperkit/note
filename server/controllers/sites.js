@@ -1,6 +1,7 @@
 import joi from "joi";
 import _ from "lodash";
 
+import models from "@/models/index.js";
 import Controller from "@/controllers/controller.js";
 import ERR from "@@/common/error.js";
 import {
@@ -15,6 +16,26 @@ import {
 export const Sites = class extends Controller {
 	constructor() {
 		super();
+	}
+
+	async addNotification(userId, siteId, oper) {
+		const usersModel = models["users"];
+		const sitesModel = models["sites"];
+		const notificationsModel = models["notifications"];
+
+		let user = await usersModel.getByUserId(userId);
+		user = user.getData();
+
+		let site = await sitesModel.getBySiteId(siteId);
+		site = site.getData();
+
+		if (oper == "create") oper = "创建";
+		if (oper == "update") oper = "更新";
+		if (oper == "delete") oper = "删除";
+		const description = `${user.nickname || user.username}[${user.username}]${oper}站点${site.sitename}`;
+		//console.log(description);
+		const result = await notificationsModel.addNotification(userId, description);
+		console.log(result);
 	}
 
 	async create(ctx) {
@@ -37,6 +58,8 @@ export const Sites = class extends Controller {
 
 		data = data.get({plain:true});
 
+		this.addNotification(userId, data.id, "create");
+
 		return ERR.ERR_OK().setData(data);
 	}
 
@@ -49,6 +72,24 @@ export const Sites = class extends Controller {
 
 		const result = await this.model.update(params, {where:{id, userId}});
 		
+		this.addNotification(userId, id, "update");
+
+		return ERR.ERR_OK(result);
+	}
+
+	async delete(ctx) {
+		const id = ctx.params.id;
+		const userId = ctx.state.user.userId;
+
+		let result = await this.model.destroy({
+			where: {
+				userId,
+				id,
+			}
+		});
+
+		this.addNotification(userId, id, "delete");
+
 		return ERR.ERR_OK(result);
 	}
 

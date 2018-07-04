@@ -60,9 +60,9 @@ export const Pages = class extends Controller {
 		let result = await this.model.findOne({where:{key}});
 		result = result ? result.get({plain:true}) : {key};
 		
-		if (!result.hash) {
-			result.content = await storage.get(key).then(ret => ret.getData());
-		}
+		//if (!result.hash) {
+			//result.content = await storage.get(key).then(ret => ret.getData());
+		//}
 
 		return ERR.ERR_OK(result);
 	}
