@@ -30,6 +30,20 @@ export const Sites = class extends Model {
 		return false;
 	}
 
+	async isReadableByMemberId(siteId, memberId) {
+		let result = null;
+
+		result = await this.getMemberLevel(siteId, memberId);
+
+		if (result.isErr()) return false;
+
+		const level = result.getData();
+
+		if (level >= USER_ACCESS_LEVEL_READ) return true;
+
+		return false;
+	}
+
 	async getBySiteId(siteId) {
 		let site = await this.model.findOne({where:{id:siteId}});
 		return ERR.ERR_OK(site);
@@ -60,6 +74,8 @@ export const Sites = class extends Model {
 		if (!site) return ERR.ERR_PARAMS();
 
 		site = site.get({plain: true});
+
+		if (!memberId) return site.visibility == ENTITY_VISIBILITY_PRIVATE ? USER_ACCESS_LEVEL_NONE : USER_ACCESS_LEVEL_READ;
 
 		if (siteId.userId == memberId) return ERR.ERR_OK(USER_ACCESS_LEVEL_WRITE);
 

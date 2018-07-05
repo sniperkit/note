@@ -142,10 +142,38 @@ export const Sites = class extends Controller {
 		return ERR.ERR_OK(list);
 	}
 
+	async getByName(ctx) {
+		const usersModel = models["users"];
+		const sitesModel = models["sites"];
+		const params = ctx.state.params;
+		
+		let user = await usersModel.findOne({where:{username: params.username}});
+		if (!user) return ERR.ERR_PARAMS();
+
+		let site = await sitesModel.findOne({where: {
+			userId: user.id,
+			sitename: params.sitename,
+		}});
+		if (!site) return ERR.ERR_PARAMS();
+
+		if (!isReadableByMemberId(site.id, ctx.state.user.userId)) return ERR.ERR_PARAMS();
+
+		return ERR.ERR_OK({user, site});
+	}
+
 	static getRoutes() {
 		this.pathPrefix = "sites";
 		const baseRoutes = super.getRoutes();
 		const routes = [
+		{
+			path:"getByName",
+			method: "GET",
+			action:"getByName",
+			validated: {
+				username: joi.string().required(),
+				sitename: joi.string().required(),
+			},
+		},
 		{
 			path:"search",
 			method:"GET",

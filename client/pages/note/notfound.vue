@@ -6,8 +6,6 @@
 
 export default {
 	async asyncData({req}) {
-		const path = req.ctx.request.path;
-		console.log(path);
 	},
 	created() {
 

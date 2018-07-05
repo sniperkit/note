@@ -120,6 +120,7 @@ export function Sites(options) {
 
 	self.getJoinSites = self.apiRequest("get", "getJoinSites");
 	self.search = self.apiRequest("get", "search");
+	self.getByName = self.apiRequest("get", "getByName");
 }
 
 export function Pages(options) {

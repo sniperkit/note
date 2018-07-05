@@ -6,7 +6,6 @@ import axios from "axios";
 import config from "@/config.js";
 
 const baseUrl = config.origin + config.baseUrl + "oauthUsers/";
-console.log(baseUrl);
 
 vue.use(vueAxios, axios);
 vue.use(vueAuthenticate, {
