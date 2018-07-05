@@ -3,12 +3,6 @@
 		<el-form-item label="名称">
 			<el-input v-model="site.sitename" placeholder="名称"></el-input>
 		</el-form-item>
-		<!--<el-form-item label="类型">-->
-			<!--<el-select v-model="site.type" placeholder="类型" style="width:100%;">-->
-				<!--<el-option label="gitlab" value="gitlab"></el-option>-->
-				<!--<el-option disabled label="github" value="github"></el-option>-->
-			<!--</el-select>-->
-		<!--</el-form-item>-->
 
 		<el-form-item label="描述">
 			<el-input v-model="site.description" placeholder="描述"></el-input>
@@ -37,8 +31,6 @@ import {
 	Message,
 } from "element-ui";
 
-import api from "@@/common/api/note.js";
-
 export default {
 	components: {
 		[Form.name]: Form,
@@ -58,7 +50,7 @@ export default {
 
 	methods: {
 		async clickSubmitSiteBtn() {
-			const result = await api.sites.create(this.site);
+			const result = await this.api.sites.create(this.site);
 			if (result.isErr()) {
 				return Message(result.getMessage());
 			}

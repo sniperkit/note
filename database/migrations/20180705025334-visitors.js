@@ -2,40 +2,42 @@
 
 module.exports = {
 	up: (queryInterface, Sequelize) => {
-		return queryInterface.createTable('sites', {
+		return queryInterface.createTable('visitors', { 
 			id: {
 				type: Sequelize.BIGINT,
 				autoIncrement: true,
 				primaryKey: true,
 			},
-			
+
 			userId: {
+				type: Sequelize.BIGINT,
+			},
+
+			entityId: {
 				type: Sequelize.BIGINT,
 				allowNull: false,
 			},
 
-			sitename: {
-				type: Sequelize.STRING(48),
+			type: {
+				type: Sequelize.INTEGER,
 				allowNull: false,
 			},
 
-			visibility: {
-				type: Sequelize.INTEGER, // public private
+			count: {
+				type: Sequelize.INTEGER,
 				defaultValue: 0,
 			},
 
-			description: {
-				type: Sequelize.STRING(128),
+			visitors: {
+				type: Sequelize.TEXT,
 			},
 
 			createdAt: {
-				type: Sequelize.DATE,
-				defaultValue: Sequelize.NOW,
+				type: Sequelize.DATE
 			},
 
 			updatedAt: {
-				type: Sequelize.DATE,
-				defaultValue: Sequelize.NOW,
+				type: Sequelize.DATE
 			},
 		}, {
 			charset: "utf8mb4",
@@ -43,14 +45,13 @@ module.exports = {
 			indexes: [
 			{
 				unique: true,
-				fields: ["userId", "sitename"],
+				fields: ["entityId", "type"],
 			},
 			],
 		});
 	},
 
 	down: (queryInterface, Sequelize) => {
-		return queryInterface.dropTable('sites');
+		return queryInterface.dropTable('visitors');
 	}
 };
-

@@ -20,9 +20,9 @@ const users = sequelize.define('users', {
 
 	password: {
 		type: Sequelize.STRING(48),
-		set(val) {
-			this.setDataValue("password", md5(val));
-		},
+		//set(val) {
+			//this.setDataValue("password", md5(val));
+		//},
 	},
 
 	email: {
@@ -40,7 +40,7 @@ const users = sequelize.define('users', {
 	},
 
 	portrait: {
-		type: Sequelize.STRING,
+		type: Sequelize.STRING(128),
 	},
 
 	sex: {
@@ -385,12 +385,10 @@ export const pages = sequelize.define("pages", {
 
 	//userId: {
 		//type: Sequelize.BIGINT,
-		//allowNull: false,
 	//},
 
 	//siteId: {
 		//type: Sequelize.BIGINT,
-		////allowNull: false,
 	//},
 
 	key: {
@@ -762,7 +760,7 @@ export const datas = sequelize.define("datas", {
 	
 	data: {
 		type: Sequelize.JSON,
-	}
+	},
 }, {
 	charset: "utf8mb4",
 	collate: 'utf8mb4_bin',

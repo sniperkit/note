@@ -2,40 +2,35 @@
 
 module.exports = {
 	up: (queryInterface, Sequelize) => {
-		return queryInterface.createTable('sites', {
+		return queryInterface.createTable('oauthUsers', { 
 			id: {
 				type: Sequelize.BIGINT,
 				autoIncrement: true,
 				primaryKey: true,
 			},
-			
-			userId: {
+
+			userId: {  // 文件所属者
 				type: Sequelize.BIGINT,
-				allowNull: false,
 			},
 
-			sitename: {
+			externalId: {
 				type: Sequelize.STRING(48),
-				allowNull: false,
 			},
 
-			visibility: {
-				type: Sequelize.INTEGER, // public private
-				defaultValue: 0,
+			externalUsername: {
+				type: Sequelize.STRING(48),
 			},
 
-			description: {
-				type: Sequelize.STRING(128),
+			type: {
+				type: Sequelize.INTEGER,
 			},
 
 			createdAt: {
-				type: Sequelize.DATE,
-				defaultValue: Sequelize.NOW,
+				type: Sequelize.DATE
 			},
 
 			updatedAt: {
-				type: Sequelize.DATE,
-				defaultValue: Sequelize.NOW,
+				type: Sequelize.DATE
 			},
 		}, {
 			charset: "utf8mb4",
@@ -43,14 +38,13 @@ module.exports = {
 			indexes: [
 			{
 				unique: true,
-				fields: ["userId", "sitename"],
+				fields: ["externalId", "type"],
 			},
 			],
 		});
 	},
 
 	down: (queryInterface, Sequelize) => {
-		return queryInterface.dropTable('sites');
+		return queryInterface.dropTable('oauthUsers');
 	}
 };
-

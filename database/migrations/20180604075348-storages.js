@@ -10,7 +10,7 @@ module.exports = {
 			},
 			
 			userId: {  // 文件所属者
-				type: Sequelize.STRING(48),
+				type: Sequelize.BIGINT,
 				unique: true,
 				allowNull: false,
 			},

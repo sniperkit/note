@@ -2,7 +2,7 @@ import Vue from "vue";
 
 import {
   //Pagination,
-  //Dialog,
+  Dialog,
   //Autocomplete,
   //Dropdown,
   //DropdownMenu,
@@ -34,8 +34,8 @@ import {
   //Tooltip,
   //Breadcrumb,
   //BreadcrumbItem,
-  //Form,
-  //FormItem,
+  Form,
+  FormItem,
   //Tabs,
   //TabPane,
   //Tag,
@@ -71,7 +71,7 @@ import {
 } from 'element-ui';
 
 //Vue.use(Pagination);
-//Vue.use(Dialog);
+Vue.use(Dialog);
 //Vue.use(Autocomplete);
 //Vue.use(Dropdown);
 //Vue.use(DropdownMenu);
@@ -103,8 +103,8 @@ Vue.use(Button);
 //Vue.use(Tooltip);
 //Vue.use(Breadcrumb);
 //Vue.use(BreadcrumbItem);
-//Vue.use(Form);
-//Vue.use(FormItem);
+Vue.use(Form);
+Vue.use(FormItem);
 //Vue.use(Tabs);
 //Vue.use(TabPane);
 //Vue.use(Tag);

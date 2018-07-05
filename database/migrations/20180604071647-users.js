@@ -17,9 +17,9 @@ module.exports = {
 
 			password: {
 				type: Sequelize.STRING(48),
-				set(val) {
-					this.setDataValue("password", md5(val));
-				},
+				//set(val) {
+					//this.setDataValue("password", md5(val));
+				//},
 			},
 
 			email: {
@@ -37,7 +37,7 @@ module.exports = {
 			},
 
 			portrait: {
-				type: Sequelize.STRING,
+				type: Sequelize.STRING(128),
 			},
 
 			sex: {

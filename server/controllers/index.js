@@ -22,12 +22,14 @@ import oauthUsers from "./oauthUsers.js";
 import favorites from "./favorites.js";
 import roles from "./roles.js";
 import datas from "./datas.js";
+import convert from "./convert.js";
 
 import models from "@/models/index.js";
 
 const {validate, validated, pagination} = middlewares;
 
 export const controllers = {
+	convert,
 	tests,
 	code,
 	oauth,

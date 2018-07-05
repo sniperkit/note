@@ -80,7 +80,7 @@ export const Users = class extends Controller {
 
 		user = await this.model.create({
 			username: params.username,
-			password: params.password,
+			password: md5(params.password),
 		});
 
 		if (!user) return ERR.ERR();
@@ -154,7 +154,7 @@ export const Users = class extends Controller {
 		const userId = ctx.state.user.userId;
 
 		const result = await this.model.update({
-			password: params.newpassword,
+			password: md5(params.newpassword),
 		}, {
 			where: {
 				userId: userId,

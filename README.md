@@ -58,3 +58,7 @@ const defaultConfig = {
 	- http://xxxxx.com/note/demo          # 登录后自行跳转至此  此页面展示表数据列表  
 	- http://xxxxx.com/note/demo/new      # 新增表记录页面  图片上传为七牛上传
 ```
+
+## 表迁移
+cd databases;
+sequelize migration:generate --name=filename   # 创建构建文件

@@ -36,3 +36,5 @@ module.exports = {
 	"operatorsAliases":Sequelize.Op,
   }
 };
+
+console.log(developmentConfig);

@@ -2,40 +2,47 @@
 
 module.exports = {
 	up: (queryInterface, Sequelize) => {
-		return queryInterface.createTable('sites', {
+		return queryInterface.createTable('dataSources', { 
 			id: {
 				type: Sequelize.BIGINT,
 				autoIncrement: true,
 				primaryKey: true,
 			},
-			
+
 			userId: {
 				type: Sequelize.BIGINT,
 				allowNull: false,
 			},
 
-			sitename: {
-				type: Sequelize.STRING(48),
+			name: {
+				type: Sequelize.STRING(32),
 				allowNull: false,
 			},
 
-			visibility: {
-				type: Sequelize.INTEGER, // public private
-				defaultValue: 0,
+			type: {
+				type: Sequelize.INTEGER,
+				allowNull: false,
 			},
 
-			description: {
-				type: Sequelize.STRING(128),
+			token: {
+				type: Sequelize.STRING(64),
+				allowNull: false,
+			},
+			
+			projectId: {
+				type: Sequelize.INTEGER,
+			},
+			
+			host: {
+				type: Sequelize.STRING(32),
 			},
 
 			createdAt: {
-				type: Sequelize.DATE,
-				defaultValue: Sequelize.NOW,
+				type: Sequelize.DATE
 			},
 
 			updatedAt: {
-				type: Sequelize.DATE,
-				defaultValue: Sequelize.NOW,
+				type: Sequelize.DATE
 			},
 		}, {
 			charset: "utf8mb4",
@@ -43,14 +50,13 @@ module.exports = {
 			indexes: [
 			{
 				unique: true,
-				fields: ["userId", "sitename"],
+				fields: ["userId", "name"],
 			},
 			],
 		});
 	},
 
 	down: (queryInterface, Sequelize) => {
-		return queryInterface.dropTable('sites');
+		return queryInterface.dropTable('dataSources');
 	}
 };
-

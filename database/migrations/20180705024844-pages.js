@@ -2,31 +2,31 @@
 
 module.exports = {
 	up: (queryInterface, Sequelize) => {
-		return queryInterface.createTable('siteGroups', { 
+		return queryInterface.createTable('pages', { 
 			id: {
 				type: Sequelize.BIGINT,
 				autoIncrement: true,
 				primaryKey: true,
 			},
 
-			userId: {
-				type: Sequelize.BIGINT,
+			key: {
+				type: Sequelize.STRING(128),
 				allowNull: false,
+				unique: true,
 			},
 
-			siteId: {
-				type: Sequelize.BIGINT,
+			folder: {
+				type: Sequelize.STRING(128),
 				allowNull: false,
 			},
-
-			groupId: {
-				type: Sequelize.BIGINT,
-				allowNull: false,
+			
+			hash: {
+				type: Sequelize.STRING(64),
 			},
-
-			level: {
-				type: Sequelize.INTEGER,
-				defaultValue: 0,
+			
+			content: {
+				type: Sequelize.TEXT,
+				defaultValue: "",
 			},
 
 			createdAt: {
@@ -39,17 +39,10 @@ module.exports = {
 		}, {
 			charset: "utf8mb4",
 			collate: 'utf8mb4_bin',
-
-			indexes: [
-			{
-				unique: true,
-				fields: ["siteId", "groupId"],
-			},
-			],
 		});
 	},
 
 	down: (queryInterface, Sequelize) => {
-		return queryInterface.dropTable('siteGroups');
+		return queryInterface.dropTable('pages');
 	}
 };

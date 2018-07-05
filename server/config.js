@@ -52,13 +52,21 @@ const defaultConfig = {
 }
 
 const productionConfig = {
+	keepworkApiUrlPrefix:"http://keepwork.com/api/wiki/models/",
 }
 
 const developmentConfig = {
+	keepworkApiUrlPrefix:"http://stage.keepwork.com/api/wiki/models/",
+	database: {
+		database: "note-dev",
+	}
 }
 
 const localConfig = {
-	
+	keepworkApiUrlPrefix:"http://localhost:8900/api/wiki/models/",
+	database: {
+		database: "note-dev",
+	}
 }
 
 const testConfig = {

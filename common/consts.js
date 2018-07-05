@@ -1,8 +1,8 @@
 
 // 用户访问权限
 export const USER_ACCESS_LEVEL_NONE = 0;
-export const USER_ACCESS_LEVEL_READ = 30;
-export const USER_ACCESS_LEVEL_WRITE = 40;
+export const USER_ACCESS_LEVEL_READ = 32;
+export const USER_ACCESS_LEVEL_WRITE = 64;
 export const USER_ACCESS_LEVEL = {
 	USER_ACCESS_LEVEL_NONE,
 	USER_ACCESS_LEVEL_READ,

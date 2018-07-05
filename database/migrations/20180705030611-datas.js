@@ -2,11 +2,21 @@
 
 module.exports = {
 	up: (queryInterface, Sequelize) => {
-		return queryInterface.createTable('test', { 
+		return queryInterface.createTable('datas', { 
 			id: {
 				type: Sequelize.BIGINT,
 				autoIncrement: true,
 				primaryKey: true,
+			},
+
+			userId: {  // 文件所属者
+				type: Sequelize.BIGINT,
+				allowNull:  false,
+				unique: true,
+			},
+			
+			data: {
+				type: Sequelize.JSON,
 			},
 
 			createdAt: {
@@ -23,6 +33,6 @@ module.exports = {
 	},
 
 	down: (queryInterface, Sequelize) => {
-		return queryInterface.dropTable('test');
+		return queryInterface.dropTable('datas');
 	}
 };

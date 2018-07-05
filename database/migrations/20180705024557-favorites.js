@@ -2,55 +2,49 @@
 
 module.exports = {
 	up: (queryInterface, Sequelize) => {
-		return queryInterface.createTable('sites', {
+		return queryInterface.createTable('favorites', { 
 			id: {
 				type: Sequelize.BIGINT,
 				autoIncrement: true,
 				primaryKey: true,
 			},
-			
+
 			userId: {
 				type: Sequelize.BIGINT,
 				allowNull: false,
 			},
 
-			sitename: {
-				type: Sequelize.STRING(48),
+			favoriteId: {
+				type: Sequelize.BIGINT,
 				allowNull: false,
 			},
 
-			visibility: {
-				type: Sequelize.INTEGER, // public private
-				defaultValue: 0,
-			},
-
-			description: {
-				type: Sequelize.STRING(128),
+			type: {
+				type: Sequelize.INTEGER,
+				allowNull: false,
 			},
 
 			createdAt: {
-				type: Sequelize.DATE,
-				defaultValue: Sequelize.NOW,
+				type: Sequelize.DATE
 			},
 
 			updatedAt: {
-				type: Sequelize.DATE,
-				defaultValue: Sequelize.NOW,
+				type: Sequelize.DATE
 			},
 		}, {
 			charset: "utf8mb4",
 			collate: 'utf8mb4_bin',
+
 			indexes: [
 			{
 				unique: true,
-				fields: ["userId", "sitename"],
+				fields: ["userId", "favoriteId", "type"],
 			},
 			],
 		});
 	},
 
 	down: (queryInterface, Sequelize) => {
-		return queryInterface.dropTable('sites');
+		return queryInterface.dropTable('favorites');
 	}
 };
-

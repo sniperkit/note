@@ -2,11 +2,27 @@
 
 module.exports = {
 	up: (queryInterface, Sequelize) => {
-		return queryInterface.createTable('test', { 
+		return queryInterface.createTable('domains', { 
 			id: {
 				type: Sequelize.BIGINT,
 				autoIncrement: true,
 				primaryKey: true,
+			},
+
+			domain: {
+				type: Sequelize.STRING(32),
+				unique: true,
+				allowNull: false,
+			},
+
+			userId: {
+				type: Sequelize.BIGINT,
+				allowNull: false,
+			},
+
+			siteId: {
+				type: Sequelize.BIGINT,
+				allowNull: false,
 			},
 
 			createdAt: {
@@ -23,6 +39,6 @@ module.exports = {
 	},
 
 	down: (queryInterface, Sequelize) => {
-		return queryInterface.dropTable('test');
+		return queryInterface.dropTable('domains');
 	}
 };
