@@ -36,13 +36,33 @@ a, a:hover, a:focus, a:visited
   opacity: 0
 }
 
+[v-cloak] {
+	  display: none;
+
+}
+
 .full-height {
 	height: 100%;
 }
+
+.full-width {
+	width: 100%;
+}
+
 .container {
 	max-width:1200px;
 	margin-right: auto;
 	margin-left: auto;
+}
+
+.v-center {
+	display:flex;
+	align-items:center;
+}
+
+.h-center {
+	display:flex;
+	justify-content: center;:w
 }
 
 .el-col {

@@ -1,57 +1,85 @@
 <template>
-	<el-row>
-		<el-col :span="6">
-			<img :src="userinfo.portrait">
-			<h3>{{userinfo.nickname}}</h3>
-			<h5>{{userinfo.username}}</h5>
-			<p>{{userinfo.description}}</p>
-			<el-button @click="clickFollowingBtn">{{isFollowing ? "取消关注" : "关注"}}</el-button>
-		</el-col>
-		<el-col :span="18">
-			<el-tabs v-model="activeItem" @tab-click="clickActiveItemBtn">
-				<el-tab-pane label="概述" name="overview">概述</el-tab-pane>
-				<el-tab-pane label="站点" name="site">
-					<div v-for="(x, index) in sites" :key="index">
-						<h4>{{x.sitename}}</h4>
-						<p>{{x.description}}</p>
+	<div class="container">
+		<el-row>
+			<el-col :span="6" :xs="{span:24}">
+				<div class="leftContainer">
+					<img :src="userinfo.portrait" class="portrait">
+					<div class="v-center">
+						<h3 style="margin-top:10px; margin-bottom:0px" v-cloak>{{(userinfo.nickname || userinfo.username) + "("+ userinfo.username + ")"}}</h3>
 					</div>
-				</el-tab-pane>
-				<el-tab-pane label="收藏" name="favorite">
-				</el-tab-pane>
-				<el-tab-pane label="粉丝" name="follows">
-					<div v-for="(x, index) in follows" :key="index">
-						<h4>{{x.nickname}}</h4>
-						<h5>{{x.username}}</h5>
-						<p>{{x.description}}</p>
-					</div>
-				</el-tab-pane>
-				<el-tab-pane label="关注" name="following">
-					<div v-for="(x, index) in following">
-						<h4>{{x.nickname}}</h4>
-						<h5>{{x.username}}</h5>
-						<p>{{x.description}}</p>
-					</div>
-				</el-tab-pane>
-			</el-tabs>
-		</el-col>
-	</el-row>
+					<p v-if="!isEditDescription">{{userinfo.description}}</p>
+					<el-form v-if="isEditDescription" :model="user">
+						<el-form-item>
+							<el-input type="textarea" v-model="user.description" placeholder="简介"></el-input>
+						</el-form-item>
+						<el-form-item>
+							<el-button type="primary" @click="clickSaveDescriptionBtn">保存</el-button>
+							<el-button @click="isEditDescription=false">取消</el-button>
+						</el-form-item>
+					</el-form>
+
+					<el-button class="full-width" v-if="isAuthUser && !isEditDescription" @click="isEditDescription = true">编辑备注</el-button>
+					<el-button class="full-width" v-if="!isAuthUser" @click="clickFollowingBtn">{{isFollowing ? "取消关注" : "关注"}}</el-button>
+				</div>
+			</el-col>
+			<el-col :span="18" :xs="{span:24}">
+				<div class="rightContainer">
+					<el-tabs v-model="activeItem" @tab-click="clickActiveItemBtn">
+						<el-tab-pane label="概述" name="overview">概述</el-tab-pane>
+						<el-tab-pane label="站点" name="site">
+							<div v-for="(x, index) in sites" :key="index">
+								<h4>{{x.sitename}}</h4>
+								<p>{{x.description}}</p>
+							</div>
+						</el-tab-pane>
+						<el-tab-pane label="收藏" name="favorite">
+						</el-tab-pane>
+						<el-tab-pane label="粉丝" name="follows">
+							<div v-for="(x, index) in follows" :key="index">
+								<h4>{{x.nickname}}</h4>
+								<h5>{{x.username}}</h5>
+								<p>{{x.description}}</p>
+							</div>
+						</el-tab-pane>
+						<el-tab-pane label="关注" name="following">
+							<div v-for="(x, index) in following">
+								<h4>{{x.nickname}}</h4>
+								<h5>{{x.username}}</h5>
+								<p>{{x.description}}</p>
+							</div>
+						</el-tab-pane>
+					</el-tabs>
+				</div>
+			</el-col>
+		</el-row>
+	</div>
 </template>
 
 <script>
 import axios from "axios";
 import {
+	Form,
+	FormItem,
+	Button,
+	Input,
 	Tabs,
 	TabPane,
 } from "element-ui";
 
 export default {
 	components: {
+		[Form.name]: Form,
+		[FormItem.name]: FormItem,
+		[Button.name]: Button,
+		[Input.name]: Input,
 		[Tabs.name]: Tabs,
 		[TabPane.name]: TabPane,
 	},
 
 	data: function() {
 		return {
+			isEditDescription: false,
+			isAuthUser:false,
 			activeItem: "overview",
 			userinfo: {},
 			isFollowing: false,
@@ -65,6 +93,14 @@ export default {
 	},
 
 	methods: {
+		async clickSaveDescriptionBtn() {
+			const reuslt = await this.api.users.update(this.user);
+			if (result.isErr()) return this.$message(result.getMessage());
+			this.setUser(this.user);
+			this.userinfo.description = this.user.description;
+			this.isEditDescription = false;
+		},
+
 		clickActiveItemBtn() {
 			if (this.itemMap[this.activeItem]) return;
 			this.itemMap[this.activeItem] = true;
@@ -127,7 +163,7 @@ export default {
 	},
 
 	async mounted() {
-		axios.get("http://stage-storage.keepwork.com/api/v0/files/abc/token");
+		//axios.get("http://stage-storage.keepwork.com/api/v0/files/abc/token");
 		// 获取访问用户信息
 		const username = this.$route.params.user;
 		let result = await this.api.users.getDetailByUsername({username});
@@ -140,6 +176,21 @@ export default {
 		// 是否关注
 		result = await this.api.favorites.isFollowing({favoriteId:this.userinfo.id});
 		this.isFollowing = result.getData();
+		this.isAuthUser = username == this.user.username;
 	}
 }
 </script>
+
+<style scoped>
+.leftContainer {
+	margin:20px;
+}
+.portrait {
+	width: 260px;
+	height: 260px;
+	border: 2px solid gray;
+}
+.rightContainer {
+	margin:10px;
+}
+</style>

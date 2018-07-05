@@ -27,6 +27,7 @@ export const Users = class extends Controller {
 		const params = ctx.state.params;
 
 		delete params.password;
+		delete params.username;
 
 		if (id != userId) return ERR.ERR_NO_PERMISSION();
 
