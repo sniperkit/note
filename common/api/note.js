@@ -174,7 +174,9 @@ export function Favorites(options) {
 	self.following = self.apiRequest("post", "following");
 	self.unFollowing = self.apiRequest("post", "unFollowing");
 	self.favoriteSite = self.apiRequest("post", "favoriteSite");
-	self.favoritePages = self.apiRequest("post", "favoritePages");
+	self.unFavoriteSite = self.apiRequest("post", "unFavoriteSite");
+	self.favoritePage = self.apiRequest("post", "favoritePage");
+	self.unFavoritePage = self.apiRequest("post", "unFavoritePage");
 	self.getFollows = self.apiRequest("get", "getFollows");
 	self.getFollowing = self.apiRequest("get", "getFollowing");
 	self.getFavoriteSites = self.apiRequest("get", "getFavoriteSites");

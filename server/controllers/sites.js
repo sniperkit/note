@@ -99,7 +99,9 @@ export const Sites = class extends Controller {
 		const params = ctx.state.params;
 		const memberId = params.memberId;
 
-		return this.model.getMemberLevel({siteId:id, memberId:memberId});
+		const level = await this.model.getMemberLevel({siteId:id, memberId:memberId});
+
+		return ERR.ERR_OK(level);
 	}
 
 	async getJoinSites(ctx) {
@@ -156,7 +158,7 @@ export const Sites = class extends Controller {
 		}});
 		if (!site) return ERR.ERR_PARAMS();
 
-		if (!isReadableByMemberId(site.id, ctx.state.user.userId)) return ERR.ERR_PARAMS();
+		if (!await this.model.isReadableByMemberId(site.id, ctx.state.user.userId)) return ERR.ERR_PARAMS();
 
 		return ERR.ERR_OK({user, site});
 	}

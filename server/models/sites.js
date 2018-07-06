@@ -17,13 +17,7 @@ export const Sites = class extends Model {
 	}
 
 	async isEditableByMemberId(siteId, memberId) {
-		let result = null;
-
-		result = await this.getMemberLevel(siteId, memberId);
-
-		if (result.isErr()) return false;
-
-		const level = result.getData();
+		const level = await this.getMemberLevel(siteId, memberId);
 
 		if (level >= USER_ACCESS_LEVEL_WRITE) return true;
 
@@ -31,13 +25,7 @@ export const Sites = class extends Model {
 	}
 
 	async isReadableByMemberId(siteId, memberId) {
-		let result = null;
-
-		result = await this.getMemberLevel(siteId, memberId);
-
-		if (result.isErr()) return false;
-
-		const level = result.getData();
+		const level = await this.getMemberLevel(siteId, memberId);
 
 		if (level >= USER_ACCESS_LEVEL_READ) return true;
 
@@ -71,7 +59,7 @@ export const Sites = class extends Model {
 
 	async getMemberLevel(siteId, memberId) {
 		let site = await this.model.findOne({where:{id:siteId}});
-		if (!site) return ERR.ERR_PARAMS();
+		if (!site) return USER_ACCESS_LEVEL_NONE;
 
 		site = site.get({plain: true});
 
@@ -108,7 +96,7 @@ export const Sites = class extends Model {
 
 		_.each(result, val => level = level < val.level ? val.level : level);
 
-		return ERR.ERR_OK(level);
+		return level;
 	}
 }
 

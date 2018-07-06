@@ -1,6 +1,7 @@
 <template>
 	<div>
-		<markdownEx :text="content"></markdownEx>
+		<markdownEx v-if="!isNotFound" :text="content"></markdownEx>
+		<notfound v-if="isNotFound"></notfound>
 	</div>
 </template>
 
@@ -13,6 +14,7 @@ import config from "@/config.js";
 import api from "@@/common/api/note.js";
 import util from "@@/common/util.js";
 import wurl from "wurl";
+import notfound from "@/components/views/notfound.vue";
 
 import markdownEx from "@/components/bases/markdownEx.vue";
 
@@ -48,10 +50,12 @@ const getKey = async function(url) {
 export default {
 	components: {
 		markdownEx,
+		notfound,
 	},
 
 	data: function() {
 		return {
+			isNotFound: false,
 			key: null,
 			content: "",
 		}
@@ -63,6 +67,7 @@ export default {
 		const result = await api.pages.getByKey({key:key});
 		if (!result || result.isErr()) {
 			console.log(result);
+			this.isNotFound = true;
 			return;
 		}
 

@@ -61,7 +61,7 @@ export default {
 				return Message(result.getMessage());
 			}
 
-			this.$router.push({path: this.user.username + "/" + this.site.sitename});
+			this.$router.push({path: "/" + this.user.username + "/" + this.site.sitename});
 		}
 	}
 }
