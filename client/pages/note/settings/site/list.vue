@@ -21,7 +21,6 @@ import {
 	Message,
 } from "element-ui";
 import {mapActions, mapGetters} from "vuex";
-import api from "@@/common/api/note.js";
 
 export default {
 	components: {
@@ -38,7 +37,7 @@ export default {
 
 	methods: {
 		async clickDeleteBtn(site, index) {
-			const result = await api.sites.delete(site);
+			const result = await this.api.sites.delete(site);
 			if (result.isErr()) {
 				Message(result.getMessage());
 				return;
@@ -49,7 +48,7 @@ export default {
 	},
 
 	async mounted() {
-		let result = await api.sites.get();
+		let result = await this.api.sites.get();
 		if (result.isErr()) {
 			Message(result.getMessage());
 			return;

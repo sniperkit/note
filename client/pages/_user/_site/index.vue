@@ -57,6 +57,7 @@ export default {
 		const username = paths[1];
 		const sitename = paths[2];
 		let result = await api.sites.getByName({username, sitename});
+		console.log(result);
 		if (result.isErr()) return {isNotFound: true};
 
 		const data = result.getData();

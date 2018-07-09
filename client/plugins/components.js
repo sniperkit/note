@@ -47,6 +47,20 @@ export const user = {
 	...localStorageGetUser(),
 };
 
+function getCookie(name) {
+	const reg = new RegExp("(^| )"+name+"=([^;]*)(;|$)"); //正则匹配
+	const arr = document.cookie.match(reg);
+	if(arr) return unescape(arr[2]);
+
+	return;
+} 
+
+export const getToken = () => {
+	if (process.server) return "";
+
+	return getCookie("token");
+}
+
 export const login = (x) => {
 	_.each(x, (val, key) => vue.set(user, key, val));
 
@@ -61,7 +75,6 @@ export const login = (x) => {
 
 	api.options.baseURL = config.baseURL;
 	api.options.headers['Authorization'] = "Bearer " + user.token;
-
 }
 
 export const logout = () => {
@@ -95,6 +108,7 @@ export const isAuthenticated = () => {
 
 // API config初始化
 api.options.baseURL = config.origin + config.baseUrl;
+user.token = getToken();
 if (isAuthenticated()) {
 	api.options.headers['Authorization'] = "Bearer " + user.token;
 } else {
