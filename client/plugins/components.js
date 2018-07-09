@@ -10,13 +10,6 @@ import "@/components/bases";
 import "@/components/complex";
 import {registerModTag} from  "@/components/mods";
 
-//console.log(process.client);
-let Cookies;
-
-if (process.client) {
-	Cookies = require("js-cookie");
-}
-
 function localStorageSetUser(user = {}) {
 	if (process.server) {
 		return ;
@@ -70,11 +63,8 @@ export const login = (x) => {
 
 	if (process.client) {
 		localStorageSetUser(user);
-		Cookies.set("token", user.token);
 	}
-
-	api.options.baseURL = config.baseURL;
-	api.options.headers['Authorization'] = "Bearer " + user.token;
+	//api.options.headers['Authorization'] = "Bearer " + user.token;
 }
 
 export const logout = () => {
@@ -82,8 +72,7 @@ export const logout = () => {
 
 	if (process.client) {
 		localStorageSetUser({});
-		Cookies.remove("token");
-		api.options.headers['Authorization'] = undefined;
+		//api.options.headers['Authorization'] = undefined;
 	}
 }
 
@@ -110,7 +99,7 @@ export const isAuthenticated = () => {
 api.options.baseURL = config.origin + config.baseUrl;
 user.token = getToken();
 if (isAuthenticated()) {
-	api.options.headers['Authorization'] = "Bearer " + user.token;
+	//api.options.headers['Authorization'] = "Bearer " + user.token;
 } else {
 	logout();
 }
