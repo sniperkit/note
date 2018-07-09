@@ -85,7 +85,7 @@ export const OauthApps = class extends Controller {
 			action: "token",
 			validated: {
 				client_secret: joi.string().required(),
-				code: joi.string().required();
+				code: joi.string().required(),
 				client_id: joi.string().required(),
 				client_secret: joi.string().required(),
 				redirect_uri: joi.string().required(),
