@@ -1,17 +1,16 @@
+import _ from "lodash";
 import vue from "vue";
 import jwt from "jwt-simple";
 
-const SET_USER = 'SET_USER';
-
 export const state = () => ({
 	user: {},
-})
+	token: null,
+});
 
 export const getters = {
 	isAuthenticated: (state) => {
-		if (!state.user || !state.user.token) return false;
-		const payload = jwt.decode(state.user.token, null, true);
-		//console.log(payload);
+		if (!state.token) return false;
+		const payload = jwt.decode(state.token, null, true);
 
 		if (payload.nbf && Date.now() < payload.nbf*1000) {
 			return false;
@@ -26,14 +25,15 @@ export const getters = {
 }
 
 export const actions = {
-	setUser({commit}, user){
-		commit(SET_USER, user);
-	},
 }
 
 export const mutations = {
-	[SET_USER](state, user) {
-		vue.set(state, "user", user);
+	setUser(state, user) {
+		state.user = user || {};
+		state.token = state.user.token || state.token;
+	},
+	setToken(state, token) {
+		state.token = token;
 	},
 }
 

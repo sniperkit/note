@@ -103,6 +103,7 @@ export const registerControllerRouter = function(router) {
 					}
 
 					ctx.state.user = ctx.state.user || {};
+					ctx.state.user.token = ctx.state.token;
 					//console.log(ctx.request.header);
 					//console.log(ctx.state.user);
 					ctx.state.params = getParams(ctx);

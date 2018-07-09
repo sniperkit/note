@@ -46,7 +46,7 @@ export default {
 	methods: {
 		handleCommand(cmd){
 			if (cmd == "logout") {
-				this.logout();
+				this.setUser()
 				this.pushName("login");
 				this.api.users.logout();
 				return;

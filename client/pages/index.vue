@@ -1,18 +1,11 @@
 <template>
 	<div>
-		<!--<Board></Board>-->
+		{{test}}
 	</div>
 </template>
 
 <script>
-import Board from "@/components/bases/board.vue";
-
-class Base {
-
-	static print() {
-		console.log(this.name);
-	}
-}
+import {mapMutations} from "vuex";
 
 export default {
 	layout: "index",
@@ -22,20 +15,29 @@ export default {
 		}
 	},
 
-	components: {
-		Board,
+	computed: {
+		test() {
+			return this.getData("key");
+		}
 	},
 
-	computed: {
+	watch: {
+		test(val) {
+			console.log(val);
+		}
+	},
+
+	components: {
 	},
 
 	methods: {
 	},
 
 	mounted() {
-		console.log(Base.print())
-		window.base = new Base();
-		console.log(base)
+		const self= this;
+		setTimeout(function() {
+			self.setData({key:"hello world"});
+		}, 1000);
 	}
 }
 </script>

@@ -36,7 +36,11 @@ export default (app, views) => {
 	app
 	.use(cors())
 	.use(KoaBody())
-	.use(jwt({secret:config.secret, passthrough:true, cookie:"token"}))
+	.use(jwt({
+		secret:config.secret, 
+		passthrough:true, 
+		cookie:"token", 
+		tokenKey:"token"}))
 	.use(apiRouter.routes())
 	.use(apiRouter.allowedMethods());
 

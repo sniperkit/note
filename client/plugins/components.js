@@ -1,4 +1,5 @@
 import vue from "vue";
+import {mapGetters, mapActions, mapMutations} from "vuex";
 import _ from "lodash";
 import jwt from "jwt-simple";
 
@@ -10,105 +11,13 @@ import "@/components/bases";
 import "@/components/complex";
 import {registerModTag} from  "@/components/mods";
 
-function localStorageSetUser(user = {}) {
-	if (process.server) {
-		return ;
-	}
-
-	window.localStorage.setItem("userinfo", JSON.stringify(user));
-}
-
-function localStorageGetUser() {
-	if (process.server) {
-		return {};
-	}
-
-	try {
-		return JSON.parse(window.localStorage.getItem("userinfo"));
-	} catch (e) {
-		return {};
-	}
-}
-
 // 定义事件对象
 const events = new vue();
-export const user = {
-	id: null,
-	username: null,
-	token: null,
-
-	...localStorageGetUser(),
-};
-
-function getCookie(name) {
-	const reg = new RegExp("(^| )"+name+"=([^;]*)(;|$)"); //正则匹配
-	const arr = document.cookie.match(reg);
-	if(arr) return unescape(arr[2]);
-
-	return;
-} 
-
-export const getToken = () => {
-	if (process.server) return "";
-
-	return getCookie("token");
-}
-
-export const login = (x) => {
-	_.each(x, (val, key) => vue.set(user, key, val));
-
-	if (!isAuthenticated()){
-		return logout();
-	}
-
-	if (process.client) {
-		localStorageSetUser(user);
-	}
-	//api.options.headers['Authorization'] = "Bearer " + user.token;
-}
-
-export const logout = () => {
-	_.each(user, (val, key) => vue.delete(user, key));
-
-	if (process.client) {
-		localStorageSetUser({});
-		//api.options.headers['Authorization'] = undefined;
-	}
-}
-
-export const setUser = (usr) => {
-	_.merge(user, usr);
-	if (process.client) localStorageSetUser(user);
-}
-
-export const isAuthenticated = () => {
-	if (!user.token) return false;
-	const payload = jwt.decode(user.token, null, true);
-
-	if (payload.nbf && Date.now() < payload.nbf*1000) {
-		return false;
-	}
-	if (payload.exp && Date.now() > payload.exp*1000) {
-		return false;
-	}
-
-	return true;
-}
-
-// API config初始化
-api.options.baseURL = config.origin + config.baseUrl;
-user.token = getToken();
-if (isAuthenticated()) {
-	//api.options.headers['Authorization'] = "Bearer " + user.token;
-} else {
-	logout();
-}
 
 export const component = {
 	data: function() {
 		return {
 			EVENTS:EVENTS,
-			user: user, // 共享用户信息
 			api: api,
 		}
 	},
@@ -119,24 +28,26 @@ export const component = {
 		},
 	},
 
+	computed: {
+		...mapGetters({
+			user: "user/user",
+			isAuthenticated: "user/isAuthenticated",
+			getData: "getData",
+		}),
+	},
+
 	methods: {
+		...mapMutations({
+			setUser: "user/setUser",
+			setData:"setData",
+		}),
+
 		on(eventName, callback) {
 			events.$on(eventName, callback);
 		},
+
 		emit(eventName, ...args) {
 			events.$emit(eventName, ...args);
-		},
-		login(userinfo) {
-			login(userinfo);
-		},
-		logout() {
-			logout();
-		},
-		setUser(usr) {
-			setUser(usr);
-		},
-		isAuthenticated() {
-			return isAuthenticated();
 		},
 		pushName(name) {
 			this.$router.push({name:config.urlPrefix + '-' + name});

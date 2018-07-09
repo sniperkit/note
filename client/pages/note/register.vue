@@ -76,7 +76,7 @@ export default {
 			}
 
 			const user = result.getData();
-			self.login(user);
+			self.setUser(user);
 			self.$router.push({name:g_app.getRouteName("home")});
 		}
 	},
