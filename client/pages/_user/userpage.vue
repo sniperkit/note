@@ -30,7 +30,7 @@ const getKey = async function(url) {
 			return path;
 		}
 
-		let data = await api.doamins.getByDomain({domain:hostname});
+		let data = await api.domains.getByDomain({domain:hostname});
 		data = data.getData();
 
 		if (data && data.user && data.site) {

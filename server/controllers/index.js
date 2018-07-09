@@ -21,6 +21,7 @@ import groupMembers from "./groupMembers.js";
 import domains from "./domains.js";
 import pages from "./pages.js";
 import oauthUsers from "./oauthUsers.js";
+import oauthApps from "./oauthApp.js";
 import favorites from "./favorites.js";
 import roles from "./roles.js";
 import datas from "./datas.js";
@@ -48,6 +49,7 @@ export const controllers = {
 	domains,
 	pages,
 	oauthUsers,
+	oauthApps,
 	favorites,
 	roles,
 	datas,
@@ -93,8 +95,6 @@ export const registerControllerRouter = function(router) {
 						validated(route.validated), 
 						validate(route.validate), 
 						async (ctx, next) => {
-
-					test(ctx);
 
 					// 认证中间件
 					if (route.authenticated && !ctx.state.user) {

@@ -49,7 +49,7 @@ export const OauthUsers = class extends Controller {
 			access_token,
 		   	oauth_consumer_key:params.client_id, 
 			openid:externalId}}).then(res => res.data);
-		console.log(result);
+		//console.log(result);
 		// 更新DB
 		const externalUsername = result.nickname;
 		const type = OAUTH_SERVICE_TYPE_QQ;

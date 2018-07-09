@@ -770,6 +770,60 @@ export const datas = sequelize.define("datas", {
 	//console.log("create files table successfully");
 //});
 
+export const oauthApps = sequelize.define("oauthApps", {
+	id: {
+		type: Sequelize.BIGINT,
+		autoIncrement: true,
+		primaryKey: true,
+	},
+	
+	userId: {  // 文件所属者
+		type: Sequelize.BIGINT,
+		allowNull:  false,
+		unique: true,
+	},
+	
+	clientId: {
+		type: Sequelize.STRING(48),
+		unique: true,
+		allowNull: false,
+	},
+
+	clientSecret: {
+		type: Sequelize.STRING(48),
+		allowNull: false,
+	},
+
+	redirectUrl: {
+		type: Sequelize.STRING(255),
+	},
+
+	skipUserGrant: {
+		type: Sequelize.BOOLEAN,
+	},
+
+	appName: {
+		type: Sequelize.STRING(64),
+	},
+
+	description: {
+		type: Sequelize.STRING(128),
+	},
+
+	data: {
+		type: Sequelize.JSON,
+	},
+}, {
+	charset: "utf8mb4",
+	collate: 'utf8mb4_bin',
+	
+});
+
+//oauthApps.sync({force:true}).then(() => {
+	//console.log("create files table successfully");
+//});
+
+
 export default {
 	users,
 	sites,
@@ -787,6 +841,7 @@ export default {
 	files,
 	storages,
 	oauthUsers,
+	oauthApps,
 	roles,
 	notifications,
 	datas,
