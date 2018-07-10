@@ -1,6 +1,7 @@
 <template>
 	<div>
 		{{test}}
+		<el-button @click="click">keepwork login</el-button>
 	</div>
 </template>
 
@@ -31,6 +32,9 @@ export default {
 	},
 
 	methods: {
+		click() {
+			this.$auth.authenticate("note", {state:"login"});
+		}
 	},
 
 	mounted() {

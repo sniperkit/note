@@ -26,6 +26,7 @@ import favorites from "./favorites.js";
 import roles from "./roles.js";
 import datas from "./datas.js";
 import convert from "./convert.js";
+import pays from "./pays.js";
 
 import models from "@/models/index.js";
 
@@ -53,6 +54,7 @@ export const controllers = {
 	favorites,
 	roles,
 	datas,
+	pays,
 }
 
 const rolesModel = models["roles"];

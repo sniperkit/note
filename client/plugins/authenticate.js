@@ -10,6 +10,15 @@ const baseUrl = config.origin + config.baseUrl + "oauthUsers/";
 vue.use(vueAxios, axios);
 vue.use(vueAuthenticate, {
 	providers: {
+		note: {
+			name: "note",
+			authorizationEndpoint: config.origin + config.baseUrl + "oauthApps/authorize",
+			clientId: config.oauths.note.clientId,
+			redirectUri: baseUrl + "note",
+			url: baseUrl + "token",
+			oauthType: "2.0",
+			popupOptions: { width: 1020, height: 618  },
+		},
 		xinlang: {
 			name:"xinlang",
 			authorizationEndpoint: "https://api.weibo.com/oauth2/authorize",

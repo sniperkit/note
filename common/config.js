@@ -11,6 +11,9 @@ const defaultConfig = {
 	baseUrl: "/api/v0/",
 
 	oauths: {
+		note: {
+			clientId: "100000",
+		},
 		github: {
 			clientId: "5cc0cf681e677a56771b",
 		},

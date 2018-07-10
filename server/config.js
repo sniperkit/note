@@ -49,6 +49,10 @@ const defaultConfig = {
 		accountToken: "",
 	},
 
+	pingpp: {
+		appId: "app_vTe5KO94GiL8nnfT",
+	}
+
 }
 
 const productionConfig = {

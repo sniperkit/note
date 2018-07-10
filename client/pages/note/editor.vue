@@ -1,6 +1,6 @@
 <template>
 	<div class="layoutContainer">
-		<div class="headerContainer">
+		<div class="editorHeaderContainer">
 			<div class="container full-height">
 				<div style="position:relative; padding:10px;">
 					<el-button @click="clickSaveBtn" :size="btnSize" round plain type="text" :icon="page.isRefresh ? 'el-icon-loading' : page.isModify ? 'iconfont icon-edit' : 'iconfont icon-save'"></el-button>
@@ -16,7 +16,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="mainContainer">
+		<div class="editorMainContainer">
 			<el-container v-if="isSmallScreen">
 				<left v-show="viewMode == 'files'"></left>
 				<code-editor v-show="viewMode == 'code'" ref="codemirror"></code-editor>
@@ -241,11 +241,11 @@ html, body {
 .layoutContainer {
 	height: 100%;
 }
-.headerContainer {
+.editorHeaderContainer {
 	height: 60px;
 	background-color: rgb(248,248,248);
 }
-.mainContainer {
+.editorMainContainer {
 	position: absolute;
 	left: 0px;
 	right: 0px;

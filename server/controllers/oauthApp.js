@@ -18,21 +18,34 @@ export const OauthApps = class extends Controller {
 		super();
 	}
 
-	authorize(ctx) {
-		const user = ctx.state.user.user;
+	async authorize(ctx) {
+		const user = ctx.state.user;
 		const params = ctx.state.params;
 
 		const clientId = params.client_id;
 		let redirectUrl = params.redirect_uri;
 
-		if (!user.userId) return ctx.redirect("/note/login");
+		if (!user || !user.userId) return ctx.redirect("/note/login");
 	
-		const code = getUuid();
+		let oauthApp = await this.model.findOne({where: {clientId}});
+		if (!oauthApp) return ERR.ERR_PARAMS();
+
+		if (oauthApp.skipUserGrant) {
+			return this.code(ctx);
+		}
+
+		return ctx.redirect("/note/authorize");
+	}
+
+	async code(ctx) {
+		const user = ctx.state.user;
+		const params = ctx.state.params;
+
+		const code = getUuid() + user.userId;
+		const redirectUrl = params.redirect_uri + "?code=" + code + (params.state ? ("&state=" + params.state) : "");
+	
 		memoryCache.put(code, {user, code}, 1000 * 60 * 10);
-
-		redirect_uri += "?code=" + code;
-		if (params.state) redirectUrl += "&state=" + params.state; 
-
+		
 		return ctx.redirect(redirectUrl);
 	}
 
@@ -71,7 +84,7 @@ export const OauthApps = class extends Controller {
 		const routes = [
 		{
 			path: "authorize",
-			method: "GET",
+			method: "get",
 			action: "authorize",
 			validated: {
 				response_type: joi.string().required(),
@@ -80,8 +93,14 @@ export const OauthApps = class extends Controller {
 			},
 		},
 		{
+			path: "code",
+			method: "get",
+			action: "code",
+			authenticated: true,
+		},
+		{
 			path: "token",
-			method: "POST",
+			method: "post",
 			action: "token",
 			validated: {
 				client_secret: joi.string().required(),

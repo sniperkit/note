@@ -10,10 +10,10 @@
 </template>
 
 <script>
-import _Header from "@/components/mods/common/header.vue";
+import Header from "@/components/mods/common/header.vue";
 export default {
 	components: {
-		Header:_Header,
+		Header:Header,
 	}
 }
 </script>
