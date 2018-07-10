@@ -183,6 +183,14 @@ export function Favorites(options) {
 	self.getFavoritePages = self.apiRequest("get", "getFavoritePages");
 }
 
+export function Domains(options) {
+	const self = this;
+
+	initHttpOptions(self, options, "favorites", "id");
+	
+	self.getByDomain = self.apiRequest("get", "getByDomain");
+}
+
 export function Notes(options = {}){
 	const self = this;
 	initHttpOptions(self, options);
@@ -199,6 +207,7 @@ export function Notes(options = {}){
 	self.siteMembers = new SiteMembers(self.options);
 	self.oauthUsers = new OauthUsers(self.options);
 	self.favorites = new Favorites(self.options);
+	self.domains = new Domains(self.options);
 }
 
 export const options = {

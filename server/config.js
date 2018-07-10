@@ -59,6 +59,7 @@ const developmentConfig = {
 	keepworkApiUrlPrefix:"http://stage.keepwork.com/api/wiki/models/",
 	database: {
 		database: "note-dev",
+		//database: "note",
 	}
 }
 
