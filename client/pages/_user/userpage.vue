@@ -65,6 +65,7 @@ export default {
 		const url = req.ctx.href;
 		const key = await getKey(url);
 		const result = await api.pages.getByKey({key:key});
+		console.log(url);
 		if (!result || result.isErr()) {
 			console.log(result);
 			this.isNotFound = true;
