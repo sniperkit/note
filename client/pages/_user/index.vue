@@ -81,7 +81,12 @@ export default {
 			isEditDescription: false,
 			isAuthUser:false,
 			activeItem: "overview",
-			userinfo: {},
+			userinfo: {
+				nickname:"",
+				username:"",
+				description:"",
+				portrait:"",
+			},
 			isFollowing: false,
 			sites: [],
 			favoriteSites: [],

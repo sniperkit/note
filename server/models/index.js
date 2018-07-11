@@ -16,6 +16,7 @@ import visitors from "./visitors.js";
 import roles from "./roles.js";
 import notifications from "./notifications.js";
 import datas from "./datas.js";
+import trades from "./trades.js";
 
 export default {
 	models,
@@ -35,4 +36,5 @@ export default {
 	roles,
 	notifications,
 	datas,
+	trades,
 }

@@ -823,6 +823,99 @@ export const oauthApps = sequelize.define("oauthApps", {
 	//console.log("create files table successfully");
 //});
 
+export const wallets = sequelize.define("wallets", {
+	id: {
+		type: Sequelize.BIGINT,
+		autoIncrement: true,
+		primaryKey: true,
+	},
+	
+	userId: {                    // 用户ID
+		type: Sequelize.BIGINT,
+		allowNull:  false,
+		unique: true,
+	},
+	
+	money: {
+		type: Sequelize.INTEGER,
+		allowNull: false,
+		defaultValue: 0,
+	},
+}, {
+	charset: "utf8mb4",
+	collate: 'utf8mb4_bin',
+});
+
+//wallets.sync({force:true}).then(() => {
+	//console.log("create files table successfully");
+//});
+
+export const trades = sequelize.define("trades", {
+	id: {
+		type: Sequelize.BIGINT,
+		autoIncrement: true,
+		primaryKey: true,
+	},
+	
+	userId: {                    // 用户ID
+		type: Sequelize.BIGINT,
+		allowNull:  false,
+	},
+	
+	type: {
+		type: Sequelize.INTEGER, // 0 - charge充值  1 - expense 消费 
+	},
+	
+	amount: {
+		type: Sequelize.INTEGER,
+	},
+
+	tradeNo: {
+		type: Sequelize.STRING(64), // 交易号
+		unique: true,
+	},
+
+	pingppId: {
+		type: Sequelize.STRING(64), // pingppId
+	},
+
+	goodsId: {
+		type: Sequelize.BIGINT,  // 物品ID
+		allowNull: false,
+	},
+
+	state: {
+		type: Sequelize.BIGINT, // 交易状态
+	},
+
+	callback: {                  // 交易成功回调通知 通过缓存解决
+		type: Sequelize.STRING(128),
+	},
+
+	channel: {                   // 支付渠道
+		type: Sequelize.STRING(16),
+	},
+
+	subject: {                   // 商品标题
+		type: Sequelize.STRING(64),
+	},
+
+	body: {                      // 商品描述信息
+		type: Sequelize.STRING(256),
+	},
+
+	extra: {                     // 交易额外参数
+		type: Sequelize.JSON,
+	},
+
+	description: {
+		type: Sequelize.STRING(256), // 交易附加信息
+	},
+});
+
+//trades.sync({force:true}).then(() => {
+	//console.log("create files table successfully");
+//});
 
 export default {
 	users,
@@ -845,4 +938,5 @@ export default {
 	roles,
 	notifications,
 	datas,
+	trades,
 };
