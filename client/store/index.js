@@ -6,7 +6,7 @@ export const state = () => ({
 });
 
 export const getters = {
-	getData: (state) => (key) => _.get(state.data, key),
+	getData: (state) => (key) => _.merge({},_.get(state.data, key)),
 }
 
 export const actions = {

@@ -37,9 +37,14 @@ export const component = {
 	},
 
 	methods: {
+		setData(key, data, replace=false) {
+			if (!replace) data = _.merge({}, this.getData(key), data);
+			
+			this.$store.commit("setData", {[key]:data});
+		},
+
 		...mapMutations({
 			setUser: "user/setUser",
-			setData:"setData",
 		}),
 
 		on(eventName, callback) {
